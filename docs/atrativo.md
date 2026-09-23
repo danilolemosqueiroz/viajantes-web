@@ -41,7 +41,7 @@ vez por atrativo, depois de saber se há alguém logado.
 
 | Convite | Quem vê | Quando |
 |---|---|---|
-| **Conta** — `ConviteConta.tsx`, o `ModalLogin` com o que a conta dá (favoritos, roteiros, pontos) | quem não está logado | em **toda** abertura de atrativo (pedido do cliente). `RESPIRO_CONTA_MIN` dá um intervalo depois de dispensado; hoje é 0. |
+| **Conta** — `ConviteConta.tsx`, o `ModalLogin` sem faixa nem capa: só título e campos, para o login caber inteiro no celular | quem não está logado | em **toda** abertura de atrativo (pedido do cliente). `RESPIRO_CONTA_MIN` dá um intervalo depois de dispensado; hoje é 0. |
 | **App** — `ConviteApp.tsx`, App Store / Google Play, a loja do aparelho primeiro | todo mundo | no **2º atrativo da visita** (quem chegou do Google e clicou num segundo lugar já mostrou interesse), ou logo no 1º para quem está logado; e **no máximo uma vez a cada 7 dias**. Quando é a vez dele, passa na frente da conta. |
 
 Memória: `sessionStorage.vj_atrativos_vistos` (atrativos abertos na aba;

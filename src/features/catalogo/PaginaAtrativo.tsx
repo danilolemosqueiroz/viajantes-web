@@ -384,8 +384,6 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
           marcarConviteContaDispensado();
           setConvite(null);
         }}
-        nome={empresa.nome}
-        capa={capa}
       />
 
       <ConviteApp aberto={convite === 'app'} aoFechar={() => setConvite(null)} nome={empresa.nome} capa={capa} />
