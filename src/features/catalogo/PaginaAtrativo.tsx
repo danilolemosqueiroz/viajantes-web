@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Clock, Globe, Mail, MapPin, Navigation, Phone, Star, Ticket, User } from 'lucide-react';
@@ -17,12 +17,10 @@ import {
   formatarTelefone,
   fotosDaGaleria,
   horarioDeHoje,
-  jaConvidouParaApp,
   linkComoChegar,
   linkExterno,
   linkPerfil,
   linkWhatsapp,
-  marcarConvidadoParaApp,
   mediaAvaliacoes,
   numeroWhatsapp,
   separarConteudo,
@@ -30,9 +28,11 @@ import {
   tituloInfo,
   urlEmbedVideo,
 } from './dados';
+import { decidirConviteAoAbrir, marcarConviteContaDispensado, type Convite } from './convites';
 import AtrativosProximos from './AtrativosProximos';
 import AvaliarLocal from './AvaliarLocal';
 import ConviteApp from './ConviteApp';
+import ConviteConta from './ConviteConta';
 import Estrelas from './Estrelas';
 import Galeria from './Galeria';
 import GradeEmpresas from './GradeEmpresas';
@@ -40,8 +40,9 @@ import GradeEmpresas from './GradeEmpresas';
 /**
  * Página de um atrativo: /cachoeiras/cachoeira-do-cristal-1234.
  *
- * Tudo fica aberto. Ao entrar, uma vez por sessão, aparece o convite para
- * baixar o aplicativo — fechar não trava nada. As seções seguem a ordem do
+ * Tudo fica aberto. Ao entrar aparece UM convite — entrar ou criar conta para
+ * quem não está logado; baixar o aplicativo de vez em quando (a regra está em
+ * `convites.ts`) — e fechar não trava nada. As seções seguem a ordem do
  * site antigo, com as fotos subidas a pedido do cliente: atrativos do
  * complexo, sobre, fotos, avaliações, atrativos próximos, vídeos, destaques e
  * horário de funcionamento; o contato fica ao lado (no celular, antes do
@@ -68,18 +69,23 @@ const AVALIACOES_NA_PAGINA = 12;
 
 export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Props) {
   const t = useT();
-  const { data: usuario } = useUsuario();
+  const { data: usuario, isPending: carregandoUsuario } = useUsuario();
 
   // A página é remontada a cada atrativo (key no CategoriaSlug), então o
   // estado do convite e do formulário de avaliação começa do zero em cada um.
-  const [convite, setConvite] = useState(() => !jaConvidouParaApp());
+  const [convite, setConvite] = useState<Convite>(null);
   const [avaliando, setAvaliando] = useState(false);
 
-  // Marca a sessão ao MOSTRAR (não ao fechar): quem sai da página sem
-  // responder também não vê o convite de novo.
+  // Qual convite mostrar se decide UMA vez por atrativo, e só depois de saber
+  // se há alguém logado (convidar a entrar quem já entrou seria um susto). A
+  // ref segura a decisão contra o efeito duplo do StrictMode e contra o
+  // usuário mudar depois (o login feito no próprio convite).
+  const decidido = useRef(false);
   useEffect(() => {
-    if (convite) marcarConvidadoParaApp();
-  }, [convite]);
+    if (carregandoUsuario || decidido.current) return;
+    decidido.current = true;
+    setConvite(decidirConviteAoAbrir(Boolean(usuario)));
+  }, [carregandoUsuario, usuario]);
 
   // Avaliações e atrativos próximos são complementos: se a API falhar, a
   // página continua de pé sem eles.
@@ -372,12 +378,17 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
         </div>
       </div>
 
-      <ConviteApp
-        aberto={convite}
-        aoFechar={() => setConvite(false)}
+      <ConviteConta
+        aberto={convite === 'conta'}
+        aoFechar={() => {
+          marcarConviteContaDispensado();
+          setConvite(null);
+        }}
         nome={empresa.nome}
         capa={capa}
       />
+
+      <ConviteApp aberto={convite === 'app'} aoFechar={() => setConvite(null)} nome={empresa.nome} capa={capa} />
 
       <AvaliarLocal
         aberto={avaliando}

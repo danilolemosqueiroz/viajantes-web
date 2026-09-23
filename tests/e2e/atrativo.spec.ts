@@ -2,8 +2,9 @@ import { expect, test, type Page } from '@playwright/test';
 import { rota } from './rota';
 
 /**
- * Página do atrativo: convite para baixar o app (que não trava nada), contato,
- * avaliações com nota média, abas de atrativos próximos e o envio de avaliação.
+ * Página do atrativo: os convites ao abrir (conta sempre, app no 2º atrativo —
+ * nenhum trava nada), contato, avaliações com nota média, abas de atrativos
+ * próximos e o envio de avaliação.
  *
  * O atrativo vem da API de verdade; avaliações, atrativos próximos e o envio
  * são simulados, para o teste não depender do que há no banco hoje.
@@ -29,6 +30,14 @@ async function simularComplementos(page: Page) {
   );
 }
 
+/** Abre o atrativo e dispensa o convite que aparece ao entrar. */
+async function abrirAtrativo(page: Page) {
+  await page.goto(rota(ATRATIVO));
+  const convite = page.getByRole('dialog', { name: /entre ou crie sua conta|baixe o aplicativo/i });
+  await convite.getByRole('button', { name: /continuar no site/i }).click();
+  await expect(convite).toBeHidden();
+}
+
 /** Aceita os cookies antes, para o aviso da LGPD não cobrir nada. */
 test.beforeEach(async ({ context, page }) => {
   await context.addInitScript(() => {
@@ -37,34 +46,40 @@ test.beforeEach(async ({ context, page }) => {
   await simularComplementos(page);
 });
 
-test('o convite para baixar o app aparece uma vez e não trava a página', async ({ page }) => {
+test('convite de conta ao abrir, app no segundo atrativo — e nada trava', async ({ page }) => {
   await page.goto(rota(ATRATIVO));
 
-  const convite = page.getByRole('dialog', { name: /baixe o aplicativo/i });
-  await expect(convite).toBeVisible();
-  await expect(convite.getByRole('link', { name: /app store/i })).toBeVisible();
-  await expect(convite.getByRole('link', { name: /google play/i })).toBeVisible();
+  // Quem não está logado é convidado a entrar ou criar conta.
+  const conta = page.getByRole('dialog', { name: /entre ou crie sua conta/i });
+  await expect(conta).toBeVisible();
+  await expect(conta.getByRole('button', { name: /criar conta/i })).toBeVisible();
+  await expect(conta.getByRole('button', { name: /^entrar$/i })).toBeVisible();
 
-  await convite.getByRole('button', { name: /continuar no site/i }).click();
-  await expect(convite).toBeHidden();
+  await conta.getByRole('button', { name: /continuar no site/i }).click();
+  await expect(conta).toBeHidden();
 
   // Nada bloqueado: contato e "como chegar" estão à mão.
   await expect(page.getByRole('heading', { name: /^contato$/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /como chegar/i }).first()).toBeVisible();
 
-  // Na mesma sessão o convite não volta.
+  // Segundo atrativo da visita: é a vez do app.
   await page.reload();
-  await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
+  const app = page.getByRole('dialog', { name: /baixe o aplicativo/i });
+  await expect(app).toBeVisible();
+  await expect(app.getByRole('link', { name: /app store/i })).toBeVisible();
+  await expect(app.getByRole('link', { name: /google play/i })).toBeVisible();
+  await app.getByRole('button', { name: /continuar no site/i }).click();
+  await expect(app).toBeHidden();
+
+  // Terceiro: o app descansa por uma semana; a conta volta, sempre.
+  await page.reload();
+  await expect(page.getByRole('dialog', { name: /entre ou crie sua conta/i })).toBeVisible();
   await expect(page.getByRole('dialog', { name: /baixe o aplicativo/i })).toBeHidden();
 });
 
 test.describe('com o convite já respondido', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => sessionStorage.setItem('vj_convite_app', '1'));
-  });
-
   test('mostra a nota média, as avaliações e os atrativos próximos em abas', async ({ page }) => {
-    await page.goto(rota(ATRATIVO));
+    await abrirAtrativo(page);
 
     // 4,5 = média de 5 e 4; aparece no topo e na seção.
     await expect(page.getByText('4,5').first()).toBeVisible();
@@ -92,7 +107,7 @@ test.describe('com o convite já respondido', () => {
       });
     });
 
-    await page.goto(rota(ATRATIVO));
+    await abrirAtrativo(page);
     await page.getByRole('button', { name: /avaliar este local/i }).click();
 
     const modal = page.getByRole('dialog', { name: /avaliar este local/i });

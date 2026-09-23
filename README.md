@@ -48,9 +48,12 @@ arquivos de `src/messages/` são os mesmos dele. Isso vale para os textos FIXOS
 do site. O conteúdo do banco (nome e descrição de atrativos) virá traduzido da
 própria API, quando estiver gravado lá.
 
-**Detalhe do atrativo é aberto.** Ao entrar aparece, uma vez por sessão, o
-convite para baixar o aplicativo (`features/catalogo/ConviteApp.tsx`); fechar
-não trava nada. As seções seguem a ordem do site antigo (sobre, avaliações com
+**Detalhe do atrativo é aberto.** Ao entrar aparece UM convite, e fechar não
+trava nada: entrar ou criar conta para quem não está logado
+(`features/catalogo/ConviteConta.tsx`, em toda abertura) ou baixar o
+aplicativo (`ConviteApp.tsx`, no 2º atrativo da visita e no máximo uma vez por
+semana). A regra, com os números, está em `features/catalogo/convites.ts`. As
+seções seguem a ordem do site antigo (sobre, avaliações com
 nota média e formulário, atrativos próximos em abas, vídeos, horários, fotos) e
 o contato fica ao lado. As pegadinhas da API do detalhe (nota sempre 0, horário
 que não é "aberto agora", vídeo com barra dobrada) estão em `docs/atrativo.md`.

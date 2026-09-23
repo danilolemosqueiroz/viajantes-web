@@ -32,16 +32,27 @@ para antes das avaliações (no celular também, é a mesma página):
 
 Seção sem dado não aparece.
 
-## Convite para baixar o aplicativo
+## Convites ao abrir: conta e aplicativo
 
-Ao abrir um atrativo aparece o `ConviteApp` (App Store / Google Play, a loja
-do aparelho primeiro). É um convite, não um bloqueio: "Continuar no site", o X
-ou Esc fecham e a página está inteira. Aparece **uma vez por sessão do
-navegador** (`sessionStorage`, chave `vj_convite_app`, gravada ao mostrar —
-quem sai sem responder também não vê de novo); fechar a aba zera.
+Ao abrir um atrativo aparece **um** convite (nunca dois), e fechar — "Continuar
+no site", o X ou Esc — deixa a página inteira. Quem decide é
+`features/catalogo/convites.ts`: a página chama `decidirConviteAoAbrir()` uma
+vez por atrativo, depois de saber se há alguém logado.
 
-Não existe mais o modal de login que travava o detalhe (ele continua em
-`features/conta/ModalLogin.tsx`, usado só pelo Plano Viajantes).
+| Convite | Quem vê | Quando |
+|---|---|---|
+| **Conta** — `ConviteConta.tsx`, o `ModalLogin` com o que a conta dá (favoritos, roteiros, pontos) | quem não está logado | em **toda** abertura de atrativo (pedido do cliente). `RESPIRO_CONTA_MIN` dá um intervalo depois de dispensado; hoje é 0. |
+| **App** — `ConviteApp.tsx`, App Store / Google Play, a loja do aparelho primeiro | todo mundo | no **2º atrativo da visita** (quem chegou do Google e clicou num segundo lugar já mostrou interesse), ou logo no 1º para quem está logado; e **no máximo uma vez a cada 7 dias**. Quando é a vez dele, passa na frente da conta. |
+
+Memória: `sessionStorage.vj_atrativos_vistos` (atrativos abertos na aba;
+fechar a aba zera) e `localStorage.vj_convite_app_em` /
+`vj_convite_conta_em` (quando cada um apareceu ou foi dispensado, em
+milissegundos). A data do app é gravada ao MOSTRAR: quem fecha a aba sem
+responder também não o vê de novo. Com o armazenamento bloqueado o site não
+insiste: só o convite de conta aparece.
+
+O login feito no convite fecha o modal e a pessoa continua onde estava; dali
+em diante só o convite do app pode aparecer.
 
 ## Avaliar este local
 

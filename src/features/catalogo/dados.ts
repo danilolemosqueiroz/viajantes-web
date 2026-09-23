@@ -251,22 +251,3 @@ export function tipoSchema(eavmoda: number | null | undefined): string {
   };
   return tipos[Number(eavmoda)] ?? 'LocalBusiness';
 }
-
-/** Já mostrou o convite para baixar o app nesta sessão do navegador. */
-const CHAVE_CONVITE = 'vj_convite_app';
-
-export function jaConvidouParaApp(): boolean {
-  try {
-    return sessionStorage.getItem(CHAVE_CONVITE) === '1';
-  } catch {
-    return true;
-  }
-}
-
-export function marcarConvidadoParaApp(): void {
-  try {
-    sessionStorage.setItem(CHAVE_CONVITE, '1');
-  } catch {
-    /* armazenamento bloqueado: o estado da página segura o resto da visita */
-  }
-}

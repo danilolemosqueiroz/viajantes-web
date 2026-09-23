@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type ComponentType } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Navigation, Star, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { href } from '@/i18n/caminhos';
 import BotaoApple from './BotaoApple';
@@ -8,8 +8,13 @@ import BotaoGoogle from './BotaoGoogle';
 import FormCadastro from './FormCadastro';
 import FormLogin from './FormLogin';
 
+/** Um ícone da lucide, com o que a lista de benefícios passa a ele. */
+type Icone = ComponentType<{ size?: number; className?: string; 'aria-hidden'?: boolean }>;
+
 /**
- * Modal de login em folha (hoje, quem quer assinar o Plano Viajantes sem conta).
+ * Modal de login em folha: entrar (Apple, Google ou e-mail) ou criar conta —
+ * a MESMA do aplicativo. Quem chama diz o motivo: o convite ao abrir um
+ * atrativo (`catalogo/ConviteConta`) e o Plano Viajantes (`roteiros/Assinar`).
  *
  * Usa o `<dialog>` nativo com `showModal()`: o navegador já prende o foco
  * dentro dele, fecha com Esc, deixa o resto da página inerte e devolve o foco
@@ -27,15 +32,21 @@ export default function ModalLogin({
   capa,
   titulo,
   texto,
+  beneficios,
+  continuarNoSite = false,
 }: {
   aberto: boolean;
   aoFechar: () => void;
-  /** Nome do atrativo, para o modal dizer o que está sendo liberado. */
+  /** Nome do atrativo (ou do plano), na faixa de cima. */
   nome: string;
   capa: string | null;
-  /** Título e frase próprios (ex.: comprar roteiro); sem eles, o texto do atrativo. */
-  titulo?: string;
+  titulo: string;
+  /** Uma frase sob o título… */
   texto?: string;
+  /** …ou uma lista curta do que a conta dá. */
+  beneficios?: { Icone: Icone; texto: string }[];
+  /** Põe "Continuar no site" no rodapé: deixa claro que fechar não custa nada. */
+  continuarNoSite?: boolean;
 }) {
   const t = useT();
   const idioma = useIdioma();
@@ -59,6 +70,14 @@ export default function ModalLogin({
 
   // Fechar pela página (depois do login) ou por Esc passa pelo evento `close`.
   const fechar = () => dialogo.current?.close();
+
+  const continuar = continuarNoSite && (
+    <p className="text-center">
+      <button type="button" onClick={fechar} className="text-nota font-semibold text-texto-2 hover:text-brand hover:underline">
+        {t('Continuar no site')}
+      </button>
+    </p>
+  );
 
   return (
     <dialog
@@ -98,25 +117,18 @@ export default function ModalLogin({
             <>
               <div>
                 <h2 id={idTitulo} className="text-secao font-bold leading-tight text-brand">
-                  {titulo ?? t('Entre para ver os detalhes')}
+                  {titulo}
                 </h2>
-                {titulo ? (
-                  <p className="mt-2 text-nota text-texto-2">{texto}</p>
-                ) : (
-                <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-mini text-texto-2">
-                  <li className="flex items-center gap-1.5">
-                    <Navigation size={13} className="text-acento" aria-hidden="true" />
-                    {t('Como chegar')}
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <MessageCircle size={13} className="text-acento" aria-hidden="true" />
-                    WhatsApp
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Star size={13} className="text-acento" aria-hidden="true" />
-                    {t('Avaliações')}
-                  </li>
-                </ul>
+                {texto && <p className="mt-2 text-nota text-texto-2">{texto}</p>}
+                {beneficios && beneficios.length > 0 && (
+                  <ul className="mt-3 space-y-2 text-nota text-texto-2">
+                    {beneficios.map(({ Icone, texto: frase }) => (
+                      <li key={frase} className="flex items-center gap-2.5">
+                        <Icone size={15} className="shrink-0 text-acento" aria-hidden />
+                        {frase}
+                      </li>
+                    ))}
+                  </ul>
                 )}
                 <p className="mt-2 text-mini text-texto-3">{t('É grátis e usa a mesma conta do aplicativo.')}</p>
               </div>
@@ -149,6 +161,8 @@ export default function ModalLogin({
                   {t('Criar conta')}
                 </button>
               </div>
+
+              {continuar}
             </>
           ) : (
             <>
@@ -157,7 +171,7 @@ export default function ModalLogin({
                   {t('Criar conta')}
                 </h2>
                 <p className="mt-1 text-nota text-texto-2">
-                  {t('Crie a sua em um minuto e veja todos os detalhes.')}
+                  {t('Vale no site e no aplicativo, com a mesma conta.')}
                 </p>
               </div>
 
@@ -172,6 +186,8 @@ export default function ModalLogin({
                   {t('Já tenho uma conta')}
                 </button>
               </p>
+
+              {continuar}
             </>
           )}
         </div>

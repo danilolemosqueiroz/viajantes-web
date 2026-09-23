@@ -8,8 +8,8 @@ import { LOJA_ANDROID, LOJA_IOS } from '@/lib/lojas';
  * Convite para baixar o aplicativo, ao abrir um atrativo.
  *
  * É só um convite: "Continuar no site" (ou Esc, ou o X) fecha e a página fica
- * inteira, sem nada bloqueado. Quem decide quando mostrar é a página — uma vez
- * por sessão do navegador.
+ * inteira, sem nada bloqueado. Quem decide quando mostrar é a página
+ * (`convites.ts`): no 2º atrativo da visita, no máximo uma vez por semana.
  */
 export default function ConviteApp({
   aberto,
