@@ -15,7 +15,7 @@ import {
   urlEmbedVideo,
 } from '@/features/catalogo/dados';
 
-/** Regras da página do atrativo — as mesmas do site antigo, agora com teste. */
+/** Regras da página do atrativo, as mesmas do site antigo, agora com teste. */
 
 describe('separarConteudo', () => {
   it('separa texto, imagem e vídeo pelo campo preenchido, como o site antigo', () => {

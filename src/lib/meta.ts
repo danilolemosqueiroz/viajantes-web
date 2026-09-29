@@ -1,13 +1,7 @@
 import { useEffect } from 'react';
 
-/**
- * Título, descrição e canonical da tela atual.
- *
- * Num site que monta no navegador não há `<head>` pronto por página: quem
- * escreve é o próprio React, a cada troca de tela. Serve para a aba do
- * navegador, para o que é compartilhado em redes sociais e para o robô que
- * executa JavaScript.
- */
+/** Título, descrição e canonical da tela atual. Num site que monta no navegador,
+ * quem escreve o `<head>` é o próprio React, a cada troca de tela. */
 interface Meta {
   titulo?: string;
   descricao?: string;

@@ -5,18 +5,8 @@ import type { Categoria, Idioma } from '@/i18n/categorias';
 import { hrefEmpresa } from '@/i18n/caminhos';
 import { capaEmpresa } from './dados';
 
-/**
- * Card de atrativo.
- *
- * Não tem moldura, borda nem sombra: numa folha branca o cartão é a própria
- * foto, e o texto respira embaixo dela. É assim que o app mostra o conteúdo —
- * o que muda de plataforma é só a quantidade de colunas.
- *
- * `formato`:
- *  - `grade`   → foto 4:3 com título embaixo (listagens);
- *  - `retrato` → foto 171:233 com o título por cima (faixas horizontais, o
- *    mesmo formato dos cards de cachoeira da home do aplicativo).
- */
+/** Card de atrativo, sem moldura nem sombra: o cartão é a própria foto, com o texto embaixo.
+ * `formato`: `grade` (foto 4:3, título embaixo) ou `retrato` (foto 171:233, título por cima). */
 export default function CardEmpresa({
   empresa,
   categoria,

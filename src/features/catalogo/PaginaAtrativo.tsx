@@ -37,17 +37,8 @@ import Estrelas from './Estrelas';
 import Galeria from './Galeria';
 import GradeEmpresas from './GradeEmpresas';
 
-/**
- * Página de um atrativo: /cachoeiras/cachoeira-do-cristal-1234.
- *
- * Tudo fica aberto. Ao entrar aparece UM convite — entrar ou criar conta para
- * quem não está logado; baixar o aplicativo de vez em quando (a regra está em
- * `convites.ts`) — e fechar não trava nada. As seções seguem a ordem do
- * site antigo, com as fotos subidas a pedido do cliente: atrativos do
- * complexo, sobre, fotos, avaliações, atrativos próximos, vídeos, destaques e
- * horário de funcionamento; o contato fica ao lado (no celular, antes do
- * conteúdo).
- */
+/** Página de um atrativo: /cachoeiras/cachoeira-do-cristal-1234. Ao entrar aparece um convite só
+ * (regra em `convites.ts`), e fechar não trava nada. As seções seguem a ordem do site antigo. */
 
 interface Props {
   empresa: Empresa;
@@ -76,10 +67,8 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
   const [convite, setConvite] = useState<Convite>(null);
   const [avaliando, setAvaliando] = useState(false);
 
-  // Qual convite mostrar se decide UMA vez por atrativo, e só depois de saber
-  // se há alguém logado (convidar a entrar quem já entrou seria um susto). A
-  // ref segura a decisão contra o efeito duplo do StrictMode e contra o
-  // usuário mudar depois (o login feito no próprio convite).
+  // Qual convite mostrar se decide uma vez por atrativo, depois de saber se há alguém logado.
+  // A ref segura a decisão contra o efeito duplo do StrictMode e contra o login feito no convite.
   const decidido = useRef(false);
   useEffect(() => {
     if (carregandoUsuario || decidido.current) return;
@@ -291,7 +280,7 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
       />
 
       {/* Capa: um painel de foto sobre a folha, e o título embaixo em tinta
-          verde — a mesma ordem da tela de detalhe do aplicativo. */}
+          verde, na mesma ordem da tela de detalhe do aplicativo. */}
       <div className="folha pt-6">
         <nav aria-label={t('Você está em')} className="flex flex-wrap items-center gap-2 text-mini text-texto-3">
           <Link to="/" className="transition hover:text-brand">

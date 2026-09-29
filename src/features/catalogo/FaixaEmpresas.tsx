@@ -2,11 +2,8 @@ import type { EmpresaResumo } from '@/lib/tipos';
 import type { Categoria, Idioma } from '@/i18n/categorias';
 import CardEmpresa from './CardEmpresa';
 
-/**
- * Faixa horizontal de atrativos — o ritmo das seções da home do aplicativo:
- * cards em retrato que rolam com o dedo, em vez de uma grade que empurra o
- * resto da página para baixo.
- */
+/** Faixa horizontal de atrativos, como na home do aplicativo: cards em retrato que rolam
+ * com o dedo, em vez de uma grade que empurra o resto da página para baixo. */
 export default function FaixaEmpresas({
   empresas,
   categoria,

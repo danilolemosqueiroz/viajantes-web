@@ -5,11 +5,8 @@ import { apiGet } from '@/lib/api';
 import { useMeta } from '@/lib/meta';
 import Carregando from '@/components/layout/Carregando';
 
-/**
- * Páginas de texto (sobre, termos, privacidade). O conteúdo vem da API — a
- * mesma tabela `geral` que o aplicativo usa —, então a equipe edita num lugar
- * só e o site acompanha.
- */
+/** Páginas de texto (sobre, termos, privacidade). O conteúdo vem da API (a mesma tabela `geral`
+ * que o aplicativo usa), então a equipe edita num lugar só e o site acompanha. */
 const PAGINAS = {
   sobre: { rota: '/sobre' as RotaFixa, chave: 'sobre', titulo: 'Sobre Nós' },
   termos: { rota: '/termos' as RotaFixa, chave: 'termos', titulo: 'Termos e condições' },

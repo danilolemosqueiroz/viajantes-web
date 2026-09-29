@@ -3,12 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { href } from '@/i18n/caminhos';
 
-/**
- * Barra de abas do celular — a mesma do aplicativo, inclusive nos detalhes que
- * a pessoa não sabe que está vendo: cantos de cima arredondados em 10px, fundo
- * branco sem borda dura e a aba ativa em LARANJA (no app, verde é tinta de
- * título; laranja é o que está ativo ou é ação).
- */
+/** Barra de abas do celular, igual à do aplicativo: cantos de cima em 10px, fundo branco sem borda
+ * dura e aba ativa em laranja (no app, verde é tinta de título; laranja é ação). */
 const ABAS = [
   { rota: '/', rotulo: 'Início', Icone: House },
   { rota: '/destinos', rotulo: 'Explorar', Icone: Compass },

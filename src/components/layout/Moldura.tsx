@@ -6,13 +6,8 @@ import BottomTabs from './BottomTabs';
 import TrilhoCategorias from './TrilhoCategorias';
 import Consentimento from './Consentimento';
 
-/**
- * A folha do site: cabeçalho, trilho de categorias, conteúdo, rodapé e, no
- * celular, a barra de abas do aplicativo.
- *
- * Também devolve a rolagem ao topo a cada troca de tela — num site que não
- * recarrega a página, o navegador não faz isso sozinho.
- */
+/** A folha do site: cabeçalho, trilho de categorias, conteúdo, rodapé e a barra de abas no celular.
+ * Também devolve a rolagem ao topo a cada troca de tela, o que o navegador não faz num SPA. */
 export default function Moldura() {
   const { pathname } = useLocation();
 

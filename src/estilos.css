@@ -1,20 +1,7 @@
 @import "tailwindcss";
 
-/**
- * Sistema visual do Viajantes — "o papel do app".
- *
- * O aplicativo (tela Explorar) é uma folha branca: estrutura feita de filete
- * fino e espaço, círculos de categoria contornados, título de seção em caixa
- * alta entre duas linhas, e a foto como protagonista. Verde é TINTA (título),
- * laranja é AÇÃO (etiqueta, aba ativa, botão). Nunca o contrário.
- *
- * Por isso aqui não existe fundo cinza, nem cartão com sombra, nem faixa
- * colorida: o site inteiro é a mesma folha, e o que separa uma coisa da outra
- * é um filete de 1px — igual ao app.
- *
- * O cinza é enviesado para o verde da marca (nunca cinza puro): é o que faz o
- * branco do site e o branco do app parecerem o mesmo branco.
- */
+/** Sistema visual do Viajantes, que segue o papel branco do app: filete fino, espaço e foto.
+ * Verde é tinta (título) e laranja é ação (etiqueta, aba ativa, botão), nunca o contrário. */
 @theme {
   /* Marca */
   --color-brand: #0c2e2d;
@@ -26,12 +13,12 @@
   --color-acento-suave: #fdece2;
 
   /* Superfícies: uma folha só. `fundo` e `cartao` são o mesmo branco de
-     propósito — o cartão não é uma caixa, é um recorte da folha. */
+     propósito, porque o cartão é um recorte da folha e não uma caixa. */
   --color-fundo: #ffffff;
   --color-cartao: #ffffff;
   --color-papel-2: #f4f8f6;
 
-  /* Filetes — o que desenha a estrutura */
+  /* Filetes, que desenham a estrutura */
   --color-borda: #e3eae8;
   --color-fio-forte: #c7d3d1;
 
@@ -58,7 +45,7 @@
   --shadow-cartao: none;
   --shadow-cartao-hover: none;
 
-  /* Poppins é a única fonte do app — 300/400/600/700 */
+  /* Poppins é a única fonte do app, nos pesos 300/400/600/700 */
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 
   --text-mini: 0.75rem;
@@ -82,7 +69,7 @@ body {
   line-height: 1.6;
 }
 
-/* ── Largura de leitura ────────────────────────────────────────────────── */
+/* Largura de leitura */
 .folha {
   margin-inline: auto;
   width: 100%;
@@ -95,10 +82,8 @@ body {
   }
 }
 
-/* ── Título de seção: a assinatura do app ──────────────────────────────
-   No celular é exatamente o do app (centralizado entre duas linhas). A partir
-   de 640px o título vai para a esquerda com um traço curto na frente e a linha
-   longa atrás — mesmo desenho, proporção certa para tela larga. */
+/* Título de seção, o mesmo do app. No celular fica centralizado entre duas linhas;
+   a partir de 640px vai para a esquerda, com um traço curto na frente e a linha longa atrás. */
 .rotulo-secao {
   display: flex;
   align-items: center;
@@ -134,7 +119,7 @@ body {
   text-decoration: underline;
 }
 
-/* ── Trilho horizontal (categorias, faixas de card) ────────────────────── */
+/* Trilho horizontal (categorias, faixas de card) */
 .trilho {
   display: flex;
   gap: 1rem;
@@ -156,7 +141,7 @@ body {
   }
 }
 
-/* ── Círculo de categoria — o do topo do app ───────────────────────────── */
+/* Círculo de categoria, o do topo do app */
 .circulo-cat {
   display: flex;
   height: 3.5rem;
@@ -176,7 +161,7 @@ body {
   color: #fff;
 }
 
-/* ── Pílula de busca — a barra do app, mesmo desenho ───────────────────── */
+/* Pílula de busca: a barra do app, com o mesmo desenho */
 .pilula-busca {
   display: flex;
   align-items: center;
@@ -222,7 +207,7 @@ body {
   background: var(--color-brand-escuro);
 }
 
-/* ── Botões ────────────────────────────────────────────────────────────── */
+/* Botões */
 .botao,
 .botao-acao,
 .botao-fio {
@@ -260,7 +245,7 @@ body {
   background: var(--color-brand-suave);
 }
 
-/* ── Chip (cidade, filtro, categoria vizinha) ──────────────────────────── */
+/* Chip (cidade, filtro, categoria vizinha) */
 .chip {
   display: inline-flex;
   align-items: center;
@@ -277,7 +262,7 @@ body {
   color: var(--color-brand);
 }
 /* Chip escolhido. Fora de @layer o .chip vence os utilitários (text-white
-   perdia e o texto sumia no fundo verde) — por isso o estado tem classe própria. */
+   perdia e o texto sumia no fundo verde), por isso o estado tem classe própria. */
 .chip--ativo,
 .chip--ativo:hover {
   border-color: var(--color-brand);
@@ -285,7 +270,7 @@ body {
   color: #fff;
 }
 
-/* ── Seletor (Estado › Região › Cidade, parcelas, UF) ──────────────────── */
+/* Seletor (Estado › Região › Cidade, parcelas, UF) */
 .seletor {
   appearance: none;
   width: 100%;
@@ -310,7 +295,7 @@ body {
   cursor: not-allowed;
 }
 
-/* ── Campo de formulário ───────────────────────────────────────────────── */
+/* Campo de formulário */
 .campo {
   width: 100%;
   min-height: 2.75rem;
@@ -332,20 +317,20 @@ body {
   color: var(--color-texto-3);
 }
 
-/* Bloco recuado (formulário, estado vazio, aviso) — o único cinza do site. */
+/* Bloco recuado (formulário, estado vazio, aviso). É o único cinza do site. */
 .recuo {
   border-radius: var(--radius-heroi);
   background: var(--color-papel-2);
 }
 
-/* ── Foco sempre visível ───────────────────────────────────────────────── */
+/* Foco sempre visível */
 :focus-visible {
   outline: 3px solid var(--color-acento);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ── Texto cortado em N linhas ─────────────────────────────────────────── */
+/* Texto cortado em N linhas */
 .linhas-2,
 .linhas-3 {
   display: -webkit-box;
@@ -359,10 +344,8 @@ body {
   -webkit-line-clamp: 3;
 }
 
-/* ── Modal em folha (login, convite do app, avaliação) ─────────────────
-   <dialog> nativo. No computador é um cartão no centro; no celular vira uma
-   folha que sobe de baixo, como as folhas do aplicativo. A página atrás não
-   rola enquanto ele está aberto. */
+/* Modal em folha (login, convite do app, avaliação), em <dialog> nativo: cartão no centro no
+   computador, folha que sobe de baixo no celular. A página atrás não rola enquanto está aberto. */
 .modal-folha {
   /* O reset do Tailwind zera a margem de tudo, inclusive o `margin: auto` que
      o navegador usa para centralizar o <dialog>: devolve aqui. */
@@ -429,10 +412,8 @@ html:has(dialog.modal-folha[open]) {
   overflow: hidden;
 }
 
-/* ── Visor de foto (galeria do atrativo) ───────────────────────────────
-   Tela inteira escura; a foto cabe sem cortar e os controles flutuam. O
-   escuro fica no próprio <dialog>: só no ::backdrop, o Chromium deixava o
-   cabeçalho (que tem backdrop-filter) aparecer por cima. */
+/* Visor de foto (galeria do atrativo): tela inteira escura, com a foto sem cortar. O escuro fica no
+   <dialog>, porque só no ::backdrop o Chromium deixava o cabeçalho aparecer por cima. */
 .visor-foto {
   margin: auto;
   width: 100vw;

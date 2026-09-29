@@ -6,7 +6,7 @@ import { hrefEmpresa } from '@/i18n/caminhos';
 import type { RoteiroItem } from '@/lib/tipos';
 import { agruparPorDia } from './dados';
 
-/** O dia a dia do roteiro — só aparece para quem tem acesso. */
+/** O dia a dia do roteiro. Só aparece para quem tem acesso. */
 export default function RoteiroCompleto({ itens, idioma }: { itens: RoteiroItem[]; idioma: Idioma }) {
   const t = useT();
   const dias = agruparPorDia(itens);

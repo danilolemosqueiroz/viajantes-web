@@ -1,17 +1,8 @@
-/**
- * Slugs e a leitura do padrão `nome-id` das URLs.
- *
- * Estas duas funções são puras de propósito: são o coração do roteamento do
- * site (decidem se `/cachoeiras/capitolio` é um destino ou um atrativo) e
- * precisam ser testáveis sem rede.
- */
+/** Slugs e a leitura do padrão `nome-id` das URLs. As duas funções são puras de propósito:
+ * o roteamento depende delas e elas precisam ser testáveis sem rede. */
 
-/**
- * Transforma um nome em slug de URL: "São Roque de Minas" → "sao-roque-de-minas".
- *
- * Mesmo resultado do `slugify()` do site PHP, para que as URLs que o Google já
- * conhece continuem batendo depois do redirecionamento.
- */
+/** Transforma um nome em slug de URL: "São Roque de Minas" vira "sao-roque-de-minas".
+ * Mesmo resultado do `slugify()` do site PHP, para as URLs antigas continuarem batendo. */
 export function slugify(texto: string | null | undefined): string {
   return String(texto ?? '')
     .normalize('NFD')
@@ -23,17 +14,8 @@ export function slugify(texto: string | null | undefined): string {
     .replace(/^-+|-+$/g, '');
 }
 
-/**
- * Lê um segmento de URL no formato `nome-do-lugar-1234`.
- *
- * É o que distingue, num segmento só, o DETALHE de um atrativo
- * (`/cachoeiras/cachoeira-do-cristal-1234`) do DESTINO
- * (`/cachoeiras/capitolio`). Nenhum nome de região ou cidade do catálogo
- * termina em "-número" — isso é verificado em teste contra a geografia real —,
- * então a regra não tem falso positivo.
- *
- * Devolve `null` quando o segmento não termina em id.
- */
+/** Lê um segmento de URL no formato `nome-do-lugar-1234`; `null` quando não termina em id.
+ * É o que distingue o detalhe de um atrativo do destino (`/cachoeiras/capitolio`). */
 export function lerSlugComId(segmento: string): { slug: string; id: number } | null {
   const casou = /^(.*[^-])-(\d+)$/.exec(segmento ?? '');
   if (!casou) return null;

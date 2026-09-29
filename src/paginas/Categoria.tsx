@@ -12,11 +12,8 @@ import GradeEmpresas from '@/features/catalogo/GradeEmpresas';
 import Carregando from '@/components/layout/Carregando';
 import NaoEncontrada from './NaoEncontrada';
 
-/**
- * Hub de uma categoria: /cachoeiras · /en/waterfalls.
- * `?estado=ID` filtra pelo estado (o filtro Estado › Região › Cidade); região
- * e cidade têm página própria e não passam por aqui.
- */
+/** Hub de uma categoria: /cachoeiras ou /en/waterfalls. `?estado=ID` filtra pelo estado;
+ * região e cidade têm página própria e não passam por aqui. */
 export default function Categoria() {
   const { categoria: slug } = useParams();
   const [params] = useSearchParams();

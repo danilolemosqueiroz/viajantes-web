@@ -10,7 +10,7 @@ import type { EmpresaResumo } from '@/lib/tipos';
 import CardEmpresa from '@/features/catalogo/CardEmpresa';
 import Carregando from '@/components/layout/Carregando';
 
-/** Os favoritos da conta — os mesmos que a pessoa marcou no aplicativo. */
+/** Os favoritos da conta, os mesmos que a pessoa marcou no aplicativo. */
 export default function Favoritos() {
   const t = useT();
   const idioma = useIdioma();

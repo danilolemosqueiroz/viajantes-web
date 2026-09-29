@@ -7,14 +7,8 @@ import { hrefCategoria, hrefDestino } from '@/i18n/caminhos';
 import { useGeografia } from '@/lib/consultas';
 import type { Destino } from '@/lib/geo/indice';
 
-/**
- * Estado › Região › Cidade, logo abaixo do título da categoria.
- *
- * Região e cidade já têm página própria (`/pousadas/capitolio`), então escolher
- * uma delas NAVEGA para lá; só o estado, que não tem página, filtra o hub pela
- * query `?estado=`. Cidade com o mesmo nome da região cai na região — é o que
- * o índice de geografia decide, e a região contém a cidade.
- */
+/** Estado › Região › Cidade, abaixo do título da categoria. Região e cidade navegam para a
+ * página própria; só o estado, que não tem página, filtra o hub pela query `?estado=`. */
 interface Props {
   categoria: Categoria;
   idioma: Idioma;

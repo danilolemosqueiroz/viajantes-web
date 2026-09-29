@@ -1,17 +1,8 @@
 import { IDIOMAS, IDIOMA_PADRAO, slugCategoria, type Categoria, type Idioma } from './categorias';
 import { slugComId } from '@/lib/slug';
 
-/**
- * Endereços do site, nos cinco idiomas.
- *
- * Português fica na raiz (`/cachoeiras`); os outros usam prefixo e caminho
- * traduzido (`/en/waterfalls`) — quem busca em inglês procura "waterfalls",
- * não "cachoeiras". É o mesmo esquema do site em Next, mantido para as URLs
- * que o Google já conhece continuarem valendo.
- *
- * As páginas de CATEGORIA não entram na tabela: o slug muda por idioma e por
- * categoria, e sai de `slugCategoria()`.
- */
+/** Endereços do site, nos cinco idiomas: português na raiz (`/cachoeiras`), os outros com prefixo
+ * e caminho traduzido (`/en/waterfalls`). Categorias ficam de fora e saem de `slugCategoria()`. */
 export const CAMINHOS_FIXOS = {
   '/': { pt: '/', en: '/', es: '/', fr: '/', de: '/' },
   '/destinos': {
@@ -99,19 +90,19 @@ export function raiz(idioma: Idioma): string {
   return idioma === IDIOMA_PADRAO ? '' : `/${idioma}`;
 }
 
-/** Endereço de uma rota fixa no idioma pedido. `/roteiros` → `/en/itineraries`. */
+/** Endereço de uma rota fixa no idioma pedido: `/roteiros` vira `/en/itineraries`. */
 export function href(rota: RotaFixa, idioma: Idioma): string {
   const caminho = CAMINHOS_FIXOS[rota][idioma];
   if (rota === '/') return raiz(idioma) || '/';
   return `${raiz(idioma)}${caminho}`;
 }
 
-/** A MESMA rota fixa nos cinco idiomas (para o seletor e o hreflang). */
+/** A mesma rota fixa nos cinco idiomas (para o seletor e o hreflang). */
 export function hrefPorIdioma(rota: RotaFixa): Record<Idioma, string> {
   return Object.fromEntries(IDIOMAS.map((idioma) => [idioma, href(rota, idioma)])) as Record<Idioma, string>;
 }
 
-/** Hub da categoria: `/cachoeiras` · `/en/waterfalls`. */
+/** Hub da categoria: `/cachoeiras` ou `/en/waterfalls`. */
 export function hrefCategoria(categoria: Categoria | string, idioma: Idioma): string {
   const id = typeof categoria === 'string' ? categoria : categoria.id;
   return `${raiz(idioma)}/${slugCategoria(id, idioma) ?? id}`;
@@ -131,7 +122,7 @@ export function hrefEmpresa(
   return `${hrefCategoria(categoria, idioma)}/${slugComId(empresa.nome, empresa.idempresa)}`;
 }
 
-/** A MESMA página de categoria nos cinco idiomas (hreflang). */
+/** A mesma página de categoria nos cinco idiomas (hreflang). */
 export function categoriaPorIdioma(categoria: Categoria | string): Record<Idioma, string> {
   return Object.fromEntries(IDIOMAS.map((i) => [i, hrefCategoria(categoria, i)])) as Record<Idioma, string>;
 }
@@ -156,10 +147,8 @@ export function hrefRoteiro(slug: string, idioma: Idioma): string {
   return `${href('/roteiros', idioma)}/${slug}`;
 }
 
-/**
- * Descobre o idioma pelo primeiro segmento do endereço.
- * `/en/waterfalls` → `en`; `/cachoeiras` → `pt`.
- */
+/** Descobre o idioma pelo primeiro segmento do endereço.
+ * `/en/waterfalls` dá `en`; `/cachoeiras` dá `pt`. */
 export function idiomaDoCaminho(caminho: string): Idioma {
   const primeiro = caminho.split('/').filter(Boolean)[0];
   return IDIOMAS.includes(primeiro as Idioma) ? (primeiro as Idioma) : IDIOMA_PADRAO;

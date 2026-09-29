@@ -8,26 +8,8 @@ import BotaoGoogle from './BotaoGoogle';
 import FormCadastro from './FormCadastro';
 import FormLogin from './FormLogin';
 
-/**
- * Modal de login em folha: entrar (Apple, Google ou e-mail) ou criar conta —
- * a MESMA do aplicativo. Quem chama diz o motivo: o convite ao abrir um
- * atrativo (`catalogo/ConviteConta`) e o Plano Viajantes (`roteiros/Assinar`).
- *
- * Com `nome`, uma faixa no topo (com a `capa`, se houver) diz do que se
- * trata; sem ele o modal é só o título e os campos, e o botão de fechar fica
- * ao lado do título — o convite do atrativo usa assim, para os campos de
- * login caberem todos na tela do celular. Os espaços são apertados de
- * propósito: o login inteiro precisa caber sem rolagem.
- *
- * Usa o `<dialog>` nativo com `showModal()`: o navegador já prende o foco
- * dentro dele, fecha com Esc, deixa o resto da página inerte e devolve o foco
- * para onde estava ao fechar — nada disso precisa ser reimplementado aqui.
- *
- * O login feito aqui NÃO leva para a conta: ele fecha o modal e a pessoa
- * continua exatamente onde estava.
- *
- * No celular vira uma folha que sobe de baixo, como no aplicativo.
- */
+/** Modal de login em `<dialog>` nativo: entrar (Apple, Google ou e-mail) ou criar conta.
+ * O login feito aqui fecha o modal e a pessoa continua onde estava. */
 export default function ModalLogin({
   aberto,
   aoFechar,
@@ -59,10 +41,8 @@ export default function ModalLogin({
     if (!el) return;
     if (aberto && !el.open) {
       el.showModal();
-      // Foco inicial no PRÓPRIO modal, e não no primeiro botão (que é onde o
-      // navegador o põe): o leitor de tela anuncia o título, o botão de fechar
-      // não abre com contorno de foco e, no celular, o teclado não sobe sozinho.
-      // O Tab continua entrando nos controles normalmente.
+      // Foco inicial no próprio modal, e não no primeiro botão: o leitor de tela anuncia o título
+      // e, no celular, o teclado não sobe sozinho.
       el.focus();
     }
     if (!aberto && el.open) el.close();

@@ -5,15 +5,8 @@ import { useIdioma, useT } from '@/i18n/Traducao';
 import { useGeografia } from '@/lib/consultas';
 import { useRegiao } from '@/lib/regiao';
 
-/**
- * Abertura da home: uma foto grande, o posicionamento da plataforma e,
- * atravessando a borda da foto, a pergunta que o aplicativo faz primeiro —
- * para onde você vai.
- *
- * A foto NÃO é um arquivo do site: é a capa da região escolhida (ou a da
- * primeira região do catálogo). Assim a abertura muda junto com o conteúdo, e
- * não há um JPEG de 2 MB para manter.
- */
+/** Abertura da home: uma foto grande, o posicionamento e a pergunta "para onde você vai".
+ * A foto é a capa da região escolhida (ou da primeira do catálogo), e não um arquivo do site. */
 export default function Hero() {
   const t = useT();
   const idioma = useIdioma();

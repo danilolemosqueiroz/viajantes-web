@@ -1,15 +1,8 @@
 import { slugify } from '@/lib/slug';
 import type { IndiceGeografia } from '@/lib/geo/indice';
 
-/**
- * Regras do filtro da página Destinos — sem React, para poder ser testado
- * (tests/unit/filtro-destinos.test.ts).
- *
- * A busca é feita sobre o slug (sem acento, sem caixa): quem digita "sao
- * thome" encontra "São Thomé das Letras", e quem digita "capitolio" encontra
- * "Capitólio". A região também é encontrada pelo nome de uma cidade dela — é
- * comum a pessoa saber a cidade e não a região que a agrega.
- */
+/** Regras do filtro da página Destinos, sem React, para poder ser testado. A busca é sobre o slug
+ * (sem acento) e acha a região também pelo nome de uma cidade dela. */
 
 export interface EstadoFiltravel {
   id: number;
@@ -48,10 +41,7 @@ export interface Filtro {
   estadoId: number | null;
 }
 
-/**
- * Aplica o filtro. Estado sem nenhuma região correspondente sai da lista —
- * mostrar um estado com título e nada embaixo parece defeito.
- */
+/** Aplica o filtro. Estado sem nenhuma região correspondente sai da lista. */
 export function filtrarEstados(estados: EstadoFiltravel[], filtro: Filtro): EstadoFiltravel[] {
   const termo = slugify(filtro.texto.trim());
 

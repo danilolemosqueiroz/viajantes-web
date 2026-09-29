@@ -4,16 +4,13 @@ import { href } from '@/i18n/caminhos';
 import type { Idioma } from '@/i18n/categorias';
 import { cadastrar, useConcluirLogin, type AposEntrar } from '@/lib/conta';
 
-/** Criar conta — os mesmos campos da tela de cadastro do aplicativo. */
+/** Criar conta, com os mesmos campos da tela de cadastro do aplicativo. */
 
 /** Para onde cada marcação do texto de aceite aponta: <1> termos, <2> privacidade. */
 const LINKS_ACEITE = { '1': '/termos', '2': '/privacidade' } as const;
 
-/**
- * Transforma "Li e aceito os <1>Termos</1> e a <2>Política</2>" em texto com
- * links. A frase inteira é uma chave só (como no app) para a ordem das
- * palavras poder mudar de um idioma para outro.
- */
+/** Transforma "Li e aceito os <1>Termos</1> e a <2>Política</2>" em texto com links.
+ * A frase é uma chave só, para a ordem das palavras poder mudar de um idioma para outro. */
 function textoComLinks(texto: string, idioma: Idioma) {
   return texto.split(/(<[12]>.*?<\/[12]>)/).map((parte, indice) => {
     const marcado = /^<([12])>(.*?)<\/\1>$/.exec(parte);

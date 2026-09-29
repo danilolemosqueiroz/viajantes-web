@@ -1,12 +1,5 @@
-/**
- * Redirecionamentos das URLs do site PHP antigo.
- *
- * Uma lista só, usada pelos DOIS destinos: o `next.config.ts` (site com
- * servidor) e o `scripts/htaccess.mjs` (site exportado como arquivos). Se
- * ficassem duplicadas, uma delas envelheceria em silêncio.
- *
- * `:algo` é um parâmetro; `:algo*` é o resto do caminho.
- */
+/** Redirecionamentos do site PHP antigo, usados por `next.config.ts` e `scripts/htaccess.mjs`.
+ * `:algo` é um parâmetro; `:algo*` é o resto do caminho. */
 export const REDIRECIONAMENTOS = [
   { de: '/home', para: '/', codigo: 301 },
   { de: '/guia-cachoeiras', para: '/cachoeiras', codigo: 301 },

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { rota } from './rota';
 
-/** O caminho que o visitante faz: home → categoria → destino → atrativo. */
+/** O caminho que o visitante faz: home, categoria, destino e atrativo. */
 test('da home até um atrativo', async ({ page }) => {
   await page.goto(rota('/'));
   await expect(page.getByRole('heading', { level: 1 })).toContainText(/descubra o brasil/i);
@@ -23,7 +23,7 @@ test('da home até um atrativo', async ({ page }) => {
 
 test('endereço inexistente mostra a página de 404', async ({ page }) => {
   // Num site que monta no navegador o servidor sempre devolve o index.html; o
-  // 404 é a TELA, e é ela que precisa aparecer.
+  // 404 é a tela, e é ela que precisa aparecer.
   for (const endereco of ['/cachoeiras/lugar-que-nao-existe', '/cachoeiras/qualquer-coisa-99999999']) {
     await page.goto(rota(endereco));
     await expect(page.getByRole('heading', { level: 1 }), endereco).toContainText(/não encontrada/i);
@@ -31,7 +31,7 @@ test('endereço inexistente mostra a página de 404', async ({ page }) => {
 });
 
 test('as URLs do site antigo continuam levando a algum lugar', async ({ page }) => {
-  // Comparação por CAMINHO, sem a barra final: a home é `/` na raiz e `/new`
+  // Comparação por caminho, sem a barra final: a home é `/` na raiz e `/new`
   // quando o site está publicado numa subpasta, e as duas formas são corretas.
   const semBarra = (caminho: string) => caminho.replace(/\/+$/, '') || '/';
   const caminhoAtual = () => semBarra(new URL(page.url()).pathname);

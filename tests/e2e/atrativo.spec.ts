@@ -1,14 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 import { rota } from './rota';
 
-/**
- * Página do atrativo: os convites ao abrir (conta sempre, app no 2º atrativo —
- * nenhum trava nada), contato, avaliações com nota média, abas de atrativos
- * próximos e o envio de avaliação.
- *
- * O atrativo vem da API de verdade; avaliações, atrativos próximos e o envio
- * são simulados, para o teste não depender do que há no banco hoje.
- */
+/** Página do atrativo: convites, contato, avaliações, atrativos próximos e envio de avaliação.
+ * O atrativo vem da API de verdade; o resto é simulado, para não depender do banco. */
 const ATRATIVO = '/cachoeiras/cachoeira-agua-limpa-19475';
 
 const AVALIACOES = [

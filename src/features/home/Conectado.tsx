@@ -5,13 +5,8 @@ import { CONEXOES } from './config';
 import { Sobrancelha, TituloSecao } from './Partes';
 import { publico } from '@/lib/publico';
 
-/**
- * Os outros lugares onde o Viajantes acontece: os dois grupos de WhatsApp
- * (a comunidade e o Viajantes Recomenda, que é o de descontos) e o blog.
- *
- * São grupos DIFERENTES de propósito — quem quer conversa e quem quer desconto
- * não são necessariamente a mesma pessoa.
- */
+/** Os outros canais do Viajantes: os dois grupos de WhatsApp (comunidade e descontos) e o blog.
+ * Os grupos são separados de propósito, porque atendem públicos diferentes. */
 export default function Conectado() {
   const t = useT();
 

@@ -1,12 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Testes de ponta a ponta.
- *
- * Rodam contra o servidor de desenvolvimento do Vite, que por sua vez fala com
- * a API (a local se `API_URL_DEV` estiver preenchida no `.env`). Dois aparelhos,
- * porque a navegação muda: no celular a barra de abas embaixo, no desktop o menu.
- */
+/** Testes de ponta a ponta, contra o servidor de desenvolvimento do Vite.
+ * Dois aparelhos, porque a navegação muda: abas embaixo no celular, menu no desktop. */
 const origem = process.env.SITE_URL ?? 'http://localhost:3000';
 
 export default defineConfig({

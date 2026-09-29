@@ -11,11 +11,8 @@ import ModalLogin from '@/features/conta/ModalLogin';
 import Checkout from './Checkout';
 import { economiaAnual, rotuloPeriodo } from './dados';
 
-/**
- * A oferta do Plano Viajantes: escolher o plano, entrar (mesma conta do app) e
- * pagar. Some sozinho quando a conta já assina. `compacto` é a faixa fechada
- * da lista de roteiros, que abre a oferta inteira ao toque.
- */
+/** A oferta do Plano Viajantes: escolher o plano, entrar e pagar. Some quando a conta já assina.
+ * `compacto` é a faixa fechada da lista de roteiros, que abre a oferta inteira ao toque. */
 export default function Assinar({ contexto, compacto = false }: { contexto?: string; compacto?: boolean }) {
   const t = useT();
   const idioma = useIdioma();

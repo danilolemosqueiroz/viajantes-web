@@ -1,17 +1,5 @@
-/**
- * Gera o `.htaccess` do site exportado como arquivos (`dist/`).
- *
- * Sem Node, quem faz o trabalho do proxy e dos redirecionamentos é o Apache:
- *
- *  1. **Português na raiz.** A exportação escreve cada idioma na sua pasta
- *     (`pt/cachoeiras.html`, `en/waterfalls.html`), mas o endereço público do
- *     português não tem prefixo. O Apache serve `/cachoeiras` a partir de
- *     `pt/cachoeiras.html` por dentro, sem mudar a URL na barra.
- *  2. **URLs do site PHP antigo**, da mesma lista que o site com servidor usa.
- *  3. **Pontes** (`/e/123`, `/r/45`): dependiam de consultar a API. Sem
- *     servidor, vão para a home em vez de dar 404.
- *  4. Cache longo para os arquivos com hash no nome e 404 próprio.
- */
+/** Gera o `.htaccess` do site exportado (`dist/`), em que o Apache faz o papel do proxy:
+ * português na raiz, 301 do site PHP antigo, pontes para a home e cache dos arquivos com hash. */
 import { existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { REDIRECIONAMENTOS } from '../redirecionamentos.mjs';
@@ -26,7 +14,7 @@ if (!existsSync(dist)) {
 
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? '').replace(/\/+$/, '');
 
-/** `/res-:categoria/cidade/:id/:slug*` → regra de Apache. */
+/** Converte `/res-:categoria/cidade/:id/:slug*` em regra de Apache. */
 function paraApache(padrao) {
   let regex = padrao
     .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
@@ -35,7 +23,7 @@ function paraApache(padrao) {
   return `^${regex.replace(/^\//, '')}/?$`;
 }
 
-/** `/c/:categoria/:id` → `/c/$1/$2` (a ordem dos parâmetros é a de aparição). */
+/** `/c/:categoria/:id` vira `/c/$1/$2` (a ordem dos parâmetros é a de aparição). */
 function destinoApache(destino) {
   let n = 0;
   return destino.replace(/:[a-zA-Z]+\*?/g, () => `$${++n}`);

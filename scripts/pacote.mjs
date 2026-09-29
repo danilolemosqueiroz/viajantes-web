@@ -1,14 +1,5 @@
-/**
- * Monta a pasta `pacote/` — é ela que vai para a VPS.
- *
- * O `next build` com `output: 'standalone'` deixa o servidor em
- * `.next/standalone`, mas INCOMPLETO de propósito: os arquivos estáticos
- * (`.next/static`) e o `public/` ficam de fora para quem serve por CDN. Quem
- * roda o Node sozinho precisa dos três juntos, senão o site abre sem CSS, sem
- * JavaScript e sem imagens. Este script junta tudo e confere o resultado.
- *
- * Uso: sai pronto no `npm run build` (raiz) e no `npm run build:new` (em /new).
- */
+/** Monta a pasta `pacote/`, que é a que vai para a VPS.
+ * Junta `.next/standalone`, `.next/static` e `public/`: faltando um, o site abre sem CSS. */
 import { cpSync, existsSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import path from 'node:path';
 
@@ -32,8 +23,8 @@ if (existsSync(path.join(raiz, 'public'))) {
   cpSync(path.join(raiz, 'public'), path.join(destino, 'public'), { recursive: true });
 }
 
-// Em que pasta este build foi publicado? Sai do próprio build, não do ambiente
-// atual — é o que de fato vai rodar na VPS.
+// A pasta de publicação sai do próprio build, e não do ambiente atual, porque
+// é o build que de fato vai rodar na VPS.
 let pasta = '';
 try {
   const manifesto = JSON.parse(

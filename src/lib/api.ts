@@ -1,14 +1,5 @@
-/**
- * Cliente da API Node (`viajantes-node-api`), chamado direto do NAVEGADOR.
- *
- * O site é um SPA: não há servidor nosso no meio, então a `Site-Key` viaja no
- * pacote do JavaScript — do mesmo jeito que já viaja dentro do aplicativo.
- * É a mesma chave, com o mesmo alcance: as rotas `/site/*`, que são de leitura
- * do catálogo e de autenticação, e nunca as rotas administrativas.
- *
- * Quem está logado manda também o `Passport` (o hash da sessão), exatamente
- * como o aplicativo faz.
- */
+/** Cliente da API Node (`viajantes-node-api`), chamado direto do navegador. A `Site-Key` vai no
+ * pacote, como no app, e só alcança as rotas `/site/*`. Quem está logado manda o `Passport`. */
 import { lerSessao } from './sessao';
 
 export type Resultado<T> =
@@ -60,7 +51,7 @@ async function requisitar<T>(
       return { ok: false, data: null, status: resposta.status, erro: dados?.message ?? `HTTP ${resposta.status}`, codigo: dados?.erro, dados };
     }
 
-    // Algumas rotas do app respondem 200 com `{ error: true, message }` — para
+    // Algumas rotas do app respondem 200 com `{ error: true, message }`. Para
     // o site isso é falha do mesmo jeito (ex.: e-mail ou senha inválidos).
     if (dados && typeof dados === 'object' && !Array.isArray(dados) && dados.error === true) {
       return { ok: false, data: null, status: resposta.status, erro: dados.message ?? 'Não foi possível concluir.', codigo: dados.erro, dados };
@@ -81,10 +72,8 @@ export function apiPost<T>(caminho: string, corpo: unknown, opcoes?: { comSessao
   return requisitar<T>('POST', montarUrl(caminho), { corpo, comSessao: opcoes?.comSessao });
 }
 
-/**
- * Para usar com o TanStack Query: lança quando falha, porque é assim que ele
- * distingue "deu erro" de "veio vazio" e sabe quando tentar de novo.
- */
+/** Para usar com o TanStack Query: lança quando falha, porque é assim que ele
+ * distingue "deu erro" de "veio vazio" e sabe quando tentar de novo. */
 export async function buscar<T>(caminho: string, query?: Query): Promise<T> {
   const resposta = await apiGet<T>(caminho, query);
   if (!resposta.ok) throw new Error(resposta.erro);

@@ -5,10 +5,8 @@ import { LOJA_ANDROID, LOJA_IOS } from '@/lib/lojas';
 import { Sobrancelha, TituloSecao } from './Partes';
 import { publico } from '@/lib/publico';
 
-/**
- * Download do aplicativo. O `id` é o alvo do botão "Baixar o aplicativo" da
- * abertura e do fechamento da página.
- */
+/** Download do aplicativo. O `id` é o alvo do botão "Baixar o aplicativo"
+ * da abertura e do fechamento da página. */
 export default function Aplicativo() {
   const t = useT();
 

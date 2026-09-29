@@ -1,12 +1,7 @@
 import { useEffect } from 'react';
 
-/**
- * Medição e anúncios — carregados SÓ depois do aceite (LGPD).
- *
- * São os mesmos do site antigo: Google Tag Manager, Meta Pixel e AdSense. O
- * componente só é montado depois da resposta ao aviso, então nenhum pedido sai
- * para eles antes disso. Os scripts entram uma única vez por visita.
- */
+/** Medição e anúncios (Tag Manager, Meta Pixel, AdSense), carregados só depois do aceite (LGPD).
+ * Os scripts entram uma única vez por visita. */
 const GTM = 'GTM-W7L6T6X';
 const PIXEL = '748226149062634';
 const ADSENSE = 'ca-pub-4436664863660214';

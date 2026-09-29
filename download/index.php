@@ -1,7 +1,5 @@
 <?php
-// =====================================================
-//  Detecção de dispositivo e redirecionamento de app
-// =====================================================
+// Detecção de dispositivo e redirecionamento de app
 
 define('URL_APP_STORE',   'https://apps.apple.com/br/app/viajantes-app/id1148316944');
 define('URL_GOOGLE_PLAY', 'https://play.google.com/store/apps/details?id=app.nahora');
@@ -21,7 +19,7 @@ if ($isAndroid) {
     exit;
 }
 
-// Nenhum dispositivo móvel detectado → exibe página com os dois botões
+// Nenhum dispositivo móvel detectado: exibe página com os dois botões
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

@@ -2,17 +2,8 @@ import { ArrowRight, MapPin, Tag } from 'lucide-react';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { formatarPreco, linkClique, rotuloCta, temPreco, type Oferta } from './dados';
 
-/**
- * Card de oferta.
- *
- * Segue o mesmo cartão do catálogo (`CardEmpresa`): sem moldura nem sombra, a
- * foto É o cartão e o texto respira embaixo. O laranja aparece só onde é ação
- * — o selo de desconto e a chamada do rodapé.
- *
- * O card inteiro é UM link. Tem três alvos de clique no desenho do site em PHP
- * (foto, título e botão), o que faz o leitor de tela anunciar a mesma oferta
- * três vezes; aqui a área toda leva ao mesmo lugar e é anunciada uma vez só.
- */
+/** Card de oferta, no mesmo desenho do `CardEmpresa`. O card inteiro é um link só,
+ * para o leitor de tela anunciar a oferta uma vez. */
 export default function CardOferta({ oferta }: { oferta: Oferta }) {
   const t = useT();
   const idioma = useIdioma();
@@ -39,9 +30,8 @@ export default function CardOferta({ oferta }: { oferta: Oferta }) {
               loading="lazy"
               decoding="async"
               className="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-[1.04]"
-              // Foto de terceiro (Amazon, Mercado Livre...) pode sair do ar a
-              // qualquer momento: some com a imagem e fica o fundo da marca,
-              // em vez do ícone de imagem quebrada.
+              // Foto de terceiro (Amazon, Mercado Livre...) pode sair do ar: some com a imagem
+              // e fica o fundo da marca, em vez do ícone de imagem quebrada.
               onError={(evento) => evento.currentTarget.remove()}
             />
           )}

@@ -1,12 +1,5 @@
-/**
- * Carrega um script de terceiro UMA vez por visita (Google Identity Services,
- * Sign in with Apple JS).
- *
- * Os botões de login aparecem em mais de um lugar ao mesmo tempo — na página
- * /entrar e no modal de um atrativo —, e cada um pediria o mesmo arquivo. Aqui
- * todos esperam a mesma promessa. Se o carregamento falha (rede, bloqueador),
- * a promessa sai do cache para a próxima tentativa poder funcionar.
- */
+/** Carrega um script de terceiro uma vez por visita (login do Google e da Apple).
+ * Se o carregamento falha, a promessa sai do cache para a próxima tentativa poder funcionar. */
 const carregando = new Map<string, Promise<void>>();
 
 export function carregarScript(src: string): Promise<void> {

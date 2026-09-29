@@ -1,14 +1,5 @@
-/**
- * Central de Ofertas Viajantes — a fonte das ofertas de "Viajantes Recomenda".
- *
- * É um projeto SEPARADO (Next/Supabase, `ofertas-indol.vercel.app`), com painel
- * próprio: o time cadastra e publica lá, e o site só EXIBE. Nada de oferta é
- * guardado aqui, nem passa pela `viajantes-node-api` — por isso este arquivo
- * não usa o cliente de `lib/api.ts`: outra base, outro contrato, e nenhuma
- * chave (os três endpoints usados são públicos e com CORS liberado).
- *
- * O contrato completo está em `docs/ofertas.md`.
- */
+/** Central de Ofertas Viajantes, a fonte do "Viajantes Recomenda". É um projeto separado, com
+ * endpoints públicos, e por isso não usa `lib/api.ts`. Contrato em `docs/ofertas.md`. */
 
 export interface Oferta {
   id: string;
@@ -22,7 +13,7 @@ export interface Oferta {
   price: number | null;
   original_price: number | null;
   discount: number | null;
-  /** Vem no JSON só por transparência — nunca linkar direto (ver `linkClique`). */
+  /** Vem no JSON só por transparência. Nunca linkar direto (ver `linkClique`). */
   affiliate_url: string;
   destination: string | null;
   city: string | null;
@@ -45,19 +36,16 @@ interface Resposta<T> {
   data?: T;
 }
 
-/** Quantas ofertas por página — o mesmo número que o site em PHP usava. */
+/** Quantas ofertas por página. É o mesmo número que o site em PHP usava. */
 export const POR_PAGINA = 12;
 
-/**
- * Canal registrado em cada clique. Continua `viajantes-site` mesmo com o site
- * refeito em React: é a MESMA superfície (o site público), e trocar o nome
- * partiria em duas a série de cliques que a Central já vinha medindo.
- */
+/** Canal registrado em cada clique. Continua `viajantes-site` para não partir em duas
+ * a série de cliques que a Central já vinha medindo. */
 const CANAL = 'viajantes-site';
 
 const API = (import.meta.env.VITE_OFERTAS_API_URL ?? 'https://ofertas-indol.vercel.app/api').replace(/\/$/, '');
 
-/** A origem da Central (sem o `/api`) — é de lá que sai a rota `/go/{id}`. */
+/** A origem da Central (sem o `/api`). É de lá que sai a rota `/go/{id}`. */
 const ORIGEM = API.replace(/\/api$/, '');
 
 const TEMPO_LIMITE = 15_000;
@@ -94,13 +82,11 @@ export function listarOfertas(filtro: {
   }).then((lista) => (Array.isArray(lista) ? lista : []));
 }
 
-/**
- * As únicas categorias que o site mostra, por decisão do cliente (22/09/2026).
- * A Central tem outras; 'Todos' continua trazendo as ofertas de todas elas.
- */
+/** As únicas categorias que o site mostra, por decisão do cliente (22/09/2026).
+ * A Central tem outras; 'Todos' continua trazendo as ofertas de todas elas. */
 export const CATEGORIAS_VISIVEIS = ['todos', 'hospedagens', 'camping', 'pet'];
 
-/** Só as visíveis, na ordem acima — o rótulo ainda é o da Central. */
+/** Só as visíveis, na ordem acima. O rótulo ainda é o da Central. */
 export function listarCategorias(): Promise<CategoriaOferta[]> {
   return pegar<CategoriaOferta[]>('/categories').then((lista) =>
     Array.isArray(lista)
@@ -111,14 +97,8 @@ export function listarCategorias(): Promise<CategoriaOferta[]> {
   );
 }
 
-/**
- * O endereço de um clique.
- *
- * SEMPRE `/go/{id}` da Central: ela registra o clique (canal, campanha,
- * dispositivo) e só então redireciona para o afiliado. Usar o `affiliate_url`
- * direto leva a pessoa ao mesmo lugar, mas o clique não é contado em lugar
- * nenhum — e é a contagem que sustenta a parceria.
- */
+/** O endereço de um clique: sempre o `/go/{id}` da Central, que registra o clique e redireciona.
+ * Usar o `affiliate_url` direto não conta o clique, e a parceria depende dessa contagem. */
 export function linkClique(id: string, categoria: string | null): string {
   const parametros = new URLSearchParams({
     canal: CANAL,
@@ -135,10 +115,8 @@ export function temPreco<T extends Pick<Oferta, 'price'>>(oferta: T): oferta is 
   return typeof oferta.price === 'number' && Number.isFinite(oferta.price) && oferta.price > 0;
 }
 
-/**
- * O texto do botão. Quem tem cupom pega cupom; hospedagem se reserva; passagem
- * se compra. Chaves em português, traduzidas na tela como o resto do site.
- */
+/** O texto do botão. Quem tem cupom pega cupom; hospedagem se reserva; passagem se compra.
+ * Chaves em português, traduzidas na tela como o resto do site. */
 export function rotuloCta(categoria: string | null, cupom: string | null): string {
   if (cupom) return 'Pegar cupom';
   if (categoria === 'hospedagens') return 'Reservar';
@@ -146,5 +124,5 @@ export function rotuloCta(categoria: string | null, cupom: string | null): strin
   return 'Ver oferta';
 }
 
-/** Preço em real nos cinco idiomas — o formatador vive em lib/moeda. */
+/** Preço em real nos cinco idiomas. O formatador fica em lib/moeda. */
 export { formatarPreco } from '@/lib/moeda';

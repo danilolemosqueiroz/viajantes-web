@@ -13,11 +13,7 @@ import { href, hrefCategoria, type RotaFixa } from '@/i18n/caminhos';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { LOJA_ANDROID, LOJA_IOS } from '@/lib/lojas';
 
-/**
- * Os perfis saem de `features/home/config.ts`, a mesma lista da seção de redes
- * da home — antes o rodapé apontava para os perfis antigos
- * (@viajantesdacanastra) e a home, para os oficiais.
- */
+/** Os perfis saem de `features/home/config.ts`, a mesma lista da seção de redes da home. */
 const ICONES = {
   instagram: IconeInstagram,
   facebook: IconeFacebook,
@@ -25,12 +21,7 @@ const ICONES = {
   youtube: IconeYoutube,
 } as const;
 
-/**
- * Rodapé — o fim da folha, não outro produto.
- *
- * Fundo quase branco, um filete em cima, títulos em tinta verde e os círculos
- * das redes com o mesmo contorno dos círculos de categoria do topo.
- */
+/** Rodapé no desenho do resto da página: fundo quase branco, filete em cima e títulos verdes. */
 export default function Footer() {
   const t = useT();
   const idioma = useIdioma();

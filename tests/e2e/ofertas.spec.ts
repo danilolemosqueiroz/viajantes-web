@@ -1,13 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { rota } from './rota';
 
-/**
- * "Viajantes Recomenda" e as seções novas da home.
- *
- * A página depende de um serviço de FORA (a Central de Ofertas), então o teste
- * não exige que exista oferta publicada: exige que a tela se resolva — ou
- * mostra cards, ou diz que está vazia, mas nunca fica carregando para sempre.
- */
+/** "Viajantes Recomenda" e as seções novas da home. A Central é um serviço de fora, então o teste
+ * só exige que a tela se resolva: ou mostra cards, ou diz que está vazia. */
 test('a vitrine de ofertas abre e se resolve', async ({ page }) => {
   await page.goto(rota('/ofertas'));
 

@@ -5,21 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './estilos.css';
 
-/**
- * Ponto de entrada do site.
- *
- * O TanStack Query guarda em memória o que já veio da API: trocar de página e
- * voltar não refaz a consulta, e ao reabrir a aba tudo é buscado de novo — o
- * conteúdo é sempre o do banco, nunca uma cópia gravada no site.
- */
-/**
- * Pasta em que o site foi publicado.
- *
- * `BASE_URL` é o `base` do build (`/` na raiz do domínio, `/new/` numa
- * subpasta). Sem passar isso ao roteador, o endereço `/new/cachoeiras` não
- * casa com nenhuma rota e a tela fica vazia mesmo com o JavaScript carregado.
- * O React Router quer o prefixo sem a barra final.
- */
+/** Ponto de entrada do site. O TanStack Query guarda em memória o que já veio da API,
+ * e ao reabrir a aba tudo é buscado de novo. */
+/** Pasta em que o site foi publicado (`/` na raiz, `/new/` numa subpasta). Sem passar isso ao
+ * roteador nenhuma rota casa. O React Router quer o prefixo sem a barra final. */
 const RAIZ = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const cliente = new QueryClient({

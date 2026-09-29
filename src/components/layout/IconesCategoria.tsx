@@ -1,10 +1,8 @@
 import type { ComponentType } from 'react';
 import { BedDouble, Church, Compass, Home, Milk, Palette, Signpost, Tent, UtensilsCrossed } from 'lucide-react';
 
-/**
- * Ícones dos círculos de categoria — os do lucide mais os desenhados aqui.
- * Cachoeira não existe no lucide; Passeios usa a placa de direção, como o app.
- */
+/** Ícones dos círculos de categoria: os do lucide mais os desenhados aqui.
+ * Cachoeira não existe no lucide; Passeios usa a placa de direção, como o app. */
 export interface PropsIcone {
   size?: number;
   className?: string;
@@ -14,7 +12,7 @@ export interface PropsIcone {
 
 export type IconeCategoria = ComponentType<PropsIcone>;
 
-/** Queda d'água sobre a borda de pedra, com o poço embaixo — mesmo traço do lucide. */
+/** Queda d'água sobre a borda de pedra, com o poço embaixo, no mesmo traço do lucide. */
 export function IconeCachoeira({ size = 24, className, strokeWidth = 2, ...resto }: PropsIcone) {
   return (
     <svg

@@ -3,13 +3,8 @@ import { CircleCheck, Star, X } from 'lucide-react';
 import { useT } from '@/i18n/Traducao';
 import { apiPost } from '@/lib/api';
 
-/**
- * "Avaliar este local": a mesma rota que o site antigo usava (`/site/avaliacaoAdd`).
- *
- * Não exige conta: a API acha ou cria o usuário pelo e-mail, e a avaliação
- * entra em moderação (só aparece depois de aprovada na gerência). Quem está
- * logado só vê nome e e-mail já preenchidos.
- */
+/** "Avaliar este local", na mesma rota do site antigo (`/site/avaliacaoAdd`). Não exige conta:
+ * a API acha ou cria o usuário pelo e-mail, e a avaliação entra em moderação. */
 export default function AvaliarLocal({
   aberto,
   aoFechar,

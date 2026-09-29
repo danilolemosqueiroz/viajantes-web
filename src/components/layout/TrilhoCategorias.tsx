@@ -4,10 +4,8 @@ import { hrefCategoria } from '@/i18n/caminhos';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { iconeDaCategoria } from './IconesCategoria';
 
-/**
- * O trilho de círculos que abre a tela Explorar do aplicativo — aqui ele fica
- * em TODA página, logo abaixo do cabeçalho. É o atalho principal do site.
- */
+/** O trilho de círculos da tela Explorar do aplicativo. Aqui ele fica em toda página,
+ * logo abaixo do cabeçalho, e é o atalho principal do site. */
 
 export default function TrilhoCategorias() {
   const t = useT();

@@ -19,17 +19,8 @@ const SCRIPT_GOOGLE = 'https://accounts.google.com/gsi/client';
 /** Idioma do texto do botão, que é desenhado pelo próprio Google. */
 const LOCALE_GOOGLE: Record<Idioma, string> = { pt: 'pt-BR', en: 'en', es: 'es', fr: 'fr', de: 'de' };
 
-/**
- * Entrar com Google — a MESMA conta do aplicativo.
- *
- * Usa o client id WEB do projeto 313706555234, o mesmo projeto dos client ids
- * de iOS e Android que o app usa. A API aceita os três, e o Google identifica a
- * pessoa pelo mesmo `sub` em todos eles: quem entrou pelo celular cai na mesma
- * conta aqui.
- *
- * Para o botão aparecer, o domínio do site precisa estar em "Origens
- * JavaScript autorizadas" desse client id no Google Cloud (ver docs/DEPLOY.md).
- */
+/** Entrar com Google, na mesma conta do aplicativo (client id web do projeto 313706555234).
+ * O domínio precisa estar nas origens autorizadas desse client id (ver docs/DEPLOY.md). */
 export default function BotaoGoogle({ aoEntrar, voltarPara }: AposEntrar) {
   const t = useT();
   const idioma = useIdioma();

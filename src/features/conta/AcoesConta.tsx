@@ -7,12 +7,8 @@ import { useT } from '@/i18n/Traducao';
 import { sair, useAtualizarUsuario } from '@/lib/conta';
 import { apiPost } from '@/lib/api';
 
-/**
- * Sair e excluir a conta.
- *
- * A exclusão pede confirmação em dois passos, como o aplicativo: apaga os dados
- * e derruba todas as sessões, inclusive a do celular.
- */
+/** Sair e excluir a conta. A exclusão pede confirmação em dois passos, como o aplicativo,
+ * e derruba todas as sessões, inclusive a do celular. */
 export default function AcoesConta() {
   const t = useT();
   const navegar = useNavigate();

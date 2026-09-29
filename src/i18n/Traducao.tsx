@@ -1,21 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { IDIOMA_PADRAO, IDIOMAS, type Idioma } from './categorias';
 
-/**
- * Textos FIXOS da interface.
- *
- * A chave é o próprio texto em português (`t('Ver todos')`), como no
- * aplicativo: os cinco arquivos de `src/messages/` são os mesmos dele, com
- * 1.372 frases já traduzidas. Faltando tradução, aparece o português — nunca
- * uma chave crua na tela.
- *
- * Isto NÃO traduz o conteúdo do banco (nome e descrição de atrativos): esse
- * virá da própria API, no idioma pedido, quando estiver gravado lá.
- *
- * Num site que roda no navegador o dicionário inteiro é carregado de uma vez
- * (~100 KB), uma única vez por idioma — e some a necessidade de listar quais
- * frases cada componente usa.
- */
+/** Textos fixos da interface. A chave é o próprio texto em português (`t('Ver todos')`), como no
+ * aplicativo; faltando tradução, aparece o português. O conteúdo do banco não é traduzido aqui. */
 type Dicionario = Record<string, string>;
 type Variaveis = Record<string, string | number>;
 export type Traduzir = (chave: string, variaveis?: Variaveis) => string;

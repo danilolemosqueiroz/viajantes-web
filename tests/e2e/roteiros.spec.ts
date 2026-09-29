@@ -1,10 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { rota } from './rota';
 
-/**
- * Roteiros prontos: a lista mostra SÓ a capa, e o detalhe não entrega o dia a
- * dia para quem não comprou — é o conteúdo que se vende.
- */
+/** Roteiros prontos: a lista mostra só a capa, e o detalhe não entrega o dia a
+ * dia para quem não comprou, porque é o conteúdo que se vende. */
 test('a lista de roteiros mostra só a capa com o título', async ({ page }) => {
   await page.goto(rota('/roteiros'));
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Roteiros prontos');
@@ -17,7 +15,7 @@ test('a lista de roteiros mostra só a capa com o título', async ({ page }) => 
   // A faixa do plano fica acima da lista, fechada.
   await expect(page.getByRole('button', { name: 'Assinar', exact: true })).toBeVisible();
 
-  // Um card é um link só, com a foto e o título por cima — nada de descrição ou paradas.
+  // Um card é um link só, com a foto e o título por cima, sem descrição nem paradas.
   const primeiro = cards.first();
   await expect(primeiro.getByRole('link')).toHaveCount(1);
   await expect(primeiro.getByRole('heading', { level: 3 })).not.toBeEmpty();
@@ -32,7 +30,7 @@ test('sem assinar, o detalhe mostra o plano e nenhuma parada', async ({ page }) 
   await cards.first().getByRole('link').click();
 
   await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
-  // Quem não assina vê a oferta do Plano Viajantes — nunca a lista de dias.
+  // Quem não assina vê a oferta do Plano Viajantes, e não a lista de dias.
   await expect(page.getByRole('button', { name: /^Assinar por/ })).toBeVisible();
   await expect(page.getByRole('radio', { name: /Plano/ }).first()).toBeVisible();
   await expect(page.getByRole('heading', { name: /^Dia \d+$/ })).toHaveCount(0);

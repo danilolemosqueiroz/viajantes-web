@@ -1,9 +1,5 @@
-/**
- * Tokenização do cartão no navegador (pagar.me v5) com a chave PÚBLICA.
- *
- * Número e CVV nunca chegam à nossa API: vai só o `card_token`, como no app
- * (`src/scenes/passaporte/pagarme.js`) e na página "Seja Parceiro".
- */
+/** Tokenização do cartão no navegador (pagar.me v5) com a chave pública.
+ * Número e CVV nunca chegam à nossa API: vai só o `card_token`, como no app. */
 const CHAVE = (import.meta.env.VITE_PAGARME_PUBLIC_KEY ?? '').trim();
 const URL_TOKENS = 'https://api.pagar.me/core/v5/tokens';
 

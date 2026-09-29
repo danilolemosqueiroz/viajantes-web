@@ -8,10 +8,8 @@ import SeletorIdioma from './SeletorIdioma';
 import { publico } from '@/lib/publico';
 import { CONEXOES } from '@/features/home/config';
 
-/**
- * Cabeçalho: folha branca com um filete embaixo — nada de faixa colorida.
- * O verde é tinta de título; aqui ele só aparece no logotipo e nos links.
- */
+/** Cabeçalho: folha branca com um filete embaixo, sem faixa colorida.
+ * O verde é tinta de título; aqui ele só aparece no logotipo e nos links. */
 export default function Header() {
   const t = useT();
   const idioma = useIdioma();

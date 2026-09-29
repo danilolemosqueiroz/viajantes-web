@@ -11,7 +11,7 @@ interface AppleIdJs {
     init(opcoes: { clientId: string; scope: string; redirectURI: string; usePopup: boolean }): void;
     signIn(): Promise<{
       authorization?: { id_token?: string };
-      /** Só vem na PRIMEIRA autorização da pessoa. */
+      /** Só vem na primeira autorização da pessoa. */
       user?: { name?: { firstName?: string; lastName?: string } };
     }>;
   };
@@ -23,22 +23,8 @@ const LOCALE_APPLE: Record<Idioma, string> = { pt: 'pt_BR', en: 'en_US', es: 'es
 const scriptApple = (idioma: Idioma) =>
   `https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/${LOCALE_APPLE[idioma]}/appleid.auth.js`;
 
-/**
- * Iniciar sessão com a Apple — a MESMA conta do aplicativo.
- *
- * No iPhone o app entra com o bundle id `br.com.mediaplus.nahoraapp`. Na web a
- * Apple exige outro identificador, um SERVICES ID (`VITE_APPLE_SERVICES_ID`).
- * Quando esse Services ID é agrupado com o App ID do aplicativo no painel da
- * Apple, a pessoa chega aqui com o mesmo identificador (`sub`) que tem no app,
- * e a API a encontra na mesma conta. O passo a passo está em docs/DEPLOY.md.
- *
- * O botão só aparece com o Services ID configurado. A Apple não aceita
- * `localhost` nem `http` como endereço de retorno: ele só funciona no domínio
- * cadastrado.
- *
- * O desenho segue as regras da Apple para o botão: fundo preto, logo e texto
- * brancos, altura igual à dos outros botões de login.
- */
+/** Iniciar sessão com a Apple, na mesma conta do aplicativo. Só aparece com o Services ID
+ * configurado e só funciona no domínio cadastrado (ver docs/DEPLOY.md). */
 export default function BotaoApple({ aoEntrar, voltarPara }: AposEntrar) {
   const t = useT();
   const idioma = useIdioma();
@@ -49,7 +35,7 @@ export default function BotaoApple({ aoEntrar, voltarPara }: AposEntrar) {
   const appleRef = useRef<AppleIdJs | null>(null);
 
   const servicesId = import.meta.env.VITE_APPLE_SERVICES_ID;
-  // O endereço de retorno tem que ser EXATAMENTE um dos cadastrados na Apple.
+  // O endereço de retorno tem que ser exatamente um dos cadastrados na Apple.
   const retorno = import.meta.env.VITE_APPLE_REDIRECT_URI || `${window.location.origin}/`;
 
   useEffect(() => {

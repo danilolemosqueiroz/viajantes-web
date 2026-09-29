@@ -1,7 +1,4 @@
-/**
- * Espera entre telas. Ocupa a altura de uma dobra para o rodapé não subir e
- * descer a cada navegação.
- */
+/** Espera entre telas, com a altura de uma dobra para o rodapé não pular a cada navegação. */
 export default function Carregando({ altura = 'min-h-[60vh]' }: { altura?: string }) {
   return (
     <div className={`folha flex ${altura} items-center justify-center py-20`} role="status" aria-live="polite">
