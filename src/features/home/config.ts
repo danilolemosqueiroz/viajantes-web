@@ -3,8 +3,8 @@
 
 /** Prova social do topo da seção Comunidade. */
 export const NUMEROS = [
-  { valor: '+900 mil', rotulo: 'viajantes usando a plataforma' },
-  { valor: '+1.500', rotulo: 'cachoeiras mapeadas' },
+  { valor: '+1 milhão', rotulo: 'viajantes usando a plataforma' },
+  { valor: '+1.600', rotulo: 'cachoeiras mapeadas' },
   { valor: 'Brasil', rotulo: 'destinos de norte a sul' },
   { valor: '+1 milhão', rotulo: 'pessoas nas redes sociais' },
 ] as const;
@@ -34,7 +34,7 @@ export const CONTATO = {
 
 /** Onde um negócio de turismo entra na plataforma. Os dois são externos. */
 export const B2B = {
-  cadastro: 'https://viajantesapp.com.br/seja-parceiro/assinar.php',
+  cadastro: 'https://viajantesapp.com.br/seja-cliente/assinar.php',
   mapeador: 'https://viajantes-mapeadores.vercel.app/',
 } as const;
 
