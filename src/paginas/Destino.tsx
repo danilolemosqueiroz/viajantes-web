@@ -13,7 +13,7 @@ import Carregando from '@/components/layout/Carregando';
 import NaoEncontrada from './NaoEncontrada';
 import { paginaDestinoPorIdioma } from '@/i18n/caminhos';
 
-/** Página do destino: /destinos/capitolio — "o que fazer em Capitólio". */
+/** Página do destino: /destinos/capitolio ("o que fazer em Capitólio"). */
 export default function Destino() {
   const { destino: slug = '' } = useParams();
   const t = useT();
@@ -66,7 +66,7 @@ export default function Destino() {
       />
 
       {/* Abertura igual à da home: a foto do destino ocupa o topo inteiro e o
-          título vive DENTRO dela. O h1 continua sendo texto de verdade. */}
+          título fica dentro dela. O h1 continua sendo texto de verdade. */}
       {destino.foto ? (
         <section className="relative isolate h-72 overflow-hidden bg-brand sm:h-96">
           <img src={destino.foto} alt="" className="absolute inset-0 size-full object-cover" />

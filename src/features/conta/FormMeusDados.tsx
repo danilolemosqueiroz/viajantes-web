@@ -4,11 +4,8 @@ import type { UsuarioSessao } from '@/lib/tipos';
 import { useAtualizarUsuario } from '@/lib/conta';
 import { apiPost } from '@/lib/api';
 
-/**
- * Meus dados. Nome, telefone, CPF e nascimento vão para a API antiga (a mesma
- * que o aplicativo usa); a troca de senha é um formulário separado, para não
- * misturar dois pedidos num botão só.
- */
+/** Meus dados. Nome, telefone, CPF e nascimento vão para a API antiga (a mesma do aplicativo).
+ * A troca de senha é um formulário separado. */
 export default function FormMeusDados({ usuario }: { usuario: UsuarioSessao }) {
   const t = useT();
   const atualizarUsuario = useAtualizarUsuario();

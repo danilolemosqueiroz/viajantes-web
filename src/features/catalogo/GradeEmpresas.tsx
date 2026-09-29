@@ -2,7 +2,7 @@ import type { EmpresaResumo } from '@/lib/tipos';
 import type { Categoria, Idioma } from '@/i18n/categorias';
 import CardEmpresa from './CardEmpresa';
 
-/** Grade de atrativos. Some quando não há nada — quem chama decide o vazio. */
+/** Grade de atrativos. Some quando não há nada; quem chama trata o vazio. */
 export default function GradeEmpresas({
   empresas,
   categoria,

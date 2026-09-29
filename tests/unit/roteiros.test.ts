@@ -13,10 +13,8 @@ import { agruparPorDia, economiaAnual, rotuloPeriodo } from '@/features/roteiros
 import { temPreco } from '@/features/ofertas/dados';
 import type { RoteiroItem } from '@/lib/tipos';
 
-/**
- * Regras da compra de roteiro no site. O que é barrado aqui não sai do
- * navegador — o pagar.me recusaria do mesmo jeito, só que com mensagem pior.
- */
+/** Regras da compra de roteiro no site. O que é barrado aqui não sai do navegador.
+ * O pagar.me recusaria do mesmo jeito, só que com mensagem pior. */
 
 describe('cartão', () => {
   test('Luhn: os cartões de teste do pagar.me passam, um dígito trocado não', () => {

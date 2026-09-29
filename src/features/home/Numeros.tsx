@@ -3,13 +3,8 @@ import { useT } from '@/i18n/Traducao';
 import { NUMEROS } from './config';
 import { Sobrancelha, TituloSecao } from './Partes';
 
-/**
- * Prova social.
- *
- * No site em PHP isto era uma faixa verde de ponta a ponta. Aqui não: a folha
- * é branca do topo ao rodapé, e o que separa uma seção da outra é um filete —
- * o número grande em tinta verde já carrega o peso sozinho.
- */
+/** Prova social. A folha segue branca, separada por um filete,
+ * e o destaque fica por conta do número grande em tinta verde. */
 export default function Numeros() {
   const t = useT();
 

@@ -2,24 +2,16 @@ import { apiGet, apiPost, type Resultado } from '@/lib/api';
 import type { AssinaturaSite, CompraFeita, CompraPlano, Periodicidade, PlanoSite, Roteiro, RoteiroItem, StatusCompra } from '@/lib/tipos';
 import { slugComId } from '@/lib/slug';
 
-/**
- * Roteiros prontos — os mesmos da aba "Roteiros" do aplicativo
- * (`roteiro_personalizado`). Não confundir com os "roteiros personalizados"
- * (a consultoria por WhatsApp) nem com os roteiros mapeados por usuários.
- */
+/** Roteiros prontos, os mesmos da aba "Roteiros" do aplicativo (`roteiro_personalizado`).
+ * Não confundir com a consultoria por WhatsApp nem com os roteiros mapeados por usuários. */
 
 /** Caminho do detalhe: /roteiros/{titulo}-{id}. */
 export function caminhoRoteiro(roteiro: Pick<Roteiro, 'idroteiro_personalizado' | 'titulo'>): string {
   return slugComId(roteiro.titulo, roteiro.idroteiro_personalizado);
 }
 
-/**
- * Todos os roteiros ativos, ou só os de uma região.
- *
- * A API embaralha a ordem de propósito (o app quer variedade a cada abertura);
- * o site fixa em destaque primeiro e depois alfabética — quem volta encontra a
- * mesma lista, e o robô vê uma ordem estável.
- */
+/** Todos os roteiros ativos, ou só os de uma região. A API embaralha a ordem;
+ * o site fixa em destaque primeiro e depois alfabética, para a lista ser estável. */
 export async function listarRoteiros(idRegiao?: number): Promise<Roteiro[]> {
   const resposta = await apiGet<Roteiro[]>('/site/roteiros', idRegiao ? { regiao_id: idRegiao } : undefined);
 
@@ -45,10 +37,8 @@ export async function listarItensRoteiro(id: number): Promise<RoteiroItem[]> {
   return resposta.ok && Array.isArray(resposta.data) ? resposta.data : [];
 }
 
-/**
- * O Plano Viajantes: os planos à venda e a assinatura da conta (loja ou site).
- * Sem a rota (API antiga) ou fora do ar, lança — a tela mostra "tentar de novo".
- */
+/** O Plano Viajantes: os planos à venda e a assinatura da conta (loja ou site).
+ * Sem a rota (API antiga) ou fora do ar, lança erro, e a tela mostra "tentar de novo". */
 export async function buscarAssinatura(): Promise<AssinaturaSite> {
   const resposta = await apiGet<AssinaturaSite>('/site/assinatura');
   if (!resposta.ok || !Array.isArray(resposta.data?.planos)) throw new Error(resposta.ok ? 'resposta inválida' : resposta.erro);
@@ -110,12 +100,8 @@ export async function registrarVisualizacao(id: number): Promise<void> {
   await apiPost(`/site/roteiros/${id}/visualizacao`, {});
 }
 
-/**
- * Regiões que o roteiro cruza, sem repetição.
- *
- * A LISTA manda `regioes`; o DETALHE manda só `cidades`, cada uma com a região
- * a que pertence — por isso as duas origens.
- */
+/** Regiões que o roteiro cruza, sem repetição. A lista manda `regioes`;
+ * o detalhe manda só `cidades`, cada uma com a região a que pertence. */
 export function regioesDoRoteiro(roteiro: Roteiro): { id: number; nome: string }[] {
   const mapa = new Map<number, string>();
 
@@ -144,11 +130,8 @@ export function cidadesDoRoteiro(roteiro: Roteiro): string[] {
   return [...nomes];
 }
 
-/**
- * Agrupa por região como o aplicativo faz: um roteiro que passa por duas
- * regiões aparece nas duas. A região escolhida no cabeçalho vem primeiro;
- * depois, as que têm mais roteiros.
- */
+/** Agrupa por região como o aplicativo: um roteiro que passa por duas regiões aparece nas duas.
+ * A região escolhida no cabeçalho vem primeiro; depois, as que têm mais roteiros. */
 export function agruparPorRegiao(
   roteiros: Roteiro[],
   idRegiaoEscolhida?: number,

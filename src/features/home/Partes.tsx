@@ -1,13 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 
-/**
- * Peças repetidas pelas seções da home.
- *
- * A home é a única tela do site com seções de apresentação (história, números,
- * parceiros). Elas precisam de um título maior que o `.rotulo-secao` das faixas
- * de catálogo, mas sem inventar uma segunda identidade: a sobrancelha usa o
- * laranja de etiqueta e o título, o verde de tinta — como no resto da folha.
- */
+/** Peças repetidas pelas seções de apresentação da home. O título é maior que o `.rotulo-secao`,
+ * com a sobrancelha em laranja e o título em verde, como no resto da folha. */
 
 export function Sobrancelha({ Icone, children }: { Icone: LucideIcon; children: React.ReactNode }) {
   return (

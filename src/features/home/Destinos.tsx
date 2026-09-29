@@ -4,18 +4,8 @@ import { href, hrefPaginaDestino } from '@/i18n/caminhos';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { useGeografia } from '@/lib/consultas';
 
-/**
- * "Por onde você quer começar?" — as regiões com mais atrativos mapeados.
- *
- * Na entrega em PHP esta seção tinha seis destinos escritos à mão, todos
- * levando ao seletor de região em vez de a uma página — e o próprio autor
- * deixou anotado que era para ligar em `/site/regioes`. Aqui ela sai do
- * catálogo: nome, foto, contagem de atrativos e o endereço real da região.
- *
- * A ordem vem pronta do índice de geografia (da região com mais atrativos para
- * a com menos), então o que aparece primeiro é o que temos de mais completo —
- * e muda sozinho conforme o mapeamento cresce.
- */
+/** "Por onde você quer começar?": as regiões com mais atrativos mapeados, vindas do catálogo.
+ * A ordem vem pronta do índice de geografia, da região com mais atrativos para a com menos. */
 const QUANTOS = 8;
 
 export default function Destinos() {
@@ -61,7 +51,7 @@ export default function Destinos() {
                 <div className="absolute inset-x-3 bottom-3">
                   <h3 className="text-corpo font-bold leading-snug text-white">{regiao.nome}</h3>
                   {/* O "título turístico" é como o app apresenta a região
-                      (ex.: "Circuito Canastra") — some quando repete o nome. */}
+                      (ex.: "Circuito Canastra"). Some quando repete o nome. */}
                   {regiao.tituloturistico && regiao.tituloturistico !== regiao.nome && (
                     <p className="mt-0.5 truncate text-mini text-white/80">{regiao.tituloturistico}</p>
                   )}

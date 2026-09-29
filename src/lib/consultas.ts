@@ -6,13 +6,8 @@ import { buscarAssinatura, buscarRoteiro, listarCompras, listarItensRoteiro, lis
 import { lerSessao } from '@/lib/sessao';
 import type { AssinaturaSite, CompraFeita, Empresa, EmpresaResumo, Roteiro, RoteiroItem } from '@/lib/tipos';
 
-/**
- * As consultas à API, em um lugar só.
- *
- * Cada tela pede o que precisa por aqui; o TanStack Query cuida de não repetir
- * a mesma consulta durante a navegação e de refazer quando a aba é reaberta.
- * Nada é gravado no site: o conteúdo vem sempre do banco, pela API.
- */
+/** As consultas à API, em um lugar só. O TanStack Query evita repetir a mesma consulta
+ * durante a navegação e refaz quando a aba é reaberta. */
 export function useGeografia() {
   return useQuery<IndiceGeografia>({
     queryKey: ['geografia'],
@@ -96,7 +91,7 @@ export function useAssinaturaSite() {
   });
 }
 
-/** Itens só quando o acesso está liberado — antes disso a API responde 401/402. */
+/** Itens só quando o acesso está liberado. Antes disso a API responde 401/402. */
 export function useItensRoteiro(id: number | undefined, liberado: boolean) {
   return useQuery<RoteiroItem[]>({
     queryKey: ['roteiro-itens', id, lerSessao()],

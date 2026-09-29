@@ -3,13 +3,8 @@ import { Link } from 'react-router-dom';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { href } from '@/i18n/caminhos';
 
-/**
- * Aviso de cookies (LGPD).
- *
- * Enquanto a pessoa não aceita, nenhuma ferramenta de terceiro é carregada — o
- * `Analytics` só entra em cena depois do aceite. A escolha fica num cookie que
- * o próprio navegador grava, para o servidor já saber na próxima visita.
- */
+/** Aviso de cookies (LGPD). Nenhuma ferramenta de terceiro carrega antes do aceite.
+ * A escolha fica num cookie gravado pelo próprio navegador. */
 export const COOKIE_CONSENTIMENTO = 'vj_cookies';
 
 export default function ConsentBanner({ decidido }: { decidido: boolean }) {

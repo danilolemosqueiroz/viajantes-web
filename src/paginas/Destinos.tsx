@@ -8,7 +8,7 @@ import FiltroDestinos from '@/features/destinos/FiltroDestinos';
 import Carregando from '@/components/layout/Carregando';
 import { hrefPorIdioma } from '@/i18n/caminhos';
 
-/** Todos os destinos, por estado — a página "Explorar" do site. */
+/** Todos os destinos, por estado. É a página "Explorar" do site. */
 export default function Destinos() {
   const t = useT();
   const idioma = useIdioma();

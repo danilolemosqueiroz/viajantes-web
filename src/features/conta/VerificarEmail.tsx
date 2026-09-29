@@ -4,10 +4,8 @@ import { useT } from '@/i18n/Traducao';
 import { useAtualizarUsuario } from '@/lib/conta';
 import { apiPost } from '@/lib/api';
 
-/**
- * Verificação do e-mail: pede o código, depois confirma. É o mesmo fluxo do
- * aplicativo, e o e-mail verificado conta para o cadastro completo nos dois.
- */
+/** Verificação do e-mail: pede o código, depois confirma. É o mesmo fluxo do aplicativo,
+ * e o e-mail verificado conta para o cadastro completo nos dois. */
 export default function VerificarEmail() {
   const t = useT();
   const atualizarUsuario = useAtualizarUsuario();

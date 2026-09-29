@@ -1,13 +1,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
-/**
- * Região escolhida no cabeçalho — um FILTRO opcional, não um portão.
- *
- * O site abre mostrando tudo ("modo geral"). Quem chega do Google numa
- * cachoeira nunca é parado para escolher estado e região, como acontecia no
- * site antigo. As páginas de destino ignoram esta escolha de propósito: a URL
- * manda mais que a preferência guardada.
- */
+/** Região escolhida no cabeçalho, como filtro opcional. O site abre mostrando tudo ("modo geral"),
+ * e as páginas de destino ignoram esta escolha: a URL manda mais que a preferência guardada. */
 export interface RegiaoEscolhida {
   id: number;
   nome: string;

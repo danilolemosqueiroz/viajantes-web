@@ -1,23 +1,5 @@
-/**
- * Build ESTÁTICO: gera `dist/` com um HTML por página, para hospedagem sem
- * Node (Apache/PHP, via FTP).
- *
- * O Next não deixa escolher rota por rota o que entra na exportação, e algumas
- * partes do site SÓ existem com servidor. Então este script tira essas partes
- * do caminho, roda o build e devolve tudo ao lugar — sempre, mesmo se o build
- * falhar (`finally`).
- *
- * O que sai do build estático e por quê:
- *   src/app/api        rotas que guardam a Site-Key e o cookie de sessão
- *   src/app/e,c,r      pontes que consultam a API para descobrir o destino
- *   src/app/download   escolhe a loja pelo aparelho
- *   src/proxy.ts       proxy de idioma (o Next ignora proxy na exportação)
- *   src/app/[locale]/conta   área logada (depende do cookie de sessão)
- *
- * Sem o proxy, o Next exporta cada idioma na sua pasta (`dist/pt/...`,
- * `dist/en/...`). O `.htaccess` gerado por `scripts/htaccess.mjs` recoloca o
- * português na raiz, refaz os 301 do site antigo e cobre as pontes.
- */
+/** Build estático: gera `dist/` com um HTML por página, para hospedagem sem Node (Apache/PHP).
+ * Tira do caminho o que só existe com servidor, roda o build e devolve tudo, mesmo se falhar. */
 import { existsSync, mkdirSync, renameSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';

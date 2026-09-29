@@ -3,7 +3,7 @@ import { useT } from '@/i18n/Traducao';
 import { CONEXOES } from './config';
 import { publico } from '@/lib/publico';
 
-/** Chamada para o Blog Viajantes — a mesma marca, um lugar de destaque na home. */
+/** Chamada para o Blog Viajantes, que é da mesma marca e tem destaque na home. */
 export default function Blog() {
   const t = useT();
 

@@ -8,10 +8,8 @@ export interface FotoGaleria {
   legenda?: string;
 }
 
-/**
- * Grade de fotos do mesmo tamanho, de 12 em 12 (há empresa com 50+ fotos), e
- * um visor de tela inteira ao tocar numa delas — as setas do teclado trocam.
- */
+/** Grade de fotos do mesmo tamanho, de 12 em 12, e um visor de tela inteira ao tocar numa delas.
+ * As setas do teclado trocam de foto. */
 export default function Galeria({
   fotos,
   nome,

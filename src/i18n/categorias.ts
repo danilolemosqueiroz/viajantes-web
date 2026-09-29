@@ -1,14 +1,5 @@
-/**
- * Categorias do catálogo — a tabela que liga o `eavmoda` da API ao slug da URL
- * em cada idioma.
- *
- * O slug é o que a pessoa busca ("cachoeiras em capitólio"), então ele muda de
- * idioma junto com o resto do site: `/cachoeiras/capitolio` e
- * `/en/waterfalls/capitolio` são a mesma página em duas línguas.
- *
- * `eavmoda` é o mesmo código que o app usa nos parâmetros de navegação e que a
- * API recebe como `reservas` na listagem de empresas.
- */
+/** Categorias do catálogo: a tabela que liga o `eavmoda` da API ao slug da URL em cada idioma.
+ * `eavmoda` é o código que o app usa na navegação e que a API recebe como `reservas`. */
 
 export const IDIOMAS = ['pt', 'en', 'es', 'fr', 'de'] as const;
 export type Idioma = (typeof IDIOMAS)[number];
@@ -24,7 +15,7 @@ export const IDIOMAS_INFO: Record<Idioma, { nome: string; nomeNativo: string; ba
   de: { nome: 'Alemão', nomeNativo: 'Deutsch', bandeira: '🇩🇪' },
 };
 
-/** Layout do card na listagem — os três que o app usa. */
+/** Layout do card na listagem. São os três que o app usa. */
 export type LayoutLista = 'capa' | 'compacto' | 'detalhado';
 
 export interface Categoria {
@@ -152,7 +143,7 @@ export function categoriaPorId(id: string): Categoria | null {
   return PORTIPO.get(id) ?? null;
 }
 
-/** Categoria pelo código da API — é assim que o detalhe descobre a própria URL. */
+/** Categoria pelo código da API. É assim que o detalhe descobre a própria URL. */
 export function categoriaPorEavmoda(eavmoda: number | null | undefined): Categoria | null {
   if (!eavmoda) return null;
   return CATEGORIAS.find((c) => c.eavmoda === Number(eavmoda)) ?? null;
@@ -168,10 +159,8 @@ export function slugCategoria(id: string, idioma: Idioma): string | null {
   return PORTIPO.get(id)?.slugs[idioma] ?? null;
 }
 
-/**
- * Slugs de rota que não são categoria (para o roteador saber que
- * `/roteiros` não é uma categoria de atrativo).
- */
+/** Slugs de rota que não são categoria (para o roteador saber que
+ * `/roteiros` não é uma categoria de atrativo). */
 export const SLUGS_RESERVADOS: Record<Idioma, Record<string, string>> = {
   pt: { roteiros: 'roteiros', destinos: 'destinos', busca: 'busca', conta: 'conta', mapeadores: 'mapeadores' },
   en: { roteiros: 'itineraries', destinos: 'destinations', busca: 'search', conta: 'account', mapeadores: 'mappers' },

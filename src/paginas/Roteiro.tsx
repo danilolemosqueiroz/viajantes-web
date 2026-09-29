@@ -13,10 +13,8 @@ import RoteiroCompleto from '@/features/roteiros/RoteiroCompleto';
 import Carregando from '@/components/layout/Carregando';
 import NaoEncontrada from './NaoEncontrada';
 
-/**
- * Detalhe de um roteiro pronto: capa, descrição e o dia a dia. O dia a dia só
- * aparece para quem assina o Plano Viajantes (loja ou site) — docs/roteiros.md.
- */
+/** Detalhe de um roteiro pronto: capa, descrição e o dia a dia. O dia a dia só aparece
+ * para quem assina o Plano Viajantes (loja ou site). Ver docs/roteiros.md. */
 export default function Roteiro() {
   const { slug = '' } = useParams();
   const t = useT();

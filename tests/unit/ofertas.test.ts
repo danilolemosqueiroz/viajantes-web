@@ -1,13 +1,8 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { formatarPreco, linkClique, listarCategorias, rotuloCta } from '@/features/ofertas/dados';
 
-/**
- * Regras da vitrine "Viajantes Recomenda".
- *
- * O que é testado aqui é o que quebra sem aparecer: um link que pula o
- * registro do clique continua levando a pessoa à loja, e ninguém percebe que a
- * contagem parou.
- */
+/** Regras da vitrine "Viajantes Recomenda". Um link que pula o registro do clique continua
+ * levando a pessoa à loja, e ninguém percebe que a contagem parou. */
 
 describe('link de clique', () => {
   test('passa pela Central (/go/{id}) e nunca pelo link de afiliado', () => {

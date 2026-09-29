@@ -6,14 +6,8 @@ import { hrefPaginaDestino } from '@/i18n/caminhos';
 import type { Idioma } from '@/i18n/categorias';
 import { contarRegioes, filtrarEstados, type EstadoFiltravel } from './filtrar';
 
-/**
- * Filtro da página Destinos: um campo de busca e as pílulas de estado.
- *
- * Com 193 regiões em vários estados, rolar a lista inteira é o caminho mais
- * lento para achar um lugar. Aqui a pessoa digita o nome (da região OU de uma
- * cidade dela) e/ou escolhe o estado, e a lista responde na hora — sem ida ao
- * servidor, porque a geografia inteira já veio com a página.
- */
+/** Filtro da página Destinos: um campo de busca e as pílulas de estado.
+ * A lista responde na hora, sem ida ao servidor, porque a geografia já veio com a página. */
 export default function FiltroDestinos({
   estados,
   idioma,
@@ -55,7 +49,7 @@ export default function FiltroDestinos({
               type="button"
               onClick={() => setTexto('')}
               aria-label={t('Limpar')}
-              // Neutro: o botão da pílula de busca é verde quando ENVIA algo.
+              // Neutro: o botão da pílula de busca é verde quando envia algo.
               // Aqui ele só apaga o que foi digitado, então não compete.
               className="!bg-transparent !text-texto-3 hover:!text-brand"
             >

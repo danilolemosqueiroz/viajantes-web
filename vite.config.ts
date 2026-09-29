@@ -3,24 +3,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
 
-/**
- * Site em React puro (SPA): o navegador monta as telas e busca TUDO na API
- * Node a cada visita. Sem servidor próprio, sem página pré-gerada.
- *
- * O build gera `dist/` com `index.html` + assets. No servidor, qualquer rota
- * que não seja arquivo deve cair no `index.html` (o "fallback" de SPA) para o
- * recarregar de página funcionar em `/cachoeiras/capitolio`.
- *
- * A configuração inteira mora num arquivo só, o `.env`. Duas chaves dele
- * valem para um lado apenas:
- *
- * - `VITE_BASE` (pasta publicada, ex.: `/new/`) só no build e no preview. Sem
- *   ela, o `index.html` publicado numa subpasta pede `/assets/...` a partir da
- *   RAIZ do domínio, os arquivos dão 404 e a página fica branca. No `dev` o
- *   site roda sempre na raiz, para a pasta de publicação não atrapalhar.
- * - `API_URL_DEV` (API da máquina local) só no `dev`. O build nunca a lê, então
- *   o site publicado não tem como sair apontando para localhost.
- */
+/** Site em React puro (SPA): o navegador monta as telas e busca tudo na API Node.
+ * `VITE_BASE` vale só no build e no preview; `API_URL_DEV`, só no `dev`. */
 export default defineConfig(({ command, mode, isPreview }) => {
   // `''` no terceiro argumento: lê o .env inteiro, não só as chaves VITE_.
   const env = loadEnv(mode, process.cwd(), '');
@@ -45,14 +29,8 @@ export default defineConfig(({ command, mode, isPreview }) => {
   };
 });
 
-/**
- * Escreve o `.htaccess` do fallback junto com o build.
- *
- * O caminho do `index.html` precisa casar com a pasta onde o site foi
- * publicado — escrito à mão, é o tipo de detalhe que se esquece ao mudar de
- * pasta e só aparece como 404 ao recarregar uma página interna. Aqui ele sai
- * do mesmo `base` que gerou os assets.
- */
+/** Escreve o `.htaccess` do fallback junto com o build, a partir do mesmo `base` dos assets,
+ * para o caminho do `index.html` casar com a pasta onde o site foi publicado. */
 function htaccessSpa(base: string): Plugin {
   return {
     name: 'htaccess-spa',

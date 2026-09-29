@@ -22,11 +22,8 @@ import {
   telefoneValido,
 } from './cartao';
 
-/**
- * Pagamento do Plano Viajantes: Pix ou cartão. O cartão é tokenizado no
- * navegador com a chave pública do pagar.me; a API só recebe o token
- * (docs/roteiros.md).
- */
+/** Pagamento do Plano Viajantes: Pix ou cartão. O cartão é tokenizado no navegador
+ * com a chave pública do pagar.me; a API só recebe o token (docs/roteiros.md). */
 type Metodo = 'pix' | 'credit_card';
 
 interface Props {
@@ -213,7 +210,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
     );
   }
 
-  // ── Aguardando o Pix (ou cartão em análise) ──────────────────────────────
+  // Aguardando o Pix (ou cartão em análise)
   if (pendente) {
     const pix = pendente.pix;
     return (
@@ -277,7 +274,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
     );
   }
 
-  // ── Formulário ───────────────────────────────────────────────────────────
+  // Formulário
   return (
     <form onSubmit={enviar} className="recuo mt-6 space-y-8 p-6 sm:p-8" aria-labelledby="checkout-titulo">
       <div>

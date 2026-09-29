@@ -8,15 +8,8 @@ import { JsonLd, migalhas } from '@/lib/seo/jsonld';
 import CardOferta from '@/features/ofertas/CardOferta';
 import { listarCategorias, listarOfertas, POR_PAGINA, type CategoriaOferta } from '@/features/ofertas/dados';
 
-/**
- * "Viajantes Recomenda" — ofertas e descontos do ecossistema.
- *
- * O conteúdo não é nosso: vem da Central de Ofertas (`features/ofertas/dados`),
- * onde o time publica. Esta tela só exibe, filtra e conta o clique.
- *
- * Se a Central cair, a página mostra o aviso e um botão de tentar de novo — e
- * nenhuma outra parte do site sente: é a única tela que depende dela.
- */
+/** "Viajantes Recomenda": ofertas e descontos, vindos da Central de Ofertas.
+ * Se a Central cair, a página mostra o aviso e um botão de tentar de novo. */
 export default function Ofertas() {
   const t = useT();
   const idioma = useIdioma();
@@ -52,7 +45,7 @@ export default function Ofertas() {
     queryKey: ['ofertas', categoria, busca],
     queryFn: ({ pageParam }) => listarOfertas({ categoria, busca, pagina: pageParam }),
     initialPageParam: 1,
-    // Página curta significa que acabou — a Central não devolve o total.
+    // Página curta significa que acabou, porque a Central não devolve o total.
     getNextPageParam: (ultima, todas) => (ultima.length < POR_PAGINA ? undefined : todas.length + 1),
   });
 
@@ -109,9 +102,8 @@ export default function Ofertas() {
         {categorias && categorias.length > 0 && (
           <div className="mt-6 flex flex-wrap gap-2" role="tablist" aria-label={t('Categorias de ofertas')}>
             {categorias.map((c) => {
-              // `own_data: false` = a categoria existe na Central mas ainda não
-              // tem oferta própria (hoje Atrativos e Patrocinadores, que vivem
-              // na nossa API). Fica visível e desligada, em vez de sumir.
+              // `own_data: false` = a categoria existe na Central mas ainda não tem oferta própria.
+              // Fica visível e desligada, em vez de sumir.
               const embreve = !c.own_data && c.value !== 'todos';
               const ativa = c.value === categoria;
 

@@ -6,14 +6,8 @@ import { useIdioma } from '@/i18n/Traducao';
 import { gravarSessao, lerSessao, limparSessao } from '@/lib/sessao';
 import type { UsuarioSessao } from '@/lib/tipos';
 
-/**
- * Conta do visitante — a MESMA do aplicativo.
- *
- * O site fala com as rotas `/site/*` da API, que reaproveitam os controles do
- * app (login, cadastro, recuperação de senha, verificação de e-mail). O que o
- * login devolve é um `hash` de sessão; ele fica no navegador e vai no
- * cabeçalho `Passport` a cada chamada, como no aplicativo.
- */
+/** Conta do visitante, a mesma do aplicativo. O login devolve um `hash` de sessão, que fica
+ * no navegador e vai no cabeçalho `Passport` a cada chamada. */
 type ComHash = UsuarioSessao & { hash: string };
 
 /** Quem está logado agora. `null` quando não há sessão ou ela expirou. */
@@ -52,17 +46,12 @@ export const entrar = (email: string, senha: string) => autenticar('/site/auth/l
 
 export const cadastrar = (dados: Record<string, unknown>) => autenticar('/site/auth/cadastro', dados);
 
-/**
- * O botão do Google devolve um `credential` (o id_token); a API — a mesma rota
- * do aplicativo — lê esse token no campo `idtoken`.
- */
+/** O botão do Google devolve um `credential` (o id_token); a API (a mesma rota
+ * do aplicativo) lê esse token no campo `idtoken`. */
 export const entrarComGoogle = (credential: string) => autenticar('/site/auth/google', { idtoken: credential });
 
-/**
- * Apple: o `identityToken` que o Sign in with Apple JS devolve no navegador.
- * O nome só chega na PRIMEIRA autorização (a Apple não o põe no token), e a
- * API só o usa para criar a conta — nunca para sobrescrever um nome gravado.
- */
+/** Apple: o `identityToken` que o Sign in with Apple JS devolve. O nome só chega na primeira
+ * autorização, e a API só o usa para criar a conta, nunca para sobrescrever um nome gravado. */
 export const entrarComApple = (identityToken: string, nome: string) =>
   autenticar('/site/auth/apple', { identityToken, nome });
 
@@ -71,20 +60,15 @@ export type DestinoConta = '/conta' | '/conta/meus-dados' | '/conta/favoritos' |
 
 /** O que fazer depois que alguém entra. */
 export interface AposEntrar {
-  /**
-   * Chamado em vez de navegar: o login feito dentro do modal de um atrativo
-   * fecha o modal e deixa a pessoa exatamente onde ela estava.
-   */
+  /** Chamado em vez de navegar: o login feito dentro do modal de um atrativo
+   * fecha o modal e deixa a pessoa exatamente onde ela estava. */
   aoEntrar?: (usuario: UsuarioSessao) => void;
   /** Sem `aoEntrar`: a página da conta para onde ir. */
   voltarPara?: DestinoConta;
 }
 
-/**
- * Fim comum a TODOS os jeitos de entrar (e-mail, cadastro, Google, Apple):
- * recarrega o usuário e decide para onde a pessoa vai. Numa tela de conta, o
- * cadastro incompleto manda para "Meus dados", como no aplicativo.
- */
+/** Fim comum a todos os jeitos de entrar: recarrega o usuário e decide para onde a pessoa vai.
+ * Numa tela de conta, o cadastro incompleto manda para "Meus dados", como no aplicativo. */
 export function useConcluirLogin({ aoEntrar, voltarPara }: AposEntrar = {}) {
   const cliente = useQueryClient();
   const navegar = useNavigate();

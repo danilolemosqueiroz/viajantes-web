@@ -1,19 +1,5 @@
-/**
- * Qual convite aparece ao abrir um atrativo — e quando.
- *
- * Dois convites para UMA cadeira: nunca há dois na mesma página.
- *
- *  - **Conta** (entrar ou criar): quem não está logado vê em TODA abertura de
- *    atrativo — é o pedido do cliente. Para dar um respiro entre um e outro,
- *    basta subir `RESPIRO_CONTA_MIN`.
- *  - **App** (baixar): é a vez dele no 2º atrativo da visita (quem chegou do
- *    Google e clicou num segundo lugar já mostrou interesse), ou logo no 1º
- *    para quem está logado — e não volta por 7 dias, nem em visita nova.
- *    Quando é a vez do app, ele passa na frente da conta.
- *
- * Sem memória (armazenamento bloqueado) o site não insiste: mostra só o que
- * não depende de lembrar, que é o convite de conta.
- */
+/** Qual convite aparece ao abrir um atrativo. Conta: em toda abertura para quem não está logado.
+ * App: no 2º atrativo da visita (ou no 1º para logado), e depois não volta por 7 dias. */
 export type Convite = 'conta' | 'app' | null;
 
 /** Em que atrativo da visita o app é convidado, para quem não está logado. */
@@ -35,7 +21,7 @@ export interface MemoriaConvites {
 const DIA = 24 * 60 * 60 * 1000;
 const MINUTO = 60 * 1000;
 
-/** A regra, pura: quem senta na cadeira desta página. */
+/** A regra, como função pura: qual convite esta página mostra. */
 export function escolherConvite(logado: boolean, memoria: MemoriaConvites, agora = Date.now()): Convite {
   const { vistos, appEm, contaEm } = memoria;
 
@@ -49,7 +35,7 @@ export function escolherConvite(logado: boolean, memoria: MemoriaConvites, agora
   return contaDescansou ? 'conta' : null;
 }
 
-/** Atrativos abertos nesta aba — fechar a aba zera. */
+/** Atrativos abertos nesta aba. Fechar a aba zera. */
 const CHAVE_VISTOS = 'vj_atrativos_vistos';
 /** Datas em milissegundos; sobrevivem à visita. */
 const CHAVE_APP_EM = 'vj_convite_app_em';
@@ -68,11 +54,8 @@ function gravarData(chave: string, valor: number): void {
   }
 }
 
-/**
- * Conta mais um atrativo aberto e diz qual convite mostrar. Chamar UMA vez
- * por atrativo aberto. Se for a vez do app, a data já fica marcada ao
- * MOSTRAR: quem fecha a aba sem responder também não o vê de novo.
- */
+/** Conta mais um atrativo aberto e diz qual convite mostrar. Chamar uma vez por atrativo.
+ * Se for a vez do app, a data já fica marcada ao mostrar. */
 export function decidirConviteAoAbrir(logado: boolean, agora = Date.now()): Convite {
   let memoria: MemoriaConvites;
   try {

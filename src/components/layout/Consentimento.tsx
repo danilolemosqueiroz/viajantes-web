@@ -4,19 +4,8 @@ import { useCallback, useSyncExternalStore } from 'react';
 import Analytics from './Analytics';
 import ConsentBanner, { COOKIE_CONSENTIMENTO } from './ConsentBanner';
 
-/**
- * Aviso de cookies e medição, decididos NO NAVEGADOR.
- *
- * Antes quem lia o cookie era o servidor, o que não existe no site exportado
- * como arquivos (hospedagem sem Node): lá o HTML é o mesmo para todo mundo.
- * Ler no navegador não muda nada para a LGPD — o que importa é que nenhuma
- * ferramenta de terceiro carregue antes do aceite, e elas continuam entrando
- * só depois dele.
- *
- * `useSyncExternalStore` em vez de `useEffect`: é a forma que o React tem para
- * ler estado que vive fora dele (aqui, o cookie), sem uma renderização a mais
- * e sem divergir entre servidor e navegador.
- */
+/** Aviso de cookies e medição, decididos no navegador (o site exportado não tem servidor).
+ * Usa `useSyncExternalStore` para ler o cookie sem renderização a mais. */
 function lerConsentimento(): string | null {
   try {
     const achado = document.cookie

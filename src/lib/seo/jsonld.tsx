@@ -1,9 +1,6 @@
 import { publico } from '@/lib/publico';
-/**
- * Dados estruturados (schema.org) — o que o Google usa para mostrar o site em
- * resultados enriquecidos. Num site que monta no navegador, o bloco entra no
- * HTML junto com a tela, e o robô que executa JavaScript o encontra.
- */
+/** Dados estruturados (schema.org), que o Google usa nos resultados enriquecidos.
+ * O bloco entra no HTML junto com a tela, e o robô que executa JavaScript o encontra. */
 export function urlSite(caminho = '/'): string {
   const origem = typeof window === 'undefined' ? '' : window.location.origin;
   return `${origem}${caminho.startsWith('/') ? caminho : `/${caminho}`}`;
@@ -40,7 +37,7 @@ export function listaDeItens(nome: string, itens: { nome: string; caminho: strin
   };
 }
 
-/** A organização — vai na home. */
+/** A organização. Vai na home. */
 export function organizacao(): Bloco {
   return {
     '@context': 'https://schema.org',

@@ -2,13 +2,8 @@ import { useState } from 'react';
 import { useT } from '@/i18n/Traducao';
 import { recuperarSenha } from '@/lib/conta';
 
-/**
- * Pede o link de nova senha.
- *
- * A resposta é a mesma exista a conta ou não — senão a página viraria um jeito
- * de descobrir quem tem cadastro. A página de criar a senha nova é a da API,
- * aberta pelo link do e-mail.
- */
+/** Pede o link de nova senha. A resposta é a mesma exista a conta ou não,
+ * para a página não revelar quem tem cadastro. */
 export default function FormRecuperarSenha() {
   const t = useT();
   const [enviado, setEnviado] = useState(false);

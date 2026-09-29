@@ -3,10 +3,8 @@ import { useT } from '@/i18n/Traducao';
 import { B2B } from './config';
 import { Sobrancelha, TituloSecao } from './Partes';
 
-/**
- * Área B2B — vem depois de toda a experiência do viajante, de propósito: a
- * home é para quem viaja; quem vende só precisa encontrar a porta no fim.
- */
+/** Área B2B. Vem depois de todo o conteúdo do viajante, de propósito:
+ * a home é para quem viaja, e quem vende só precisa achar a entrada no fim dela. */
 export default function Parceiros() {
   const t = useT();
 

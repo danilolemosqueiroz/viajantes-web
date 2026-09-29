@@ -7,11 +7,8 @@ import { hrefEmpresa } from '@/i18n/caminhos';
 import type { AtrativoProximo } from '@/lib/tipos';
 import { abasProximos } from './dados';
 
-/**
- * Atrativos num raio de 30 km, em abas por categoria como no aplicativo:
- * numa cachoeira, Restaurantes e Hospedagens; numa pousada, Cachoeiras e
- * Restaurantes (a API já tira a categoria do próprio lugar).
- */
+/** Atrativos num raio de 30 km, em abas por categoria como no aplicativo.
+ * A API já tira a categoria do próprio lugar. */
 export default function AtrativosProximos({ proximos, idioma }: { proximos: AtrativoProximo[]; idioma: Idioma }) {
   const t = useT();
   const abas = abasProximos(proximos);

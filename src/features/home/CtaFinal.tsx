@@ -3,10 +3,8 @@ import { href } from '@/i18n/caminhos';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { useGeografia } from '@/lib/consultas';
 
-/**
- * Fechamento da página. Usa a capa de OUTRA região que não a da abertura —
- * repetir a mesma foto no topo e no fim faz a home parecer curta.
- */
+/** Fechamento da página. Usa a capa de uma região diferente da abertura,
+ * porque repetir a mesma foto no topo e no fim faz a home parecer curta. */
 export default function CtaFinal() {
   const t = useT();
   const idioma = useIdioma();

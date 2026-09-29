@@ -8,14 +8,8 @@ import PaginaDestino from '@/features/catalogo/PaginaDestino';
 import PaginaAtrativo from '@/features/catalogo/PaginaAtrativo';
 import NaoEncontrada from './NaoEncontrada';
 
-/**
- * O segundo segmento de uma categoria acumula DOIS tipos de página:
- *  - `/cachoeiras/capitolio`                  → a categoria num destino
- *  - `/cachoeiras/cachoeira-do-cristal-1234`  → o detalhe de um atrativo
- *
- * Quem distingue é o `-id` no fim: nenhum nome de região ou cidade do catálogo
- * termina em "-número" (há teste garantindo isso).
- */
+/** O segundo segmento serve a duas páginas: a categoria num destino (`/cachoeiras/capitolio`)
+ * e o detalhe de um atrativo (`/cachoeiras/cachoeira-do-cristal-1234`), que termina em `-id`. */
 export default function CategoriaSlug() {
   const { categoria: slugCategoria, slug = '' } = useParams();
   const idioma = useIdioma();

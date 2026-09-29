@@ -1,8 +1,5 @@
-/**
- * Validação e máscaras do formulário de pagamento — puras, para teste
- * (tests/unit/roteiros.test.ts). O que o pagar.me recusa aqui já é barrado
- * antes de sair do navegador.
- */
+/** Validação e máscaras do formulário de pagamento, em funções puras para poderem ser testadas.
+ * O que o pagar.me recusa aqui já é barrado antes de sair do navegador. */
 
 export function somenteDigitos(valor: string | null | undefined): string {
   return String(valor ?? '').replace(/\D/g, '');
@@ -26,7 +23,7 @@ export function numeroCartaoValido(numero: string): boolean {
   return soma % 10 === 0;
 }
 
-/** "MM/AA" ou "MM/AAAA" → mês e ano, ou `null` se inválida ou vencida. */
+/** De "MM/AA" ou "MM/AAAA" para mês e ano; `null` se inválida ou vencida. */
 export function lerValidade(validade: string, hoje = new Date()): { mes: number; ano: number } | null {
   const d = somenteDigitos(validade);
   if (d.length !== 4 && d.length !== 6) return null;
@@ -65,7 +62,7 @@ export function cepValido(cep: string): boolean {
   return somenteDigitos(cep).length === 8;
 }
 
-// ── Máscaras (aplicadas enquanto a pessoa digita) ─────────────────────────
+// Máscaras (aplicadas enquanto a pessoa digita)
 
 export function mascaraCartao(valor: string): string {
   return somenteDigitos(valor).slice(0, 19).replace(/(\d{4})(?=\d)/g, '$1 ');

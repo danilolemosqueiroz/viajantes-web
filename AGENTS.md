@@ -1,6 +1,6 @@
 # viajantes-web
 
-Site em **React + Vite (SPA)**. Não é mais Next.js: não existe `next/*`,
+Site em React + Vite (SPA). Não é mais Next.js: não existe `next/*`,
 `app/`, server components, rotas `/api` nem `middleware`/`proxy`. O navegador
 busca tudo na `viajantes-node-api` pelas rotas `/site/*`.
 

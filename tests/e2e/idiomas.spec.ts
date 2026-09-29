@@ -25,12 +25,8 @@ test('os roteiros têm endereço traduzido', async ({ page }) => {
   expect(page.url()).toContain('/es/itinerarios');
 });
 
-/**
- * O endereço de um destino muda de nome em cada idioma (`/destinos`,
- * `/de/reiseziele`). A lista já montou esse link à mão uma vez e levou a 404
- * em tudo que não era português — por isso o teste abre o link, em vez de só
- * conferir o texto dele.
- */
+/** O endereço de um destino muda de nome em cada idioma (`/destinos`, `/de/reiseziele`).
+ * Um link montado à mão já deu 404, por isso o teste abre o link em vez de conferir o texto. */
 test('o destino aberto pela lista existe em todos os idiomas', async ({ page }) => {
   for (const lista of ['/destinos', '/de/reiseziele', '/en/destinations', '/fr/destinations', '/es/destinos']) {
     await page.goto(rota(lista));

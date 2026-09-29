@@ -11,13 +11,8 @@ import Carregando from '@/components/layout/Carregando';
 import FiltroLocal from './FiltroLocal';
 import GradeEmpresas from './GradeEmpresas';
 
-/**
- * Atrativos de uma categoria em um destino — a página que responde à busca
- * mais comum do site: "cachoeiras em Capitólio".
- *
- * O destino pode ser uma região ou uma cidade; para quem busca dá no mesmo, e
- * o índice de geografia já resolveu qual é qual.
- */
+/** Atrativos de uma categoria em um destino, como "cachoeiras em Capitólio".
+ * O destino pode ser região ou cidade; o índice de geografia já resolveu qual é qual. */
 
 interface Props {
   destino: Destino;
@@ -71,9 +66,8 @@ export default function PaginaDestino({ destino, categoria, idioma }: Props) {
         ]}
       />
 
-      {/* Cabeçalho na folha branca: o texto vem primeiro (é o que o Google lê
-          e o que a pessoa veio buscar); a foto entra como um painel, não como
-          uma faixa que pinta a página. */}
+      {/* Cabeçalho na folha branca: o texto vem primeiro (é o que o Google lê);
+          a foto entra como um painel, não como uma faixa que pinta a página. */}
       <div className="folha pt-6">
         <nav aria-label={t('Você está em')} className="flex flex-wrap items-center gap-2 text-mini text-texto-3">
           <Link to="/" className="transition hover:text-brand">

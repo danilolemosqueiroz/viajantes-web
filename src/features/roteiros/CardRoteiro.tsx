@@ -5,10 +5,8 @@ import { caminhoRoteiro, rotuloDias } from './dados';
 import { hrefRoteiro } from '@/i18n/caminhos';
 import { useIdioma } from '@/i18n/Traducao';
 
-/**
- * Card de roteiro pronto: SÓ a capa, com o título por cima. Nada de descrição,
- * cidades ou paradas aqui — o conteúdo é o que se compra.
- */
+/** Card de roteiro pronto: só a capa, com o título por cima.
+ * Descrição, cidades e paradas ficam de fora, porque o conteúdo é o que se compra. */
 export default function CardRoteiro({
   roteiro,
   formato = 'grade',

@@ -1,11 +1,5 @@
-/**
- * Ícones de marca desenhados aqui.
- *
- * A versão 1 do lucide-react tirou os logos de terceiros do pacote (questão de
- * marca registrada), então os do rodapé e das lojas vivem neste arquivo. São
- * decorativos: quem lê com leitor de tela recebe o nome pelo `aria-label` do
- * link em volta, e o `<svg>` fica escondido.
- */
+/** Ícones de marca desenhados aqui, porque o lucide-react v1 tirou os logos de terceiros.
+ * São decorativos: o leitor de tela recebe o nome pelo `aria-label` do link em volta. */
 
 type Props = { size?: number; className?: string };
 

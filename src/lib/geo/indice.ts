@@ -2,20 +2,8 @@ import { buscar } from '@/lib/api';
 import type { Geografia } from '@/lib/tipos';
 import { slugify } from '@/lib/slug';
 
-/**
- * Índice de destinos: transforma o slug da URL no id que a API entende.
- *
- * O visitante não sabe (nem precisa saber) se Capitólio é uma região ou uma
- * cidade no cadastro — ele digita "capitólio". Por isso os dois vivem no mesmo
- * espaço de nomes e `/cachoeiras/capitolio` resolve para o que fizer mais
- * sentido.
- *
- * Duas regras de desempate, medidas contra o catálogo real (193 regiões e 261
- * cidades, 173 delas com nome igual ao de uma região):
- *  1. Região vence cidade. As regiões do catálogo costumam ter o nome da cidade
- *     principal e agregam os arredores — que é o que o turista quer ver.
- *  2. Entre dois do mesmo tipo, vence o que tem mais atrativos.
- */
+/** Índice de destinos: transforma o slug da URL no id que a API entende. Região e cidade dividem
+ * o mesmo espaço de nomes: região vence cidade e, no mesmo tipo, vence quem tem mais atrativos. */
 
 export interface Destino {
   tipo: 'regiao' | 'cidade';
@@ -26,7 +14,7 @@ export interface Destino {
   /** Capa da região (a cidade herda a da região a que pertence). */
   foto: string | null;
   tituloturistico: string | null;
-  /** Região a que a cidade pertence — ausente quando o destino já é a região. */
+  /** Região a que a cidade pertence. Ausente quando o destino já é a região. */
   regiao?: { id: number; nome: string; slug: string } | null;
   estado?: { id: number; nome: string } | null;
   /** Cidades da região, quando o destino é uma região. */
@@ -34,9 +22,9 @@ export interface Destino {
 }
 
 export interface IndiceGeografia {
-  /** slug → destino (região ou cidade), já com o desempate aplicado. */
+  /** De slug para destino (região ou cidade), já com o desempate aplicado. */
   porSlug: Map<string, Destino>;
-  /** Todas as regiões, da maior para a menor — usado em /destinos e no sitemap. */
+  /** Todas as regiões, da maior para a menor. Usado em /destinos e no sitemap. */
   regioes: Destino[];
   /** Todas as cidades, para o sitemap e a busca por destino. */
   cidades: Destino[];
@@ -126,11 +114,8 @@ function montarIndice(geo: Geografia): IndiceGeografia {
 /** Exposto para teste: monta o índice a partir de uma geografia qualquer. */
 export const montarIndiceGeografia = montarIndice;
 
-/**
- * A geografia inteira numa consulta só, guardada em memória enquanto a aba
- * estiver aberta. É ela que transforma o slug da URL no id que a API entende,
- * então toda navegação precisa dela — e ela muda no máximo algumas vezes por dia.
- */
+/** A geografia inteira numa consulta só, guardada em memória enquanto a aba estiver aberta.
+ * Toda navegação precisa dela, e ela muda no máximo algumas vezes por dia. */
 let emMemoria: Promise<IndiceGeografia> | null = null;
 
 export function indiceGeografia(): Promise<IndiceGeografia> {
@@ -152,7 +137,7 @@ export async function resolverDestino(slug: string): Promise<Destino | null> {
   return indice.porSlug.get(slug) ?? null;
 }
 
-/** Destino a partir de um id de cidade — usado nos 301 das URLs antigas. */
+/** Destino a partir de um id de cidade. Usado nos 301 das URLs antigas. */
 export async function destinoPorIdCidade(idcidade: number): Promise<Destino | null> {
   const indice = await indiceGeografia();
   return indice.cidades.find((c) => c.id === idcidade) ?? null;

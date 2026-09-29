@@ -6,20 +6,8 @@ import { useEmpresas, useRoteiros } from '@/lib/consultas';
 import { useRegiao } from '@/lib/regiao';
 import { capaEmpresa } from '@/features/catalogo/dados';
 
-/**
- * "Tudo para viver cada destino" — uma porta com foto para cada categoria,
- * mais os roteiros prontos.
- *
- * O trilho de círculos do topo já leva às mesmas páginas, mas ele é um atalho
- * de quem já sabe o que procura. Aqui a foto faz o trabalho: quem chega sem
- * destino vê o que existe antes de precisar ler um rótulo.
- *
- * As fotos vêm da API, não de arquivos no site: cada quadro usa a capa do
- * primeiro atrativo daquela categoria. O parceiro tinha baixado nove JPEGs
- * para o site em PHP e deixou anotado que precisavam ser curados — eram fotos
- * de negócios específicos servindo de rosto para a categoria inteira. Vindo da
- * API, a foto acompanha o catálogo e a região escolhida.
- */
+/** "Tudo para viver cada destino": uma entrada com foto para cada categoria, mais os roteiros.
+ * As fotos vêm da API: cada quadro usa a capa do primeiro atrativo da categoria. */
 export default function Mosaico() {
   const t = useT();
   const idioma = useIdioma();
@@ -51,11 +39,8 @@ export default function Mosaico() {
   );
 }
 
-/**
- * Um quadro de categoria. Pede a MESMA lista das faixas da home (mesma
- * categoria, mesma região, mesmo limite), então as duas seções compartilham
- * uma única consulta em cache — o quadro não custa uma ida a mais à API.
- */
+/** Um quadro de categoria. Pede a mesma lista das faixas da home, então as duas seções
+ * compartilham uma única consulta em cache. */
 function QuadroCategoria({ categoria }: { categoria: Categoria }) {
   const t = useT();
   const idioma = useIdioma();

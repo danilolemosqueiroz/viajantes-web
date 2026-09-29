@@ -4,7 +4,7 @@ import { HISTORIA_HREF } from './config';
 import { Sobrancelha, TituloSecao } from './Partes';
 import { publico } from '@/lib/publico';
 
-/** Como o aplicativo começou — o texto institucional curto, com a foto real. */
+/** Como o aplicativo começou: o texto institucional curto, com a foto real. */
 export default function Historia() {
   const t = useT();
 

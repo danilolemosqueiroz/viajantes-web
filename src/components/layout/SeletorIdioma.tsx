@@ -5,15 +5,8 @@ import { IDIOMAS, IDIOMAS_INFO, type Idioma } from '@/i18n/categorias';
 import { useIdioma } from '@/i18n/Traducao';
 import { raiz } from '@/i18n/caminhos';
 
-/**
- * Troca de idioma.
- *
- * Trocar o idioma só troca o PREFIXO do endereço; os caminhos traduzidos
- * (`/en/waterfalls`) são resolvidos pela própria tela de destino, então cair na
- * home do idioma escolhido é o comportamento correto e previsível — melhor do
- * que adivinhar o equivalente de uma página que pode não existir no outro
- * idioma.
- */
+/** Troca de idioma. Só o prefixo do endereço muda, então a pessoa cai na home do idioma escolhido
+ * em vez de numa página que pode não existir nele. */
 export default function SeletorIdioma() {
   const atual = useIdioma();
   const navegar = useNavigate();
@@ -23,7 +16,7 @@ export default function SeletorIdioma() {
   function trocar(novo: Idioma) {
     setAberto(false);
     if (novo === atual) return;
-    // Mantém a pessoa na mesma SEÇÃO quando o caminho não é traduzido
+    // Mantém a pessoa na mesma seção quando o caminho não é traduzido
     // (categoria), senão leva à home do novo idioma.
     const semPrefixo = pathname.replace(new RegExp(`^${raiz(atual)}`), '') || '/';
     const destino = `${raiz(novo)}${semPrefixo}`;

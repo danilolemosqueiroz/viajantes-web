@@ -1,10 +1,7 @@
 import type { Idioma } from '@/i18n/categorias';
 
-/**
- * Preço sempre em real: o idioma muda só a escrita do número (1.234,50 /
- * 1,234.50). `narrowSymbol` para sair "R$" nos cinco idiomas — sem ele o
- * espanhol escreve "35,89 BRL".
- */
+/** Preço sempre em real: o idioma muda só a escrita do número (1.234,50 / 1,234.50).
+ * `narrowSymbol` para sair "R$" nos cinco idiomas; sem ele o espanhol escreve "35,89 BRL". */
 const LOCALIDADE: Record<Idioma, string> = {
   pt: 'pt-BR',
   en: 'en-US',

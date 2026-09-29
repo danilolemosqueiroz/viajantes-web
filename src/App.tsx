@@ -6,18 +6,8 @@ import { ProvedorTraducao } from '@/i18n/Traducao';
 import Moldura from '@/components/layout/Moldura';
 import Carregando from '@/components/layout/Carregando';
 
-/**
- * Rotas do site.
- *
- * Cada idioma tem os seus endereços: português na raiz (`/cachoeiras`) e os
- * demais com prefixo e caminho traduzido (`/en/waterfalls`). Como os caminhos
- * fixos mudam de nome por idioma, as rotas são MONTADAS a partir da mesma
- * tabela que os links usam — assim não existe uma segunda lista para
- * desatualizar.
- *
- * Cada tela é carregada sob demanda (`lazy`): quem entra numa cachoeira não
- * baixa o código da área de conta.
- */
+/** Rotas do site, montadas da mesma tabela que os links usam (os caminhos mudam por idioma).
+ * Cada tela é carregada sob demanda (`lazy`). */
 const Home = lazy(() => import('@/paginas/Home'));
 const Categoria = lazy(() => import('@/paginas/Categoria'));
 const CategoriaSlug = lazy(() => import('@/paginas/CategoriaSlug'));
@@ -67,7 +57,7 @@ function rotasDoIdioma(idioma: Idioma) {
       <Route path={c('/conta/meus-dados')} element={<MeusDados />} />
       <Route path={c('/conta/roteiros')} element={<MinhasCompras />} />
 
-      {/* Categoria e o que vem dentro dela. Fica por ÚLTIMO: `:categoria` casa
+      {/* Categoria e o que vem dentro dela. Fica por último: `:categoria` casa
           com qualquer coisa, e engoliria os caminhos fixos acima. */}
       <Route path=":categoria" element={<Categoria />} />
       <Route path=":categoria/:slug" element={<CategoriaSlug />} />

@@ -1,17 +1,8 @@
-/**
- * Formato dos dados que a API devolve.
- *
- * Copiado dos payloads reais (`/site/empresas`, `/site/empresa/:id`,
- * `/site/roteiros`, `/site/geografia`, `/site/usuario/me`). Onde a API é
- * inconsistente entre listagem e detalhe, o campo aparece como opcional em vez
- * de virar duas verdades — quem consome trata a ausência.
- */
+/** Formato dos dados que a API devolve, copiado dos payloads reais. Onde a API é inconsistente
+ * entre listagem e detalhe, o campo aparece como opcional e quem consome trata a ausência. */
 
-/**
- * Bloco de conteúdo da empresa. No detalhe vem numa lista só, e o que diz o
- * tipo é o campo preenchido: `descricao` (texto), `arquivo` (imagem) ou
- * `video` (YouTube). Na listagem (`informacoes`) só há texto, com `posicao`.
- */
+/** Bloco de conteúdo da empresa. No detalhe, o tipo é o campo preenchido: `descricao` (texto),
+ * `arquivo` (imagem) ou `video` (YouTube). Na listagem (`informacoes`) só há texto. */
 export interface Info {
   idinfo?: number;
   titulo: string;
@@ -44,7 +35,7 @@ export interface Telefone {
   descricao: string;
 }
 
-/** Empresa como vem na LISTAGEM (`/site/empresas/{pagina}`). */
+/** Empresa como vem na listagem (`/site/empresas/{pagina}`). */
 export interface EmpresaResumo {
   idempresa: number;
   nome: string;
@@ -70,7 +61,7 @@ export interface EmpresaResumo {
   desconto_percentual?: number | null;
 }
 
-/** Empresa como vem no DETALHE (`/site/empresa/:id`). */
+/** Empresa como vem no detalhe (`/site/empresa/:id`). */
 export interface Empresa {
   idempresa: number;
   nome: string;
@@ -101,7 +92,7 @@ export interface Empresa {
   lat: string | null;
   long: string | null;
   coordenada: string | null;
-  /** É o status de cadastro, não "aberto agora" — para isso, `horarios`. */
+  /** É o status de cadastro, não "aberto agora". Para isso, use `horarios`. */
   aberto: number | null;
   horario: string | null;
   horarios: Horario[] | null;
@@ -135,13 +126,13 @@ export interface AtrativoProximo {
   logotipo?: string | null;
   cidade: string | null;
   endereco?: string | null;
-  /** Categoria (2 hospedagem, 3 cachoeira, 4 restaurante) — monta as abas. */
+  /** Categoria (2 hospedagem, 3 cachoeira, 4 restaurante). Monta as abas. */
   eavmoda: number | null;
   distancia_km: number | null;
   categorias?: string[];
 }
 
-// ── Geografia (`/site/geografia`) ───────────────────────────────────────────
+// Geografia (`/site/geografia`)
 
 export interface CidadeGeo {
   idcidade: number;
@@ -169,7 +160,7 @@ export interface Geografia {
   estados: EstadoGeo[];
 }
 
-// ── Roteiros prontos (`/site/roteiros`) ─────────────────────────────────────
+// Roteiros prontos (`/site/roteiros`)
 
 export interface CidadeRoteiro {
   idcidade: number;
@@ -220,11 +211,11 @@ export interface RoteiroItem {
   empresa_nome?: string | null;
 }
 
-// ── Plano Viajantes (`/site/assinatura`) ────────────────────────────────────
+// Plano Viajantes (`/site/assinatura`)
 
 export type Periodicidade = 'mensal' | 'anual';
 
-/** Um plano da tabela `assinatura` — os mesmos que o app vende nas lojas. */
+/** Um plano da tabela `assinatura`. São os mesmos que o app vende nas lojas. */
 export interface PlanoSite {
   idassinatura: number;
   nome: string;
@@ -269,7 +260,7 @@ export interface CompraPlano {
   pix?: PixCompra | null;
 }
 
-/** `/site/assinatura/compras/:idcompra` — o polling do Pix. */
+/** `/site/assinatura/compras/:idcompra`: o polling do Pix. */
 export interface StatusCompra {
   idcompra: number;
   plano_id: number;
@@ -283,7 +274,7 @@ export interface StatusCompra {
   assinatura?: AssinaturaAtiva | null;
 }
 
-/** `/site/assinatura/compras` — compra paga no site. */
+/** `/site/assinatura/compras`: compra paga no site. */
 export interface CompraFeita {
   idcompra: number;
   status: StatusCompraPlano;
@@ -298,9 +289,9 @@ export interface CompraFeita {
   data_expiracao: string | null;
 }
 
-// ── Usuário ─────────────────────────────────────────────────────────────────
+// Usuário
 
-/** Payload de sessão — o mesmo que o app guarda, sem o hash. */
+/** Payload de sessão: o mesmo que o app guarda, sem o hash. */
 export interface UsuarioSessao {
   idusuario: number;
   nome: string;

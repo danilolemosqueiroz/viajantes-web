@@ -12,7 +12,7 @@ interface Mapeador {
   total?: number;
 }
 
-/** Ranking de quem mais mapeou atrativos — o mesmo do aplicativo. */
+/** Ranking de quem mais mapeou atrativos, o mesmo do aplicativo. */
 export default function Mapeadores() {
   const t = useT();
   const idioma = useIdioma();

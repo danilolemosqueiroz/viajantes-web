@@ -4,13 +4,8 @@ import type { Categoria } from '@/i18n/categorias';
 import type { Destino } from '@/lib/geo/indice';
 import { filtroDoDestino } from '@/lib/geo/indice';
 
-/**
- * Leitura do catálogo de atrativos.
- *
- * Uma função por pergunta que uma página faz — "quais atrativos desta categoria
- * neste destino?", "qual é este atrativo?" — para as páginas ficarem só com a
- * montagem da tela.
- */
+/** Leitura do catálogo de atrativos: uma função por pergunta que uma página faz,
+ * para as páginas ficarem só com a montagem da tela. */
 
 interface FiltroLista {
   categoria?: Categoria;
@@ -23,18 +18,13 @@ interface FiltroLista {
   limite?: number;
 }
 
-/**
- * Lista de atrativos. A API devolve a página 1 com até 100 itens, ordenada por
- * relevância dela; aqui a ordem final é alfabética, com quem tem o termo
- * buscado no nome primeiro — a mesma regra do site antigo.
- */
+/** Lista de atrativos. A API devolve até 100 itens por relevância; aqui a ordem é alfabética,
+ * com quem tem o termo buscado no nome primeiro, como no site antigo. */
 export async function listarEmpresas(filtro: FiltroLista): Promise<EmpresaResumo[]> {
   const query: Record<string, string | number> = {};
 
-  // `turismo=1` só acompanha uma categoria: na API ele liga o filtro
-  // `eavmoda = reservas`, e sem `reservas` isso vira `eavmoda = 0` — o guia
-  // comercial, que não é o que a busca geral quer. A busca sem categoria vai
-  // sem os dois e procura em todos os tipos, como no site antigo.
+  // `turismo=1` só acompanha uma categoria: sem `reservas`, a API filtra `eavmoda = 0`,
+  // que é o guia comercial. A busca sem categoria vai sem os dois.
   if (filtro.categoria) {
     query.turismo = 1;
     query.reservas = filtro.categoria.eavmoda;
@@ -84,10 +74,8 @@ export function capaEmpresa(empresa: { capa?: string | null; logotipo?: string |
   return empresa.capa || empresa.logotipo || null;
 }
 
-/**
- * O conteúdo do detalhe vem numa lista só (`infos`): texto, imagem ou vídeo,
- * conforme o campo preenchido — a mesma separação que o site antigo fazia.
- */
+/** O conteúdo do detalhe vem numa lista só (`infos`): texto, imagem ou vídeo,
+ * conforme o campo preenchido. */
 export function separarConteudo(infos: Info[] | null | undefined) {
   const textos: Info[] = [];
   const imagens: Info[] = [];
@@ -109,10 +97,8 @@ export function tituloInfo(titulo: string | null | undefined): string {
     .trim();
 }
 
-/**
- * URL de embed de um vídeo do YouTube. A API troca `watch?v=` por `/embed/` e
- * deixa uma barra dobrada; a gerência às vezes grava só o ID ou um youtu.be.
- */
+/** URL de embed de um vídeo do YouTube. A API troca `watch?v=` por `/embed/` e deixa uma barra
+ * dobrada; a gerência às vezes grava só o ID ou um youtu.be. */
 export function urlEmbedVideo(video: string): string {
   const texto = video.trim();
   const id = texto.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{6,})/)?.[1];
@@ -212,7 +198,7 @@ export function linkWhatsapp(valor: string | null | undefined): string | null {
   return `https://api.whatsapp.com/send?phone=55${digitos}`;
 }
 
-/** O número por extenso a partir do link (`phone=5537999090767` → "(37) 99909-0767"). */
+/** O número por extenso a partir do link (`phone=5537999090767` vira "(37) 99909-0767"). */
 export function numeroWhatsapp(link: string | null): string {
   const digitos = link?.match(/phone=(\d+)/)?.[1] ?? '';
   if (!digitos) return '';
@@ -220,7 +206,7 @@ export function numeroWhatsapp(link: string | null): string {
   return formatarTelefone(nacional) || nacional;
 }
 
-/** Link externo garantido com protocolo ("pousada.com.br" → "https://pousada.com.br"). */
+/** Link externo garantido com protocolo ("pousada.com.br" vira "https://pousada.com.br"). */
 export function linkExterno(valor: string | null | undefined): string | null {
   const texto = String(valor ?? '').trim();
   if (!texto) return null;
@@ -236,7 +222,7 @@ export function linkPerfil(valor: string | null | undefined, base: string): stri
   return `${base}/${texto.replace(/^@/, '')}`;
 }
 
-/** Tipo schema.org da empresa, pela categoria — o mesmo mapa do site antigo. */
+/** Tipo schema.org da empresa, pela categoria. É o mesmo mapa do site antigo. */
 export function tipoSchema(eavmoda: number | null | undefined): string {
   const tipos: Record<number, string> = {
     2: 'LodgingBusiness',

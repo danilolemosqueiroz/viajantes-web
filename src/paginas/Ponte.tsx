@@ -7,16 +7,8 @@ import { caminhoRoteiro } from '@/features/roteiros/dados';
 import { LOJA_ANDROID, LOJA_IOS } from '@/lib/lojas';
 import Carregando from '@/components/layout/Carregando';
 
-/**
- * Pontes: endereços curtos que existem só para levar ao lugar certo.
- *
- *  /e/1234        atrativo (a categoria vem da API)
- *  /r/45          roteiro
- *  /c/cat/12      listagem de uma cidade (URL do site antigo)
- *  /download      a loja do aparelho
- *
- * Não têm idioma: são impressas em material e vieram do site PHP.
- */
+/** Pontes: endereços curtos que só levam ao lugar certo (/e/1234 atrativo, /r/45 roteiro,
+ * /c/cat/12 cidade do site antigo, /download loja). Não têm idioma. */
 export default function Ponte({ tipo }: { tipo: 'empresa' | 'roteiro' | 'cidade' | 'download' }) {
   const { id, categoria: slugCategoria } = useParams();
   const numero = Number(id);
