@@ -46,9 +46,10 @@ function htaccessSpa(base: string): Plugin {
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase ${raiz}
-  # A captura saiu de /seja-parceiro/ para /seja-cliente/; sem isto o fallback
-  # abaixo devolveria a home do site no lugar do 404 (app antigo e e-mails).
+  # As duas pastas do parceiro foram renomeadas. Sem estes 301 o fallback abaixo
+  # devolveria a home no lugar do 404 (app publicado e e-mails já enviados).
   RewriteRule ^seja-parceiro(/.*)?$ ${raiz}seja-cliente$1 [R=301,L]
+  RewriteRule ^parceiros(/.*)?$ ${raiz}painel-cliente$1 [R=301,L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . ${raiz}index.html [L]

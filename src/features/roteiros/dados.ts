@@ -25,6 +25,19 @@ export async function listarRoteiros(idRegiao?: number): Promise<Roteiro[]> {
     });
 }
 
+/** Ordem sorteada para a faixa da home sem região escolhida: varia os destinos a cada visita,
+ * sem perder a frente para os roteiros em destaque. */
+export function sortearRoteiros(roteiros: Roteiro[]): Roteiro[] {
+  const emDestaque = (r: Roteiro) => Number(r.destaque ?? 0) > 0;
+  const embaralhar = (lista: Roteiro[]) =>
+    lista
+      .map((roteiro) => ({ roteiro, chave: Math.random() }))
+      .sort((a, b) => a.chave - b.chave)
+      .map(({ roteiro }) => roteiro);
+
+  return [...embaralhar(roteiros.filter(emDestaque)), ...embaralhar(roteiros.filter((r) => !emDestaque(r)))];
+}
+
 export async function buscarRoteiro(id: number): Promise<Roteiro | null> {
   const resposta = await apiGet<Roteiro>(`/site/roteiros/${id}`);
   if (!resposta.ok || !resposta.data?.idroteiro_personalizado) return null;
