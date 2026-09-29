@@ -40,7 +40,7 @@ export default function Home() {
   useMeta({
     titulo: t('Viajantes App — Guia de Cachoeiras, Pousadas e Turismo'),
     descricao: t(
-      'O Viajantes App é o guia turístico com mais de 1500 cachoeiras com rotas traçadas, pousadas, passeios, restaurantes e roteiros em Minas Gerais e no Brasil.',
+      'O Viajantes App é o guia turístico com mais de 1600 cachoeiras com rotas traçadas, pousadas, passeios, restaurantes e roteiros em Minas Gerais e no Brasil.',
     ),
     caminho: href('/', idioma),
     porIdioma: hrefPorIdioma('/'),

@@ -4,7 +4,7 @@
 /** Prova social do topo da seção Comunidade. */
 export const NUMEROS = [
   { valor: '+1 milhão', rotulo: 'viajantes usando a plataforma' },
-  { valor: '+1.500', rotulo: 'cachoeiras mapeadas' },
+  { valor: '+1.600', rotulo: 'cachoeiras mapeadas' },
   { valor: 'Brasil', rotulo: 'destinos de norte a sul' },
   { valor: '+1 milhão', rotulo: 'pessoas nas redes sociais' },
 ] as const;
