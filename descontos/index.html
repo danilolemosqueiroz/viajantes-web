@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trilha de Descontos | Viajantes App</title>
+<meta name="description" content="Roteiros e descontos que separamos para sua próxima viagem, direto do Viajantes App.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest-deep: #172611;
+    --forest-deep-2: #10190c;
+    --forest-brand: #3b5321;
+    --moss: #4f6b33;
+    --moss-line: rgba(233, 209, 159, 0.14);
+    --sand: #e9d19f;
+    --sand-dim: #cdd6b8;
+    --paper: #faf6ea;
+    --paper-dim: #efe6cf;
+    --terracotta: #dd6a15;
+    --terracotta-deep: #b0530f;
+    --ink: #23301b;
+    --ink-soft: #565f45;
+    --cream: #f5f1e2;
+    --cream-dim: #c9d2b4;
+    --radius-card: 20px;
+    --radius-pill: 999px;
+    --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    --font-body: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--forest-deep);
+    color: var(--cream);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  h1, h2, h3, p { margin: 0; }
+  img { max-width: 100%; display: block; }
+  button { font: inherit; }
+  ::selection { background: var(--terracotta); color: var(--paper); }
+  :focus-visible {
+    outline: 2px solid var(--sand);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .topo {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: linear-gradient(180deg, var(--forest-deep) 0%, var(--forest-deep-2) 100%);
+  }
+  .topo::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    left: -20%;
+    width: 140%;
+    height: 140%;
+    will-change: transform;
+    background:
+      radial-gradient(circle at 18% 8%, rgba(233,209,159,0.09) 0 1px, transparent 1px 42px),
+      radial-gradient(circle at 82% 28%, rgba(233,209,159,0.07) 0 1px, transparent 1px 58px),
+      radial-gradient(circle at 30% 78%, rgba(233,209,159,0.08) 0 1px, transparent 1px 50px),
+      radial-gradient(circle at 92% 88%, rgba(233,209,159,0.06) 0 1px, transparent 1px 66px);
+    background-size: 420px 420px, 560px 560px, 480px 480px, 620px 620px;
+    animation: driftTopo 120s linear infinite;
+  }
+  @keyframes driftTopo {
+    0%   { transform: translate3d(0, 0, 0); }
+    50%  { transform: translate3d(-3%, 2%, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px 64px;
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  header.hero {
+    position: relative;
+    padding: 28px 0 24px;
+    text-align: center;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.6rem, 10vw, 4.6rem);
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+    color: var(--cream);
+    text-wrap: balance;
+    margin: 0 0 14px;
+  }
+  .wordmark span { color: var(--terracotta); }
+  .tagline {
+    margin: 0 auto;
+    color: var(--cream-dim);
+    font-size: clamp(0.68rem, 3vw, 1.05rem);
+    line-height: 1.55;
+    white-space: nowrap;
+  }
+  .app-card {
+    margin-top: 34px;
+    background: linear-gradient(155deg, var(--forest-brand) 0%, #2f4419 100%);
+    border: 1px solid rgba(233,209,159,0.22);
+    border-radius: var(--radius-card);
+    padding: 26px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 20px 44px rgba(6, 12, 4, 0.45);
+  }
+  .app-card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .app-card .compass-mark {
+    width: 46px;
+    height: 46px;
+    flex: none;
+    background-color: var(--sand);
+    --logo-mask: url(data:image/png;base64,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);
+    -webkit-mask-image: var(--logo-mask);
+    mask-image: var(--logo-mask);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+  .app-card h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+  }
+  .app-card p {
+    color: var(--cream-dim);
+    font-size: 0.92rem;
+    max-width: 52ch;
+  }
+  .app-card .cta { align-self: stretch; margin-top: 2px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 26px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 0.98rem;
+    white-space: nowrap;
+    transition: transform .18s cubic-bezier(.16,1,.3,1), background-color .18s ease, box-shadow .18s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-solid {
+    background: var(--terracotta);
+    color: var(--paper);
+    box-shadow: 0 10px 24px rgba(221, 106, 21, 0.35);
+  }
+  .btn-solid:hover { background: var(--terracotta-deep); transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--cream);
+    border: 1.5px solid var(--sand);
+  }
+  .btn-outline:hover { background: rgba(233,209,159,0.1); transform: translateY(-2px); }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+  .section { margin-top: 60px; }
+  .section-head { margin-bottom: 22px; }
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.7rem, 5vw, 2.3rem);
+    color: var(--cream);
+    letter-spacing: -0.015em;
+  }
+  .section-head p {
+    color: var(--cream-dim);
+    margin-top: 6px;
+    font-size: clamp(0.58rem, 2.6vw, 0.98rem);
+    white-space: nowrap;
+  }
+  .canastra {
+    margin-bottom: 20px;
+    border-radius: var(--radius-card);
+    background: linear-gradient(155deg, var(--sand) 0%, #dfc086 100%);
+    box-shadow: 0 0 0 3px rgba(221, 106, 21, 0.22), 0 20px 40px rgba(176, 83, 15, 0.3);
+  }
+  .canastra summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 24px;
+    cursor: pointer;
+    list-style: none;
+    transition: transform .2s ease;
+  }
+  .canastra summary::-webkit-details-marker { display: none; }
+  .canastra:hover summary { transform: translateY(-2px); }
+  .canastra summary .head { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .canastra summary .icon {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--paper);
+  }
+  .canastra summary .icon svg { width: 22px; height: 22px; }
+  .canastra .label {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--ink);
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+  }
+  .canastra .sub {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    margin-top: 2px;
+  }
+  .canastra summary .chevron { flex: none; width: 22px; height: 22px; color: var(--terracotta-deep); transition: transform .25s ease; }
+  .canastra[open] summary .chevron { transform: rotate(180deg); }
+  .canastra-panel {
+    padding: 4px 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .passeio-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(23, 38, 17, 0.06);
+    border-radius: 14px;
+    padding: 12px 14px;
+    transition: background-color .2s ease, transform .2s ease;
+  }
+  .passeio-row:hover { background: rgba(23, 38, 17, 0.12); transform: translateY(-1px); }
+  .passeio-row .t { font-weight: 700; color: var(--ink); font-size: 0.94rem; }
+  .passeio-row .d { color: var(--ink-soft); font-size: 0.8rem; margin-top: 1px; }
+  .passeio-row .info { min-width: 0; flex: 1; }
+  .passeio-off {
+    flex: none;
+    background: var(--terracotta);
+    color: var(--paper);
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+  .passeio-row .row-arrow { color: var(--terracotta-deep); }
+  .tickets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .ticket-wide { grid-column: 1 / -1; }
+  .ticket-featured {
+    margin-bottom: 20px;
+    border: 2px solid var(--terracotta);
+    box-shadow: 0 0 0 5px rgba(221, 106, 21, 0.14), 0 18px 34px rgba(6, 12, 4, 0.4);
+  }
+  .ticket-featured:hover {
+    box-shadow: 0 0 0 5px rgba(221, 106, 21, 0.2), 0 24px 42px rgba(6, 12, 4, 0.48);
+  }
+  .ticket-tag {
+    color: var(--terracotta-deep);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .ticket {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 92px;
+    background: var(--paper);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: 0 16px 30px rgba(6, 12, 4, 0.35);
+    transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease;
+  }
+  .ticket:hover {
+    transform: translateY(-4px) rotate(-0.6deg);
+    box-shadow: 0 22px 38px rgba(6, 12, 4, 0.45);
+  }
+  .ticket-notch {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: var(--forest-deep);
+    border-radius: 50%;
+    z-index: 2;
+  }
+  .ticket-notch.top { top: -9px; right: 84px; }
+  .ticket-notch.bottom { bottom: -9px; right: 84px; }
+  .ticket-main {
+    padding: 20px 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .ticket-brand {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.32rem;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .ticket-desc {
+    color: var(--ink-soft);
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+  .ticket-cta {
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--terracotta-deep);
+    font-weight: 700;
+    font-size: 0.86rem;
+  }
+  .ticket-cta svg { width: 14px; height: 14px; transition: transform .2s ease; }
+  .ticket:hover .ticket-cta svg { transform: translateX(3px); }
+  .ticket-stub {
+    position: relative;
+    background: var(--paper-dim);
+    border-left: 2px dashed rgba(35, 48, 27, 0.22);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 6px;
+  }
+  .ticket-off {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--terracotta-deep);
+    font-size: 2.1rem;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    transform: rotate(-6deg);
+    text-shadow: 0 2px 0 rgba(176, 83, 15, 0.12);
+  }
+  .ticket-off small {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--terracotta-deep);
+    opacity: 0.75;
+  }
+  .ticket-code {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .rows { display: flex; flex-direction: column; gap: 10px; }
+  .row-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(250, 246, 234, 0.05);
+    border: 1px solid var(--moss-line);
+    border-radius: var(--radius-card);
+    padding: 16px 18px;
+    transition: background-color .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  .row-link:hover {
+    background: rgba(250, 246, 234, 0.1);
+    border-color: rgba(233,209,159,0.35);
+    transform: translateY(-2px);
+  }
+  .row-icon {
+    flex: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--forest-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .row-icon svg { width: 21px; height: 21px; color: var(--sand); }
+  .row-text { min-width: 0; flex: 1; }
+  .row-text .t { font-weight: 700; color: var(--cream); font-size: 1rem; }
+  .row-text .d { color: var(--cream-dim); font-size: 0.86rem; margin-top: 2px; }
+  .row-arrow { flex: none; width: 18px; height: 18px; color: var(--sand); transition: transform .2s ease; }
+  .row-link:hover .row-arrow { transform: translateX(3px); }
+  .partner {
+    margin-top: 60px;
+    background: linear-gradient(155deg, var(--terracotta) 0%, var(--terracotta-deep) 100%);
+    border-radius: var(--radius-card);
+    padding: 26px 28px;
+    text-align: center;
+    box-shadow: 0 20px 44px rgba(176, 83, 15, 0.35);
+  }
+  .partner h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1rem, 2.6vw, 1.15rem);
+    color: var(--paper);
+  }
+  .partner p {
+    color: rgba(250, 246, 234, 0.88);
+    max-width: 40ch;
+    margin: 6px auto 18px;
+    font-size: 0.8rem;
+  }
+  .partner .btn-outline { border-color: var(--paper); color: var(--paper); }
+  .partner .btn-outline:hover { background: rgba(250,246,234,0.16); }
+  footer {
+    margin-top: 60px;
+    padding-top: 34px;
+    border-top: 1px solid var(--moss-line);
+    text-align: center;
+  }
+  .socials {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .socials a {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--moss-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sand);
+    transition: border-color .2s ease, transform .2s ease, color .2s ease;
+  }
+  .socials a:hover { border-color: var(--sand); color: var(--cream); transform: translateY(-3px); }
+  .socials svg { width: 19px; height: 19px; }
+  .contact {
+    color: var(--cream-dim);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  .contact a { color: var(--sand); font-weight: 700; }
+  .contact a:hover { text-decoration: underline; }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px 48px; }
+    header.hero { padding: 40px 0 24px; }
+    .app-card { padding: 20px 18px; gap: 10px; }
+    .app-card h2 { font-size: 1.22rem; }
+    .app-card p { font-size: 0.82rem; line-height: 1.4; }
+    .app-card .btn { padding: 11px 22px; font-size: 0.9rem; }
+    .tickets { grid-template-columns: 1fr; }
+    .section { margin-top: 48px; }
+    .partner { padding: 28px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .topo::before { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .ticket, .row-link, .canastra, .canastra summary, .passeio-row, .btn, .socials a { transition: none; }
+    .ticket:hover, .row-link:hover, .btn-solid:hover, .btn-outline:hover, .canastra:hover summary, .passeio-row:hover { transform: none; }
+    .canastra summary .chevron { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="topo" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <header class="hero reveal">
+    <div class="hero-content">
+      <h1 class="wordmark">Viajantes<span>APP</span></h1>
+      <p class="tagline">Roteiros e descontos que separamos para sua próxima viagem.</p>
+    </div>
+  </header>
+
+  <section class="app-card reveal">
+    <div class="app-card-head">
+      <span class="compass-mark" role="img" aria-label="Logo Viajantes App"></span>
+      <h2>Baixe o Viajantes App grátis</h2>
+    </div>
+    <p>Mais de 1.500 cachoeiras com rotas traçadas, hospedagens sem comissão e os melhores passeios na palma da sua mão.</p>
+    <a class="btn btn-solid cta" id="baixar-app" href="https://viajantessemfronteiras.com.br/baixar/" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v13m0 0l-4.5-4.5M12 16l4.5-4.5"/><path d="M4 19h16"/></svg>
+      Baixar agora
+    </a>
+  </section>
+
+  <section class="section" id="descontos">
+    <div class="section-head reveal">
+      <h2>Descontos para sua próxima viagem</h2>
+      <p>Cupons que negociamos com marcas parceiras. Usa e conta pra gente.</p>
+    </div>
+
+    <details class="canastra reveal">
+      <summary>
+        <div class="head">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.5 7-11.5A7 7 0 105 9.5C5 14.5 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+          </span>
+          <div>
+            <div class="label">Serra da Canastra</div>
+            <div class="sub">Confira os melhores passeios com desconto aqui</div>
+          </div>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="canastra-panel">
+
+        <a class="passeio-row" href="https://api.whatsapp.com/send?phone=5535991712820&amp;text=Ol%C3%A1!%20Vim%20pelo%20Viajantes%20App%20e%20gostaria%20de%20saber%20mais%20sobre%20o%20passeio%20na%20Gruta%20do%20Grito%20e%20tamb%C3%A9m%20sobre%20o%20desconto." target="_blank" rel="noopener noreferrer">
+          <div class="info">
+            <div class="t">Gruta do Grito</div>
+            <div class="d">Passeio pela Serra da Canastra.</div>
+          </div>
+          <span class="passeio-off">10% OFF</span>
+          <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+
+        <a class="passeio-row" href="https://canyon-cascata-eco-parque.mymento.site/?u=65155405" target="_blank" rel="noopener noreferrer">
+          <div class="info">
+            <div class="t">Canyons Cascata EcoPark</div>
+            <div class="d">Passeio de canyoning em Capitólio.</div>
+          </div>
+          <span class="passeio-off">10% OFF</span>
+          <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+
+        <a class="passeio-row" href="https://reservas.caneladeemacapitolio.com.br/?s=viajantesapp" target="_blank" rel="noopener noreferrer">
+          <div class="info">
+            <div class="t">Canela de Ema</div>
+            <div class="d">Entrada no ponto turístico em Capitólio.</div>
+          </div>
+          <span class="passeio-off">10% OFF</span>
+          <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+
+        <a class="passeio-row" href="https://sofalta.eu/meuingresso/no/mirantedoscanyons/#/?cupom=VklBSkFOVEVT&amp;fl=6af0363e-6551-4063-985e-662fe409e3af" target="_blank" rel="noopener noreferrer">
+          <div class="info">
+            <div class="t">Passeio de lancha</div>
+            <div class="d">Passeio de barco pelos canyons de Capitólio.</div>
+          </div>
+          <span class="passeio-off">12% OFF</span>
+          <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+
+        <a class="passeio-row" href="https://loja.multiclubes.com.br/capivara/Ingressos/Link%20Ingressos?Promoter=UFNsL1c0QllxVmJGQjNybzFWOHNQdz09" target="_blank" rel="noopener noreferrer">
+          <div class="info">
+            <div class="t">Complexo Capivara</div>
+            <div class="d">Complexo turístico em Capitólio.</div>
+          </div>
+          <span class="passeio-off">até 15% OFF</span>
+          <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+
+        <a class="passeio-row" href="https://bit.ly/viajantesdacanastraPAUA" target="_blank" rel="noopener noreferrer">
+          <div class="info">
+            <div class="t">Parque Tuná + Tirolesa</div>
+            <div class="d">Mirante e tirolesa em Capitólio.</div>
+          </div>
+          <span class="passeio-off">até 20% OFF</span>
+          <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+
+        <a class="passeio-row" href="https://loja.multiclubes.com.br/capivara/Ingressos/Link%20Ingressos?Promoter=UFNsL1c0QllxVmJGQjNybzFWOHNQdz09" target="_blank" rel="noopener noreferrer">
+          <div class="info">
+            <div class="t">Passeio de Quadriciclo</div>
+            <div class="d">Trilha de quadriciclo em Capitólio.</div>
+          </div>
+          <span class="passeio-off">desconto</span>
+          <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+
+      </div>
+    </details>
+
+    <a class="ticket ticket-wide ticket-featured reveal" href="https://api.whatsapp.com/send?phone=5563992442921&amp;text=Ol%C3%A1!%20Vim%20pelo%20Viajantes%20App%20e%20quero%20saber%20sobre%20o%20Roteiro%20Jalap%C3%A3o." target="_blank" rel="noopener noreferrer">
+      <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+      <div class="ticket-main">
+        <div class="ticket-tag">Nosso roteiro</div>
+        <div class="ticket-brand">Roteiro Jalapão</div>
+        <div class="ticket-desc">Manda um oi no WhatsApp e garante seu desconto no roteiro.</div>
+        <div class="ticket-cta">Aproveitar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="ticket-stub">
+        <div class="ticket-off">5%<small>OFF</small></div>
+        <div class="ticket-code">CUPOM VIAJANTESAPP</div>
+      </div>
+    </a>
+
+    <a class="ticket ticket-wide ticket-featured reveal" href="https://conteudo.viagensmachupicchu.com.br/desconto-especial-viajantes-app" target="_blank" rel="noopener noreferrer">
+      <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+      <div class="ticket-main">
+        <div class="ticket-tag">Nosso roteiro</div>
+        <div class="ticket-brand">Roteiro Peru</div>
+        <div class="ticket-desc">Confira o desconto especial pro roteiro em Machu Picchu.</div>
+        <div class="ticket-cta">Aproveitar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="ticket-stub">
+        <div class="ticket-off">5%<small>OFF</small></div>
+        <div class="ticket-code">CUPOM VIAJANTESAPP</div>
+      </div>
+    </a>
+
+    <div class="tickets">
+
+      <a class="ticket reveal" href="https://www.seguroviagem.srv.br/" target="_blank" rel="noopener noreferrer">
+        <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+        <div class="ticket-main">
+          <div class="ticket-brand">Real Seguros</div>
+          <div class="ticket-desc">Compare os melhores seguros de viagem.</div>
+          <div class="ticket-cta">Aproveitar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+        <div class="ticket-stub">
+          <div class="ticket-off">10%<small>OFF</small></div>
+          <div class="ticket-code">CUPOM VIAJANTESAPP</div>
+        </div>
+      </a>
+
+      <a class="ticket reveal" href="https://esim.holafly.com/" target="_blank" rel="noopener noreferrer">
+        <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+        <div class="ticket-main">
+          <div class="ticket-brand">Holafly</div>
+          <div class="ticket-desc">O melhor preço em chip de viagem para qualquer país.</div>
+          <div class="ticket-cta">Aproveitar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+        <div class="ticket-stub">
+          <div class="ticket-off">5%<small>OFF</small></div>
+          <div class="ticket-code">CUPOM VIAJANTESAPP</div>
+        </div>
+      </a>
+
+      <a class="ticket reveal" href="https://www.macboot.com.br/" target="_blank" rel="noopener noreferrer">
+        <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+        <div class="ticket-main">
+          <div class="ticket-brand">Macboot</div>
+          <div class="ticket-desc">Botas de trilha e acessórios para qualquer terreno.</div>
+          <div class="ticket-cta">Aproveitar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+        <div class="ticket-stub">
+          <div class="ticket-off">10%<small>OFF</small></div>
+          <div class="ticket-code">CUPOM VIAJANTESAPP</div>
+        </div>
+      </a>
+
+      <a class="ticket reveal" href="https://galapagosoutdoor.com.br/" target="_blank" rel="noopener noreferrer">
+        <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+        <div class="ticket-main">
+          <div class="ticket-brand">Galápagos</div>
+          <div class="ticket-desc">Equipamentos outdoor, válido pra compras no site.</div>
+          <div class="ticket-cta">Aproveitar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+        <div class="ticket-stub">
+          <div class="ticket-off">10%<small>OFF</small></div>
+          <div class="ticket-code">CUPOM VIAJANTESAPP</div>
+        </div>
+      </a>
+
+      <a class="ticket reveal" href="https://www.kouda.com.br/loja/" target="_blank" rel="noopener noreferrer">
+        <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+        <div class="ticket-main">
+          <div class="ticket-brand">Kouda</div>
+          <div class="ticket-desc">Equipamentos de aventura e as melhores térmicas.</div>
+          <div class="ticket-cta">Aproveitar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+        <div class="ticket-stub">
+          <div class="ticket-off">15%<small>OFF</small></div>
+          <div class="ticket-code">CUPOM VIAJANTES15</div>
+        </div>
+      </a>
+
+      <a class="ticket reveal" href="https://www.estanciacafe.com.br/" target="_blank" rel="noopener noreferrer">
+        <span class="ticket-notch top"></span><span class="ticket-notch bottom"></span>
+        <div class="ticket-main">
+          <div class="ticket-brand">Estância Café</div>
+          <div class="ticket-desc">O melhor café de Minas Gerais.</div>
+          <div class="ticket-cta">Aproveitar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+        <div class="ticket-stub">
+          <div class="ticket-off">6%<small>OFF</small></div>
+          <div class="ticket-code">CUPOM VIAJANTESAPP</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="section" id="explorar">
+    <div class="section-head reveal">
+      <h2>Mais coisas pra explorar</h2>
+    </div>
+    <div class="rows">
+
+      <a class="row-link reveal" href="https://www.youtube.com/@ViajantesApp?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
+        <div class="row-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="3"/><path d="M10.5 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <div class="row-text">
+          <div class="t">Nosso canal no YouTube</div>
+          <div class="d">Roteiros completos com detalhes.</div>
+        </div>
+        <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+
+      <a class="row-link reveal" href="http://www.blog.viajantesapp.com.br/" target="_blank" rel="noopener noreferrer">
+        <div class="row-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5h11a3 3 0 013 3V20H7a3 3 0 01-3-3V4.5z"/><path d="M8 9h8M8 12.5h8"/></svg>
+        </div>
+        <div class="row-text">
+          <div class="t">Nosso blog</div>
+          <div class="d">Dicas exclusivas para quem quer viajar melhor.</div>
+        </div>
+        <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+
+      <a class="row-link reveal" href="https://viajantesdacanastra.com.br/" target="_blank" rel="noopener noreferrer">
+        <div class="row-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4l4 2 4-2 3 3-2 2v11H7V9L5 7z"/></svg>
+        </div>
+        <div class="row-text">
+          <div class="t">Loja Viajantes App</div>
+          <div class="d">Camisetas UV50+, bonés, maiôs e acessórios.</div>
+        </div>
+        <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+
+      <a class="row-link reveal" href="https://linktr.ee/viajantesdiaadia" target="_blank" rel="noopener noreferrer">
+        <div class="row-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.5l-6-3.6V7.6l6-3.6 6 3.6v6.3z"/><path d="M12 4v13.5M6 7.6l6 3.5 6-3.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="row-text">
+          <div class="t">Usamos e aprovamos</div>
+          <div class="d">Os produtos que não saem da nossa mala.</div>
+        </div>
+        <svg class="row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="partner reveal">
+    <h2>Trabalha com turismo?</h2>
+    <p>Divulgue sua empresa no maior guia de ecoturismo do Brasil e alcance milhares de viajantes.</p>
+    <a class="btn btn-outline" href="https://viajantessemfronteiras.com.br/planos/" target="_blank" rel="noopener noreferrer">Conheça nossos planos</a>
+  </section>
+
+  <footer class="reveal">
+    <div class="socials">
+      <a href="https://www.tiktok.com/@viajantesapp" target="_blank" rel="noopener noreferrer" aria-label="Tiktok">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4v9.2a3.8 3.8 0 11-3-3.7"/><path d="M16 4c.4 2.2 2 3.8 4 4.1"/></svg>
+      </a>
+      <a href="https://www.youtube.com/@viajantesapp" target="_blank" rel="noopener noreferrer" aria-label="Youtube">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="3"/><path d="M10.5 9.7l5 2.3-5 2.3z" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="https://www.instagram.com/viajantesapp/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17" cy="7" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="https://www.facebook.com/viajantesapp" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8.5h2.5V5H14c-2 0-3.5 1.5-3.5 3.5V11H8v3h2.5v6H14v-6h2.3l.7-3H14V8.9c0-.2.2-.4.4-.4z"/></svg>
+      </a>
+    </div>
+    <p class="contact">
+      Fala com a gente pra divulgar sua marca:<br>
+      <a href="tel:+5535999953120">(35) 99995-3120</a> · <a href="mailto:contato@viajantesapp.com.br">contato@viajantesapp.com.br</a>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  // Botão "Baixar agora": manda direto para a loja do celular (mesmos links de /download/index.php).
+  // No desktop mantém o link original, que mostra as duas lojas.
+  (function () {
+    var btn = document.getElementById('baixar-app');
+    if (!btn) return;
+    var ua = navigator.userAgent || '';
+    // iPadOS 13+ se identifica como Mac; o toque denuncia que é iPad.
+    var isIOS = /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+    var isAndroid = /android/i.test(ua);
+    var url = isIOS ? 'https://apps.apple.com/br/app/viajantes-app/id1148316944'
+            : isAndroid ? 'https://play.google.com/store/apps/details?id=app.nahora'
+            : null;
+    if (!url) return;
+    btn.href = url;
+    // Na mesma aba o celular abre o app da loja direto, sem deixar aba em branco para trás.
+    btn.removeAttribute('target');
+  })();
+
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var items = document.querySelectorAll('.reveal');
+    if (reduce || !('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('in-view'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>
