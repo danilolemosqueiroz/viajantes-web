@@ -46,6 +46,9 @@ function htaccessSpa(base: string): Plugin {
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase ${raiz}
+  # A captura saiu de /seja-parceiro/ para /seja-cliente/; sem isto o fallback
+  # abaixo devolveria a home do site no lugar do 404 (app antigo e e-mails).
+  RewriteRule ^seja-parceiro(/.*)?$ ${raiz}seja-cliente$1 [R=301,L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . ${raiz}index.html [L]
