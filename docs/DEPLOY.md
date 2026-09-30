@@ -73,7 +73,7 @@ VITE_APPLE_SERVICES_ID=br.com.mediaplus.nahoraapp.web
 VITE_APPLE_REDIRECT_URI=          # vazio = raiz do site
 VITE_ROTEIROS_COMPLETOS=false
 VITE_OFERTAS_API_URL=https://ofertas-indol.vercel.app/api   # opcional
-VITE_IA_URL=https://nahoraapp.com.br/viajantes/ia   # Guia Viajantes; vazio = sem o botão
+VITE_IA_URL=https://viajantes-ia-production.up.railway.app   # Guia Viajantes; vazio = sem o botão
 VITE_IA_APP_KEY=...       # a mesma MPAUTH_KEY da API (= APP_KEY do viajantes-ia)
 VITE_BASE=                # pasta publicada: /new/ ou vazio = raiz
 ```
@@ -96,11 +96,13 @@ VITE_BASE=                # pasta publicada: /new/ ou vazio = raiz
 
 > **Guia Viajantes (chat com IA).** O botão laranja no canto chama o serviço
 > `viajantes-ia` direto do navegador, com o mesmo `Passport` da sessão e o
-> `Mpauth` do app. Para funcionar, o `.env` do serviço precisa de
-> `CORS_ORIGINS=https://viajantesapp.com.br,https://www.viajantesapp.com.br`, e o
-> proxy de `nahoraapp.com.br/viajantes/ia` precisa estar sem buffering
-> (`flushpackets=on timeout=150`). Para desligar o guia, basta publicar um build
-> com `VITE_IA_URL` vazio. Os detalhes estão em `viajantes-ia/docs/INTEGRACAO.md` §9.
+> `Mpauth` do app. O serviço roda na Railway
+> (`https://viajantes-ia-production.up.railway.app`) com
+> `CORS_ORIGINS=https://viajantesapp.com.br,https://www.viajantesapp.com.br` —
+> outras origens (inclusive `localhost`) são bloqueadas pelo navegador; para mexer
+> no guia localmente, aponte `VITE_IA_URL` para o serviço local. Para desligar o
+> guia, basta publicar um build com `VITE_IA_URL` vazio. Os detalhes estão em
+> `viajantes-ia/docs/INTEGRACAO.md` §9.
 
 ## 2. Build
 

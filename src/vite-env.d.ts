@@ -16,7 +16,7 @@ interface ImportMetaEnv {
   readonly VITE_PAGARME_PUBLIC_KEY?: string;
   /** Base da Central de Ofertas (projeto separado). Tem valor padrão no código. */
   readonly VITE_OFERTAS_API_URL?: string;
-  /** Base do Guia Viajantes (viajantes-ia), ex.: https://nahoraapp.com.br/viajantes/ia.
+  /** Base do Guia Viajantes (viajantes-ia), ex.: https://viajantes-ia-production.up.railway.app.
    * Vazia = o botão do guia não aparece. */
   readonly VITE_IA_URL?: string;
   /** `Mpauth` do app (= `APP_KEY` do viajantes-ia). Vai no pacote, como no aplicativo. */
