@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Copy, CreditCard, Lock, QrCode } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { useQueryClient } from '@tanstack/react-query';
-import type { PixCompra, PlanoSite, UsuarioSessao } from '@/lib/tipos';
+import type { PlanoSite, UsuarioSessao } from '@/lib/tipos';
 import { formatarPreco } from '@/lib/moeda';
 import { pagamentoConfigurado, tokenizarCartao } from '@/lib/pagarme';
 import { comprarPlano, rotuloPeriodo, statusCompra, type PedidoCompra } from './dados';
@@ -22,9 +22,8 @@ import {
   telefoneValido,
 } from './cartao';
 
-/** Pagamento do Plano Viajantes: Pix ou cartão. O cartão é tokenizado no navegador
- * com a chave pública do pagar.me; a API só recebe o token (docs/roteiros.md). */
-type Metodo = 'pix' | 'credit_card';
+/** Pagamento do Plano Viajantes, só no cartão de crédito. O cartão é tokenizado no
+ * navegador com a chave pública do pagar.me; a API só recebe o token (docs/roteiros.md). */
 
 interface Props {
   plano: PlanoSite;
@@ -40,7 +39,6 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
   const idioma = useIdioma();
   const cliente = useQueryClient();
 
-  const [metodo, setMetodo] = useState<Metodo>('pix');
   const [dados, setDados] = useState({
     nome: [usuario.nome, usuario.sobrenome].filter(Boolean).join(' '),
     cpf: mascaraCpf(usuario.cpf ?? ''),
@@ -51,14 +49,12 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
   const [endereco, setEndereco] = useState({ cep: '', rua: '', numero: '', bairro: '', complemento: '', cidade: '', uf: '' });
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
-  const [pendente, setPendente] = useState<{ idcompra: number; pix: PixCompra | null } | null>(null);
-  const [copiado, setCopiado] = useState(false);
-  const [pixVencidoCodigo, setPixVencidoCodigo] = useState<string | null>(null);
+  const [pendente, setPendente] = useState<{ idcompra: number } | null>(null);
 
   const preco = plano.valor;
   const opcoes = parcelasOpcoes(preco, plano.parcelas_max);
 
-  // Pix e cartão "em análise": pergunta à API a cada 5 s até confirmar.
+  // Cartão "em análise": pergunta à API a cada 5 s até a operadora decidir.
   useEffect(() => {
     if (!pendente) return;
     const relogio = setInterval(async () => {
@@ -76,37 +72,22 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
         setErro(t('O pagamento não foi concluído. Tente de novo.'));
         return;
       }
-      if (situacao.pix && situacao.pix.copia_cola !== pendente.pix?.copia_cola) {
-        setPendente({ idcompra: pendente.idcompra, pix: situacao.pix });
-      }
     }, 5000);
     return () => clearInterval(relogio);
   }, [pendente, aoPagar, cliente, t]);
-
-  // Avisa quando o QR venceu, em vez de deixar a pessoa pagando um Pix morto.
-  useEffect(() => {
-    const pix = pendente?.pix;
-    const expira = pix?.expira_em ? Date.parse(pix.expira_em) : NaN;
-    if (!pix || !Number.isFinite(expira)) return;
-    const relogio = setTimeout(() => setPixVencidoCodigo(pix.copia_cola), Math.max(0, expira - Date.now()));
-    return () => clearTimeout(relogio);
-  }, [pendente]);
-  const pixVencido = Boolean(pendente?.pix) && pixVencidoCodigo === pendente?.pix?.copia_cola;
 
   function validar(): string | null {
     if (!dados.nome.trim()) return t('Informe o seu nome.');
     if (!cpfValido(dados.cpf)) return t('CPF inválido. Verifique os números digitados.');
     if (!/^\S+@\S+\.\S+$/.test(dados.email.trim())) return t('Informe um e-mail válido.');
-    if (metodo === 'credit_card') {
-      if (!telefoneValido(dados.telefone)) return t('Informe o celular com DDD.');
-      if (!numeroCartaoValido(cartao.numero)) return t('Número do cartão inválido.');
-      if (!cartao.nome.trim()) return t('Informe o nome como está no cartão.');
-      if (!lerValidade(cartao.validade)) return t('Validade inválida ou vencida.');
-      if (!cvvValido(cartao.cvv)) return t('Código de segurança inválido.');
-      if (!cepValido(endereco.cep)) return t('CEP inválido.');
-      if (!endereco.rua.trim() || !endereco.numero.trim() || !endereco.cidade.trim() || !endereco.uf) {
-        return t('Complete o endereço de cobrança do cartão.');
-      }
+    if (!telefoneValido(dados.telefone)) return t('Informe o celular com DDD.');
+    if (!numeroCartaoValido(cartao.numero)) return t('Número do cartão inválido.');
+    if (!cartao.nome.trim()) return t('Informe o nome como está no cartão.');
+    if (!lerValidade(cartao.validade)) return t('Validade inválida ou vencida.');
+    if (!cvvValido(cartao.cvv)) return t('Código de segurança inválido.');
+    if (!cepValido(endereco.cep)) return t('CEP inválido.');
+    if (!endereco.rua.trim() || !endereco.numero.trim() || !endereco.cidade.trim() || !endereco.uf) {
+      return t('Complete o endereço de cobrança do cartão.');
     }
     return null;
   }
@@ -124,50 +105,44 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
     try {
       const pedido: PedidoCompra = {
         plano_id: plano.idassinatura,
-        metodo,
+        metodo: 'credit_card',
         nome: dados.nome.trim(),
         cpf: somenteDigitos(dados.cpf),
         email: dados.email.trim(),
         telefone: somenteDigitos(dados.telefone),
       };
 
-      if (metodo === 'credit_card') {
-        const validade = lerValidade(cartao.validade)!;
-        const token = await tokenizarCartao({
-          numero: cartao.numero,
-          nome: cartao.nome,
-          mes: validade.mes,
-          ano: validade.ano,
-          cvv: cartao.cvv,
-        });
-        if (!token.ok) {
-          setErro(
-            token.erro === 'falha_conexao'
-              ? t('Não foi possível concluir. Tente novamente.')
-              : t('O cartão não foi aceito. Confira o número, a validade e o código de segurança.'),
-          );
-          return;
-        }
-        pedido.card_token = token.token;
-        pedido.parcelas = cartao.parcelas;
-        pedido.billing_address = {
-          line_1: [endereco.numero.trim(), endereco.rua.trim(), endereco.bairro.trim()].filter(Boolean).join(', '),
-          ...(endereco.complemento.trim() && { line_2: endereco.complemento.trim() }),
-          zip_code: somenteDigitos(endereco.cep),
-          city: endereco.cidade.trim(),
-          state: endereco.uf,
-        };
+      const validade = lerValidade(cartao.validade)!;
+      const token = await tokenizarCartao({
+        numero: cartao.numero,
+        nome: cartao.nome,
+        mes: validade.mes,
+        ano: validade.ano,
+        cvv: cartao.cvv,
+      });
+      if (!token.ok) {
+        setErro(
+          token.erro === 'falha_conexao'
+            ? t('Não foi possível concluir. Tente novamente.')
+            : t('O cartão não foi aceito. Confira o número, a validade e o código de segurança.'),
+        );
+        return;
       }
+      pedido.card_token = token.token;
+      pedido.parcelas = cartao.parcelas;
+      pedido.billing_address = {
+        line_1: [endereco.numero.trim(), endereco.rua.trim(), endereco.bairro.trim()].filter(Boolean).join(', '),
+        ...(endereco.complemento.trim() && { line_2: endereco.complemento.trim() }),
+        zip_code: somenteDigitos(endereco.cep),
+        city: endereco.cidade.trim(),
+        state: endereco.uf,
+      };
 
       const resposta = await comprarPlano(pedido);
       if (!resposta.ok) {
         if (resposta.codigo === 'cartao_recusado') {
           const motivo = resposta.dados?.acquirer_message;
           setErro(motivo ? t('Cartão recusado: {{motivo}}', { motivo: String(motivo) }) : t('Cartão recusado. Confira os dados ou tente outro cartão.'));
-          return;
-        }
-        if (resposta.codigo === 'pix_indisponivel') {
-          setErro(t('O Pix está indisponível no momento. Pague com cartão ou tente de novo em instantes.'));
           return;
         }
         setErro(resposta.erro || t('Não foi possível concluir. Tente novamente.'));
@@ -179,7 +154,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
         aoPagar();
         return;
       }
-      setPendente({ idcompra: resposta.data.idcompra, pix: resposta.data.pix ?? null });
+      setPendente({ idcompra: resposta.data.idcompra });
     } catch {
       setErro(t('Não foi possível concluir. Tente novamente.'));
     } finally {
@@ -187,16 +162,6 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
     }
   }
 
-  async function copiarPix() {
-    if (!pendente?.pix) return;
-    try {
-      await navigator.clipboard.writeText(pendente.pix.copia_cola);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2500);
-    } catch {
-      /* sem permissão de área de transferência: o código continua visível */
-    }
-  }
 
   const campo = 'campo text-nota';
   const rotulo = 'mb-1 block text-mini font-semibold text-texto-2';
@@ -210,61 +175,17 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
     );
   }
 
-  // Aguardando o Pix (ou cartão em análise)
+  // Cartão em análise pela operadora
   if (pendente) {
-    const pix = pendente.pix;
     return (
       <section aria-live="polite" className="recuo mt-6 p-6 sm:p-8">
-        {pix ? (
-          <div className="grid items-start gap-6 md:grid-cols-[auto_1fr]">
-            <div className="mx-auto rounded-cartao border border-borda bg-white p-2">
-              {pix.qr_code_url ? (
-                <img src={pix.qr_code_url} alt={t('QR Code do Pix')} width={220} height={220} className="size-56" />
-              ) : (
-                <QrCode size={120} className="m-8 text-texto-3" aria-hidden="true" />
-              )}
-            </div>
-            <div>
-              <h3 className="text-secao font-bold leading-tight text-brand">{t('Pague com Pix para ativar o plano')}</h3>
-              <p className="mt-2 text-nota text-texto-2">
-                {t('Abra o aplicativo do seu banco, escolha pagar com Pix e leia o QR Code ou cole o código abaixo. Os roteiros liberam sozinhos assim que o pagamento cair.')}
-              </p>
-              <p className="mt-3 text-corpo font-bold text-brand">{total}</p>
-              <textarea
-                readOnly
-                value={pix.copia_cola}
-                rows={3}
-                aria-label={t('Código Pix copia e cola')}
-                className="campo mt-3 font-mono text-mini"
-                onFocus={(e) => e.currentTarget.select()}
-              />
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <button type="button" onClick={copiarPix} className="botao">
-                  <Copy size={15} aria-hidden="true" />
-                  {copiado ? t('Pix copiado com sucesso') : t('Copiar código Pix')}
-                </button>
-                {pixVencido ? (
-                  <button type="button" onClick={() => setPendente(null)} className="text-nota font-semibold text-erro hover:underline">
-                    {t('Pix expirado')} · {t('Gerar outro')}
-                  </button>
-                ) : (
-                  <span className="flex items-center gap-2 text-mini text-texto-3">
-                    <span className="size-3 animate-spin rounded-pilula border-2 border-borda border-t-brand" />
-                    {t('Aguardando o pagamento...')}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-3 text-center">
-            <span className="size-8 animate-spin rounded-pilula border-2 border-borda border-t-brand" />
-            <p className="font-semibold text-brand">{t('Pagamento em análise')}</p>
-            <p className="max-w-md text-nota text-texto-2">
-              {t('A operadora está confirmando o seu cartão. Isso costuma levar menos de um minuto; você também receberá um e-mail quando o plano for ativado.')}
-            </p>
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-3 text-center">
+          <span className="size-8 animate-spin rounded-pilula border-2 border-borda border-t-brand" />
+          <p className="font-semibold text-brand">{t('Pagamento em análise')}</p>
+          <p className="max-w-md text-nota text-texto-2">
+            {t('A operadora está confirmando o seu cartão. Isso costuma levar menos de um minuto; você também receberá um e-mail quando o plano for ativado.')}
+          </p>
+        </div>
         {erro && (
           <p role="alert" className="mt-4 rounded-cartao bg-erro/10 p-3 text-mini text-erro">
             {erro}
@@ -297,7 +218,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
           </div>
           <div>
             <label htmlFor="ck-telefone" className={rotulo}>{t('Celular com DDD?')}</label>
-            <input id="ck-telefone" type="tel" inputMode="tel" autoComplete="tel" required={metodo === 'credit_card'} value={dados.telefone} onChange={(e) => setDados({ ...dados, telefone: mascaraTelefone(e.target.value) })} placeholder="(35) 99999-9999" className={campo} />
+            <input id="ck-telefone" type="tel" inputMode="tel" autoComplete="tel" required value={dados.telefone} onChange={(e) => setDados({ ...dados, telefone: mascaraTelefone(e.target.value) })} placeholder="(35) 99999-9999" className={campo} />
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="ck-email" className={rotulo}>{t('E-mail')}</label>
@@ -309,33 +230,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
 
       <fieldset className="space-y-4">
         <legend className="rotulo-secao mb-4 w-full">{t('Pagamento')}</legend>
-        <div role="radiogroup" aria-label={t('Forma de pagamento')} className="flex flex-wrap gap-2">
-          {(
-            [
-              { id: 'pix', rotulo: 'Pix', Icone: QrCode },
-              { id: 'credit_card', rotulo: t('Cartão de crédito'), Icone: CreditCard },
-            ] as const
-          ).map(({ id, rotulo: nome, Icone }) => (
-            <button
-              key={id}
-              type="button"
-              role="radio"
-              aria-checked={metodo === id}
-              onClick={() => setMetodo(id)}
-              className={`chip min-h-11 px-4 ${metodo === id ? 'chip--ativo font-semibold' : ''}`}
-            >
-              <Icone size={15} aria-hidden="true" />
-              {nome}
-            </button>
-          ))}
-        </div>
-
-        {metodo === 'pix' ? (
-          <p className="text-nota text-texto-2">
-            {t('Você recebe o QR Code na próxima tela. O plano ativa na hora em que o pagamento cai.')}
-          </p>
-        ) : (
-          <div className="space-y-4">
+        <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label htmlFor="ck-numero" className={rotulo}>{t('Número do cartão')}</label>
@@ -405,8 +300,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
                 </select>
               </div>
             </div>
-          </div>
-        )}
+        </div>
       </fieldset>
 
       {erro && (
@@ -422,7 +316,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
         </p>
         <button type="submit" disabled={enviando} className="botao-acao disabled:opacity-60">
           <Lock size={14} aria-hidden="true" />
-          {enviando ? t('Processando...') : metodo === 'pix' ? t('Gerar Pix de {{valor}}', { valor: total }) : t('Pagar {{valor}}', { valor: total })}
+          {enviando ? t('Processando...') : t('Pagar {{valor}}', { valor: total })}
         </button>
       </div>
       <p className="text-mini text-texto-3">

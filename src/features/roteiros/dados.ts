@@ -60,7 +60,7 @@ export async function buscarAssinatura(): Promise<AssinaturaSite> {
 
 export interface PedidoCompra {
   plano_id: number;
-  metodo: 'credit_card' | 'pix';
+  metodo: 'credit_card';
   card_token?: string;
   parcelas?: number;
   nome: string;
