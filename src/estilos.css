@@ -411,6 +411,29 @@ body {
 html:has(dialog.modal-folha[open]) {
   overflow: hidden;
 }
+/* Variante larga (roteiro do guia): o dia a dia pede mais linha que o login. */
+.modal-folha--largo {
+  width: min(36rem, calc(100vw - 2rem));
+}
+@media (max-width: 639px) {
+  .modal-folha--largo {
+    width: 100vw;
+  }
+}
+
+/* Painel do Guia Viajantes: no celular ocupa a tela, e a página atrás não rola. */
+.painel-guia {
+  animation: modal-entra 0.22s ease-out;
+  box-shadow: 0 24px 60px rgb(12 46 45 / 0.28);
+}
+@media (max-width: 767px) {
+  html:has(.painel-guia) {
+    overflow: hidden;
+  }
+  .painel-guia {
+    box-shadow: none;
+  }
+}
 
 /* Visor de foto (galeria do atrativo): tela inteira escura, com a foto sem cortar. O escuro fica no
    <dialog>, porque só no ::backdrop o Chromium deixava o cabeçalho aparecer por cima. */

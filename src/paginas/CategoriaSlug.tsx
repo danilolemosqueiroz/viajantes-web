@@ -7,6 +7,7 @@ import Carregando from '@/components/layout/Carregando';
 import PaginaDestino from '@/features/catalogo/PaginaDestino';
 import PaginaAtrativo from '@/features/catalogo/PaginaAtrativo';
 import NaoEncontrada from './NaoEncontrada';
+import { regiaoDoDestino, useInformarRegiao } from '@/features/guia/contexto';
 
 /** O segundo segmento serve a duas páginas: a categoria num destino (`/cachoeiras/capitolio`)
  * e o detalhe de um atrativo (`/cachoeiras/cachoeira-do-cristal-1234`), que termina em `-id`. */
@@ -18,6 +19,12 @@ export default function CategoriaSlug() {
   const comId = lerSlugComId(slug);
   const empresa = useEmpresa(comId?.id);
   const destino = useDestino(comId ? undefined : slug);
+
+  // O guia usa a região que está na tela nas sugestões e ao abrir uma conversa.
+  const regiaoGuia = comId
+    ? { id: empresa.data?.regiao_idregiao, nome: empresa.data?.regiao_nome }
+    : regiaoDoDestino(destino.data);
+  useInformarRegiao(regiaoGuia?.id, regiaoGuia?.nome);
 
   if (!categoria) return <NaoEncontrada />;
 
