@@ -177,3 +177,16 @@ export function rotuloDias(total: number | null | undefined): string {
   const dias = Number(total ?? 0);
   return dias === 1 ? '1 dia' : `${dias} dias`;
 }
+
+/** Desliga a renovação. O acesso fica até a data já paga, que a resposta devolve. */
+export function cancelarAssinatura(): Promise<Resultado<{ ok: boolean; acesso_ate: string | null }>> {
+  return apiPost('/site/assinatura/cancelar', {});
+}
+
+/** Troca o cartão da recorrência. Sem isto a assinatura morre quando o cartão vence. */
+export function trocarCartaoAssinatura(
+  cardToken: string,
+  billing: PedidoCompra['billing_address'],
+): Promise<Resultado<{ ok: boolean }>> {
+  return apiPost('/site/assinatura/cartao', { card_token: cardToken, billing_address: billing });
+}

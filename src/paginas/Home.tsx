@@ -12,6 +12,7 @@ import FaixaRoteiros from '@/features/roteiros/FaixaRoteiros';
 import { sortearRoteiros } from '@/features/roteiros/dados';
 import FaixaOfertas from '@/features/ofertas/FaixaOfertas';
 import Hero from '@/features/home/Hero';
+import Blog from '@/features/home/Blog';
 import Mosaico from '@/features/home/Mosaico';
 import Destinos from '@/features/home/Destinos';
 import Numeros from '@/features/home/Numeros';
@@ -71,6 +72,7 @@ export default function Home() {
         )}
 
         <FaixaOfertas />
+        <Blog />
 
         <Numeros />
         <Conectado />

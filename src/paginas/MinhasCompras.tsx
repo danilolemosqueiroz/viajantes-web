@@ -9,6 +9,7 @@ import { formatarData, formatarPreco } from '@/lib/moeda';
 import Assinar from '@/features/roteiros/Assinar';
 import CardRoteiro from '@/features/roteiros/CardRoteiro';
 import { rotuloPeriodo } from '@/features/roteiros/dados';
+import GerenciarAssinatura from '@/features/roteiros/GerenciarAssinatura';
 import Carregando from '@/components/layout/Carregando';
 
 const ORIGEM: Record<string, string> = { ios: 'App Store', android: 'Google Play', site: 'site' };
@@ -46,6 +47,8 @@ export default function MinhasCompras() {
             </span>
           </p>
           <p className="mt-2 text-nota text-texto-2">{t('Todos os roteiros abaixo estão liberados, no site e no aplicativo.')}</p>
+
+          {assinatura?.recorrencia && <GerenciarAssinatura recorrencia={assinatura.recorrencia} />}
 
           {roteiros.length > 0 && (
             <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 lg:grid-cols-3 xl:grid-cols-4">
