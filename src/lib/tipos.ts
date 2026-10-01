@@ -239,7 +239,22 @@ export interface AssinaturaSite {
   logado: boolean;
   assinado: boolean;
   assinatura: AssinaturaAtiva | null;
+  /** Controle da recorrência; só vem quando o plano foi assinado no site. */
+  recorrencia: RecorrenciaSite | null;
   planos: PlanoSite[];
+}
+
+export interface RecorrenciaSite {
+  plano: string;
+  periodicidade: Periodicidade;
+  valor: number;
+  status: StatusCompraPlano | 'inadimplente';
+  auto_renovar: boolean;
+  proxima_cobranca: string | null;
+  ciclos_pagos: number;
+  pode_cancelar: boolean;
+  inadimplente: boolean;
+  ultimo_erro: string | null;
 }
 
 export interface PixCompra {

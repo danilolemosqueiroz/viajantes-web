@@ -60,7 +60,7 @@ export async function buscarAssinatura(): Promise<AssinaturaSite> {
 
 export interface PedidoCompra {
   plano_id: number;
-  metodo: 'credit_card' | 'pix';
+  metodo: 'credit_card';
   card_token?: string;
   parcelas?: number;
   nome: string;
@@ -176,4 +176,17 @@ export function agruparPorRegiao(
 export function rotuloDias(total: number | null | undefined): string {
   const dias = Number(total ?? 0);
   return dias === 1 ? '1 dia' : `${dias} dias`;
+}
+
+/** Desliga a renovação. O acesso fica até a data já paga, que a resposta devolve. */
+export function cancelarAssinatura(): Promise<Resultado<{ ok: boolean; acesso_ate: string | null }>> {
+  return apiPost('/site/assinatura/cancelar', {});
+}
+
+/** Troca o cartão da recorrência. Sem isto a assinatura morre quando o cartão vence. */
+export function trocarCartaoAssinatura(
+  cardToken: string,
+  billing: PedidoCompra['billing_address'],
+): Promise<Resultado<{ ok: boolean }>> {
+  return apiPost('/site/assinatura/cartao', { card_token: cardToken, billing_address: billing });
 }
