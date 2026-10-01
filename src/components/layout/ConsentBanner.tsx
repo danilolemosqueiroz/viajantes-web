@@ -30,6 +30,7 @@ export default function ConsentBanner({ decidido }: { decidido: boolean }) {
     <div
       role="dialog"
       aria-label={t('Aviso de cookies')}
+      data-aviso-cookies
       className="fixed inset-x-0 bottom-16 z-50 border-t border-borda bg-cartao p-4 shadow-flutua md:bottom-0"
     >
       <div className="folha flex flex-col gap-3 sm:flex-row sm:items-center">

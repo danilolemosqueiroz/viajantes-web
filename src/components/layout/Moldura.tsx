@@ -1,10 +1,14 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import BottomTabs from './BottomTabs';
 import TrilhoCategorias from './TrilhoCategorias';
 import Consentimento from './Consentimento';
+
+/** O Guia Viajantes (chat com IA) vem num pedaço à parte, e só existe com `VITE_IA_URL` no build. */
+const GuiaIA = lazy(() => import('@/features/guia/GuiaIA'));
+const guiaLigado = Boolean(import.meta.env.VITE_IA_URL);
 
 /** A folha do site: cabeçalho, trilho de categorias, conteúdo, rodapé e a barra de abas no celular.
  * Também devolve a rolagem ao topo a cada troca de tela, o que o navegador não faz num SPA. */
@@ -25,6 +29,11 @@ export default function Moldura() {
       <Footer />
       <BottomTabs />
       <Consentimento />
+      {guiaLigado && (
+        <Suspense fallback={null}>
+          <GuiaIA />
+        </Suspense>
+      )}
     </div>
   );
 }

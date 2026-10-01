@@ -11,6 +11,7 @@ import GradeEmpresas from '@/features/catalogo/GradeEmpresas';
 import FaixaRoteiros from '@/features/roteiros/FaixaRoteiros';
 import Carregando from '@/components/layout/Carregando';
 import NaoEncontrada from './NaoEncontrada';
+import { regiaoDoDestino, useInformarRegiao } from '@/features/guia/contexto';
 import { paginaDestinoPorIdioma } from '@/i18n/caminhos';
 
 /** Página do destino: /destinos/capitolio ("o que fazer em Capitólio"). */
@@ -40,6 +41,9 @@ export default function Destino() {
     porIdioma: paginaDestinoPorIdioma(slug),
     imagem: destino?.foto,
   });
+
+  const regiaoGuia = regiaoDoDestino(destino);
+  useInformarRegiao(regiaoGuia?.id, regiaoGuia?.nome);
 
   if (isPending) return <Carregando />;
   if (!destino) return <NaoEncontrada />;
