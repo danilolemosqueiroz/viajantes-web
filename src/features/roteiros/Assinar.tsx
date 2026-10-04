@@ -101,7 +101,7 @@ export default function Assinar({ contexto, compacto = false }: { contexto?: str
             t('Todas as paradas de cada dia, com horário, foto e descrição.'),
             t('Cada parada com link para a página do atrativo, com rota e contato.'),
             t('Vale no site e no aplicativo, com a mesma conta.'),
-            t('Pagamento no cartão de crédito. Sem renovação automática.'),
+            t('Renova sozinho no cartão de crédito. Cancele quando quiser, pelo site.'),
           ].map((item) => (
             <li key={item} className="flex items-start gap-2">
               <Check size={15} className="mt-0.5 shrink-0 text-acento" aria-hidden="true" />

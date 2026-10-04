@@ -2,26 +2,29 @@ import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { href } from '@/i18n/caminhos';
 import { useIdioma, useT } from '@/i18n/Traducao';
-import { useGeografia } from '@/lib/consultas';
 import { useRegiao } from '@/lib/regiao';
+import { publico } from '@/lib/publico';
 
 /** Abertura da home: uma foto grande, o posicionamento e a pergunta "para onde você vai".
- * A foto é a capa da região escolhida (ou da primeira do catálogo), e não um arquivo do site. */
+ * Quem chega sem região vê a foto do site; escolhida a região, a capa dela assume. */
 export default function Hero() {
   const t = useT();
   const idioma = useIdioma();
   const { regiao } = useRegiao();
-  const { data: geografia } = useGeografia();
-
-  const capa = regiao?.capa ?? geografia?.regioes[0]?.foto ?? null;
 
   return (
     <section>
       <div className="relative isolate h-80 overflow-hidden bg-brand sm:h-[26rem]">
-        {capa && (
+        {regiao?.capa ? (
+          <img src={regiao.capa} alt="" fetchPriority="high" className="absolute inset-0 size-full object-cover" />
+        ) : (
           <img
-            src={capa}
+            src={publico('images/capa-home-2200.webp')}
+            srcSet={`${publico('images/capa-home-1400.webp')} 1400w, ${publico('images/capa-home-2200.webp')} 2200w`}
+            sizes="100vw"
             alt=""
+            width={2200}
+            height={1300}
             fetchPriority="high"
             className="absolute inset-0 size-full object-cover"
           />

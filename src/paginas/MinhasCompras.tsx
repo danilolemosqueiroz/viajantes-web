@@ -42,7 +42,12 @@ export default function MinhasCompras() {
             <CircleCheck size={18} aria-hidden="true" />
             <span>
               <strong>{ativa.plano}</strong>
-              {ativa.data_expiracao && ` · ${t('válido até {{data}}', { data: formatarData(ativa.data_expiracao, idioma) })}`}
+              {ativa.data_expiracao &&
+                ` · ${
+                  ativa.auto_renovacao
+                    ? t('renova em {{data}}', { data: formatarData(ativa.data_expiracao, idioma) })
+                    : t('válido até {{data}}', { data: formatarData(ativa.data_expiracao, idioma) })
+                }`}
               {` · ${t('assinado pelo {{origem}}', { origem: ORIGEM[ativa.origem] ?? ativa.origem })}`}
             </span>
           </p>

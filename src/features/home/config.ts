@@ -35,7 +35,7 @@ export const CONTATO = {
 /** Onde um negócio de turismo entra na plataforma. Os dois são externos. */
 export const B2B = {
   cadastro: 'https://viajantesapp.com.br/seja-cliente/assinar.php',
-  mapeador: 'https://viajantes-mapeadores.vercel.app/',
+  mapeador: 'https://parceiros.viajantesapp.com.br/mapeador',
 } as const;
 
 /** "Conheça nossa história": matéria do Estado de Minas indicada pelo cliente. */

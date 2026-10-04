@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { CalendarRange, CircleCheck, MapPin } from 'lucide-react';
 import { useIdioma, useT } from '@/i18n/Traducao';
@@ -25,6 +26,22 @@ export default function Roteiro() {
   const { data: assinatura } = useAssinaturaSite();
   const liberado = assinatura?.assinado === true;
   const { data: itens = [], isPending: carregandoItens } = useItensRoteiro(comId?.id, liberado);
+
+  // Quem acabou de assinar estava no fim do formulário de pagamento; o dia a dia nasce ali
+  // embaixo e a página abria no último dia. Leva de volta ao começo do roteiro.
+  const inicio = useRef<HTMLDivElement>(null);
+  const estavaBloqueado = useRef(false);
+
+  useEffect(() => {
+    if (!assinatura) return;
+    if (!liberado) {
+      estavaBloqueado.current = true;
+      return;
+    }
+    if (carregandoItens || !estavaBloqueado.current) return;
+    estavaBloqueado.current = false;
+    inicio.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [assinatura, liberado, carregandoItens]);
 
   useMeta({
     titulo: roteiro?.titulo ?? '',
@@ -87,20 +104,22 @@ export default function Roteiro() {
         {roteiro.descricao && <p className="mt-4 max-w-3xl text-corpo text-texto-2">{roteiro.descricao}</p>}
 
         {liberado ? (
-          <>
+          <div ref={inicio} className="scroll-mt-24">
             {ativa && (
               <p className="mt-6 flex flex-wrap items-center gap-2 rounded-cartao bg-ok/10 p-3 text-nota text-ok">
                 <CircleCheck size={16} aria-hidden="true" />
-                {ativa.data_expiracao
-                  ? t('{{plano}} ativo até {{data}}.', { plano: ativa.plano, data: formatarData(ativa.data_expiracao, idioma) })
-                  : t('{{plano}} ativo.', { plano: ativa.plano })}
+                {!ativa.data_expiracao
+                  ? t('{{plano}} ativo.', { plano: ativa.plano })
+                  : ativa.auto_renovacao
+                    ? t('{{plano}} ativo. Renova em {{data}}.', { plano: ativa.plano, data: formatarData(ativa.data_expiracao, idioma) })
+                    : t('{{plano}} ativo até {{data}}.', { plano: ativa.plano, data: formatarData(ativa.data_expiracao, idioma) })}
                 <Link to={href('/conta/roteiros', idioma)} className="font-semibold underline">
                   {t('Meus roteiros')}
                 </Link>
               </p>
             )}
             {carregandoItens ? <Carregando altura="min-h-[30vh]" /> : <RoteiroCompleto itens={itens} idioma={idioma} />}
-          </>
+          </div>
         ) : (
           <Assinar contexto={roteiro.titulo} />
         )}
