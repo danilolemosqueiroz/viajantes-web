@@ -3,6 +3,7 @@ import { useIdioma, useT } from '@/i18n/Traducao';
 import { href } from '@/i18n/caminhos';
 import type { Idioma } from '@/i18n/categorias';
 import { cadastrar, useConcluirLogin, type AposEntrar } from '@/lib/conta';
+import { whatsappValido } from './telefone';
 
 /** Criar conta, com os mesmos campos da tela de cadastro do aplicativo. */
 
@@ -47,13 +48,19 @@ export default function FormCadastro({ aoEntrar, voltarPara, prefixoId = '' }: A
       return;
     }
 
+    const telefone = String(form.get('telefone') ?? '').trim();
+    if (telefone && !whatsappValido(telefone)) {
+      setErro(t('Informe o celular completo'));
+      return;
+    }
+
     setEnviando(true);
     try {
       const resultado = await cadastrar({
         nome: form.get('nome'),
         email: form.get('email'),
         senha,
-        telefone: form.get('telefone'),
+        telefone,
         // O checkbox é obrigatório no formulário; a API só registra a data do
         // aceite quando recebe `true`.
         aceitarTermos: form.get('aceitarTermos') === 'on',
@@ -101,6 +108,7 @@ export default function FormCadastro({ aoEntrar, voltarPara, prefixoId = '' }: A
           className={campo}
           placeholder="(35) 99999-9999"
         />
+        <p className="mt-1 text-mini text-texto-2">{t('Fora do Brasil? Comece com + e o código do país.')}</p>
       </div>
       <div>
         <label htmlFor={`${prefixoId}senha`} className={rotulo}>

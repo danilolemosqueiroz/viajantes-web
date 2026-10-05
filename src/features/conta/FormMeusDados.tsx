@@ -3,8 +3,9 @@ import { useT } from '@/i18n/Traducao';
 import type { UsuarioSessao } from '@/lib/tipos';
 import { useAtualizarUsuario } from '@/lib/conta';
 import { apiPost } from '@/lib/api';
+import { whatsappValido } from './telefone';
 
-/** Meus dados. Nome, telefone, CPF e nascimento vão para a API antiga (a mesma do aplicativo).
+/** Meus dados. Nome, telefone, CPF e nascimento vão para a mesma rota da API Node que o aplicativo usa.
  * A troca de senha é um formulário separado. */
 export default function FormMeusDados({ usuario }: { usuario: UsuarioSessao }) {
   const t = useT();
@@ -15,9 +16,14 @@ export default function FormMeusDados({ usuario }: { usuario: UsuarioSessao }) {
   async function enviar(evento: React.FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setAviso(null);
-    setEnviando(true);
 
     const form = new FormData(evento.currentTarget);
+    if (!whatsappValido(form.get('telefone'))) {
+      setAviso({ tipo: 'erro', texto: t('Informe o celular completo') });
+      return;
+    }
+
+    setEnviando(true);
     try {
       const resposta = await apiPost('/site/usuario/atualizar', {
         nome: form.get('nome'),
@@ -65,6 +71,7 @@ export default function FormMeusDados({ usuario }: { usuario: UsuarioSessao }) {
           className={campo}
           placeholder="(35) 99999-9999"
         />
+        <p className="mt-1 text-mini text-texto-2">{t('Fora do Brasil? Comece com + e o código do país.')}</p>
         {usuario.faltando?.includes('telefone') && (
           <p className="mt-1 text-mini text-alerta">{t('Informe seu celular')}</p>
         )}
