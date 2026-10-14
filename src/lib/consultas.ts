@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import type { Categoria } from '@/i18n/categorias';
+import { queryOptions, useQuery } from '@tanstack/react-query';
+import type { Categoria, Idioma } from '@/i18n/categorias';
+import { useIdioma } from '@/i18n/Traducao';
 import { indiceGeografia, resolverDestino, type Destino, type IndiceGeografia } from '@/lib/geo/indice';
 import { buscarEmpresa, listarEmpresas } from '@/features/catalogo/dados';
 import { buscarAssinatura, buscarRoteiro, listarCompras, listarItensRoteiro, listarRoteiros } from '@/features/roteiros/dados';
@@ -36,9 +37,11 @@ interface FiltroEmpresas {
 }
 
 export function useEmpresas(filtro: FiltroEmpresas, ligada = true) {
+  const idioma = useIdioma();
   return useQuery<EmpresaResumo[]>({
     queryKey: [
       'empresas',
+      idioma,
       filtro.categoria?.id ?? null,
       filtro.destino ? `${filtro.destino.tipo}:${filtro.destino.id}` : null,
       filtro.regiao ?? null,
@@ -54,15 +57,25 @@ export function useEmpresas(filtro: FiltroEmpresas, ligada = true) {
         estado: filtro.estado,
         busca: filtro.busca,
         limite: filtro.limite,
+        idioma,
       }),
     enabled: ligada,
   });
 }
 
+/** O idioma vai na chave porque os textos da empresa vêm traduzidos: sem ele, trocar de `/` para
+ * `/en` reaproveitaria a resposta em português. Exportada para o `fetchQuery` usar a mesma chave. */
+export function consultaEmpresa(id: number, idioma: Idioma) {
+  return queryOptions<Empresa | null>({
+    queryKey: ['empresa', id, idioma],
+    queryFn: () => buscarEmpresa(id, idioma),
+  });
+}
+
 export function useEmpresa(id: number | undefined) {
-  return useQuery<Empresa | null>({
-    queryKey: ['empresa', id],
-    queryFn: () => buscarEmpresa(id!),
+  const idioma = useIdioma();
+  return useQuery({
+    ...consultaEmpresa(id!, idioma),
     enabled: Number.isFinite(id) && (id ?? 0) > 0,
   });
 }

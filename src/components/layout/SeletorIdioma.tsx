@@ -3,24 +3,19 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Globe } from 'lucide-react';
 import { IDIOMAS, IDIOMAS_INFO, type Idioma } from '@/i18n/categorias';
 import { useIdioma } from '@/i18n/Traducao';
-import { raiz } from '@/i18n/caminhos';
+import { caminhoEmOutroIdioma } from '@/i18n/caminhos';
 
-/** Troca de idioma. Só o prefixo do endereço muda, então a pessoa cai na home do idioma escolhido
- * em vez de numa página que pode não existir nele. */
+/** Troca de idioma mantendo a pessoa na mesma página (empresa, categoria, destino...), com o caminho traduzido. */
 export default function SeletorIdioma() {
   const atual = useIdioma();
   const navegar = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [aberto, setAberto] = useState(false);
 
   function trocar(novo: Idioma) {
     setAberto(false);
     if (novo === atual) return;
-    // Mantém a pessoa na mesma seção quando o caminho não é traduzido
-    // (categoria), senão leva à home do novo idioma.
-    const semPrefixo = pathname.replace(new RegExp(`^${raiz(atual)}`), '') || '/';
-    const destino = `${raiz(novo)}${semPrefixo}`;
-    navegar(destino === '' ? '/' : destino);
+    navegar(`${caminhoEmOutroIdioma(pathname, atual, novo)}${search}`);
   }
 
   return (

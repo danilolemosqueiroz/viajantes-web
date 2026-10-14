@@ -11,6 +11,8 @@
   /* Laranja escurecido: o #df5612 não passa em contraste como texto pequeno. */
   --color-acento-escuro: #b94409;
   --color-acento-suave: #fdece2;
+  /* Laranja clareado, só para título sobre foto escurecida. */
+  --color-acento-claro: #ffb27d;
 
   /* Superfícies: uma folha só. `fundo` e `cartao` são o mesmo branco de
      propósito, porque o cartão é um recorte da folha e não uma caixa. */

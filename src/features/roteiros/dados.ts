@@ -98,6 +98,11 @@ export function economiaAnual(planos: PlanoSite[]): number {
   return cheio > anual.valor ? Math.round(((cheio - anual.valor) / cheio) * 100) : 0;
 }
 
+/** O "+N" do título da oferta: arredonda para baixo de 5 em 5, para nunca prometer mais do que existe. */
+export function numeroVitrine(total: number): number {
+  return total >= 10 ? Math.floor(total / 5) * 5 : 0;
+}
+
 /** Itens por dia, na ordem da API (dia, horário, ordem). */
 export function agruparPorDia(itens: RoteiroItem[]): { dia: number; itens: RoteiroItem[] }[] {
   const mapa = new Map<number, RoteiroItem[]>();

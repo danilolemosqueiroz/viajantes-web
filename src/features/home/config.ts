@@ -32,10 +32,12 @@ export const CONTATO = {
   email: 'contato@viajantesapp.com.br',
 } as const;
 
-/** Onde um negócio de turismo entra na plataforma. Os dois são externos. */
+/** Onde um negócio de turismo entra na plataforma. Os dois são externos.
+ * `video` é o mesmo explicativo da página de captação, por id do YouTube. */
 export const B2B = {
   cadastro: 'https://viajantesapp.com.br/seja-cliente/assinar.php',
   mapeador: 'https://parceiros.viajantesapp.com.br/mapeador',
+  video: '0R_jbRQl0-k',
 } as const;
 
 /** "Conheça nossa história": matéria do Estado de Minas indicada pelo cliente. */

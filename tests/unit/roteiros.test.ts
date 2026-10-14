@@ -9,7 +9,7 @@ import {
   numeroCartaoValido,
   parcelasOpcoes,
 } from '@/features/roteiros/cartao';
-import { agruparPorDia, economiaAnual, rotuloPeriodo } from '@/features/roteiros/dados';
+import { agruparPorDia, economiaAnual, numeroVitrine, rotuloPeriodo } from '@/features/roteiros/dados';
 import { temPreco } from '@/features/ofertas/dados';
 import type { RoteiroItem } from '@/lib/tipos';
 
@@ -69,6 +69,12 @@ describe('roteiro', () => {
     expect(economiaAnual(planos.slice(0, 1))).toBe(0);
     expect(rotuloPeriodo('mensal')).toBe('por mês');
     expect(rotuloPeriodo('anual')).toBe('por ano');
+  });
+
+  test('o +N do título nunca passa do total de roteiros', () => {
+    expect(numeroVitrine(49)).toBe(45);
+    expect(numeroVitrine(50)).toBe(50);
+    expect(numeroVitrine(9)).toBe(0);
   });
 
   test('itens agrupados por dia, em ordem, respeitando a ordem da API dentro do dia', () => {

@@ -1,6 +1,6 @@
 import { apiGet } from '@/lib/api';
 import type { AtrativoProximo, Empresa, EmpresaResumo, Horario, Info } from '@/lib/tipos';
-import type { Categoria } from '@/i18n/categorias';
+import type { Categoria, Idioma } from '@/i18n/categorias';
 import type { Destino } from '@/lib/geo/indice';
 import { filtroDoDestino } from '@/lib/geo/indice';
 
@@ -16,6 +16,8 @@ interface FiltroLista {
   estado?: number;
   busca?: string;
   limite?: number;
+  /** Idioma dos textos (`informacoes`); sem ele vale o da URL aberta. */
+  idioma?: Idioma;
 }
 
 /** Lista de atrativos. A API devolve até 100 itens por relevância; aqui a ordem é alfabética,
@@ -41,7 +43,7 @@ export async function listarEmpresas(filtro: FiltroLista): Promise<EmpresaResumo
     query.todasregioes = 1;
   }
 
-  const resposta = await apiGet<EmpresaResumo[]>('/site/empresas/1', query);
+  const resposta = await apiGet<EmpresaResumo[]>('/site/empresas/1', query, { idioma: filtro.idioma });
 
   if (!resposta.ok || !Array.isArray(resposta.data)) return [];
 
@@ -58,9 +60,9 @@ export async function listarEmpresas(filtro: FiltroLista): Promise<EmpresaResumo
   return filtro.limite ? lista.slice(0, filtro.limite) : lista;
 }
 
-/** Detalhe de um atrativo. `null` quando não existe ou saiu do ar. */
-export async function buscarEmpresa(id: number): Promise<Empresa | null> {
-  const resposta = await apiGet<Empresa>(`/site/empresa/${id}`);
+/** Detalhe de um atrativo, com os textos no idioma pedido. `null` quando não existe ou saiu do ar. */
+export async function buscarEmpresa(id: number, idioma?: Idioma): Promise<Empresa | null> {
+  const resposta = await apiGet<Empresa>(`/site/empresa/${id}`, undefined, { idioma });
 
   if (!resposta.ok || !resposta.data?.idempresa) return null;
   // `anunciante = 0` some da listagem; tem que sumir do detalhe também.

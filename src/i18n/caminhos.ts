@@ -1,4 +1,4 @@
-import { IDIOMAS, IDIOMA_PADRAO, slugCategoria, type Categoria, type Idioma } from './categorias';
+import { IDIOMAS, IDIOMA_PADRAO, categoriaPorSlug, slugCategoria, type Categoria, type Idioma } from './categorias';
 import { slugComId } from '@/lib/slug';
 
 /** Endereços do site, nos cinco idiomas: português na raiz (`/cachoeiras`), os outros com prefixo
@@ -145,6 +145,29 @@ export function paginaDestinoPorIdioma(slug: string): Record<Idioma, string> {
 /** Detalhe de um roteiro: `/roteiros/nome-12`. */
 export function hrefRoteiro(slug: string, idioma: Idioma): string {
   return `${href('/roteiros', idioma)}/${slug}`;
+}
+
+/** O mesmo endereço em outro idioma: traduz o prefixo, a rota fixa e a categoria e mantém o resto
+ * (slug de empresa, destino ou roteiro). O que não reconhece leva à home do novo idioma. */
+export function caminhoEmOutroIdioma(caminho: string, de: Idioma, para: Idioma): string {
+  const prefixo = raiz(de);
+  const semPrefixo = prefixo && (caminho === prefixo || caminho.startsWith(`${prefixo}/`)) ? caminho.slice(prefixo.length) : caminho;
+  const limpo = semPrefixo.replace(/\/+$/, '') || '/';
+  if (limpo === '/') return raiz(para) || '/';
+
+  // A rota mais longa primeiro: `/conta/favoritos` antes de `/conta`.
+  const fixas = (Object.keys(CAMINHOS_FIXOS) as RotaFixa[])
+    .filter((rota) => rota !== '/')
+    .sort((a, b) => CAMINHOS_FIXOS[b][de].length - CAMINHOS_FIXOS[a][de].length);
+  for (const rota of fixas) {
+    const origem = CAMINHOS_FIXOS[rota][de];
+    if (limpo === origem || limpo.startsWith(`${origem}/`)) return `${href(rota, para)}${limpo.slice(origem.length)}`;
+  }
+
+  const [primeiro, ...resto] = limpo.split('/').filter(Boolean);
+  const categoria = categoriaPorSlug(primeiro, de);
+  if (categoria) return [hrefCategoria(categoria, para), ...resto].join('/');
+  return raiz(para) || '/';
 }
 
 /** Descobre o idioma pelo primeiro segmento do endereço.

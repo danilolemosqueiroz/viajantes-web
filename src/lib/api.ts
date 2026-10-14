@@ -1,6 +1,8 @@
 /** Cliente da API Node (`viajantes-node-api`), chamado direto do navegador. A `Site-Key` vai no
  * pacote, como no app, e só alcança as rotas `/site/*`. Quem está logado manda o `Passport`. */
 import { lerSessao } from './sessao';
+import { idiomaDoCaminho } from '@/i18n/caminhos';
+import type { Idioma } from '@/i18n/categorias';
 
 export type Resultado<T> =
   | { ok: true; data: T; status: number }
@@ -11,6 +13,14 @@ type Query = Record<string, string | number | boolean | undefined | null>;
 const TEMPO_LIMITE = 15_000;
 
 const base = (): string => (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+
+/** Idioma pela URL aberta, sem a pasta do site (`/new/en/...`). O provedor de tradução só o
+ * entrega depois que as consultas da tela já saíram. */
+function idiomaDaPagina(): Idioma {
+  const pasta = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const caminho = window.location.pathname;
+  return idiomaDoCaminho(pasta && caminho.startsWith(pasta) ? caminho.slice(pasta.length) : caminho);
+}
 
 /** Monta a URL ignorando parâmetros vazios. */
 export function montarUrl(caminho: string, query?: Query): string {
@@ -25,11 +35,13 @@ export function montarUrl(caminho: string, query?: Query): string {
 async function requisitar<T>(
   metodo: 'GET' | 'POST',
   url: string,
-  opcoes: { corpo?: unknown; comSessao?: boolean } = {},
+  opcoes: { corpo?: unknown; comSessao?: boolean; idioma?: Idioma } = {},
 ): Promise<Resultado<T>> {
   const headers: Record<string, string> = {
     'Site-Key': import.meta.env.VITE_API_SITE_KEY ?? '',
     Accept: 'application/json',
+    // A API ignora o Accept-Language de propósito: o do navegador não é o idioma da página.
+    'X-Idioma': opcoes.idioma ?? idiomaDaPagina(),
   };
 
   const sessao = opcoes.comSessao === false ? null : lerSessao();
@@ -64,8 +76,9 @@ async function requisitar<T>(
   }
 }
 
-export function apiGet<T>(caminho: string, query?: Query): Promise<Resultado<T>> {
-  return requisitar<T>('GET', montarUrl(caminho, query));
+/** `idioma` só quando a resposta vai para um cache cuja chave já tem o idioma (ver `consultas.ts`). */
+export function apiGet<T>(caminho: string, query?: Query, opcoes?: { idioma?: Idioma }): Promise<Resultado<T>> {
+  return requisitar<T>('GET', montarUrl(caminho, query), { idioma: opcoes?.idioma });
 }
 
 export function apiPost<T>(caminho: string, corpo: unknown, opcoes?: { comSessao?: boolean }): Promise<Resultado<T>> {

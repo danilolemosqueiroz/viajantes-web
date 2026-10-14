@@ -4,7 +4,7 @@ import { MapPin, Star, Ticket } from 'lucide-react';
 import { useIdioma, useT } from '@/i18n/Traducao';
 import { hrefEmpresa } from '@/i18n/caminhos';
 import { categoriaPorEavmoda, CATEGORIAS } from '@/i18n/categorias';
-import { buscarEmpresa } from '@/features/catalogo/dados';
+import { consultaEmpresa } from '@/lib/consultas';
 import { IconeWhatsapp } from '@/components/layout/IconesMarca';
 import { publico } from '@/lib/publico';
 import type { CartaoLugar } from './tipos';
@@ -16,7 +16,7 @@ export function useAbrirLugar(aoNavegar?: () => void) {
   const navegar = useNavigate();
   const idioma = useIdioma();
   return async (id: number) => {
-    const empresa = await cliente.fetchQuery({ queryKey: ['empresa', id], queryFn: () => buscarEmpresa(id) }).catch(() => null);
+    const empresa = await cliente.fetchQuery(consultaEmpresa(id, idioma)).catch(() => null);
     aoNavegar?.();
     if (!empresa) {
       navegar(`/empresa/${id}`);
