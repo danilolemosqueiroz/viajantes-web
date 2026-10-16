@@ -223,6 +223,11 @@ export interface PlanoSite {
   valor: number;
   periodicidade: Periodicidade;
   parcelas_max: number;
+  /** Preço de tabela. Só difere de `valor` durante uma promoção. */
+  valor_cheio?: number;
+  promo_ativa?: boolean;
+  /** Fim da promoção (ISO com fuso). A tela confere o relógio, então a promoção some sozinha. */
+  promo_ate?: string | null;
 }
 
 /** A assinatura ativa da conta, venha da loja (app) ou do site. */

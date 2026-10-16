@@ -9,7 +9,7 @@ import {
   numeroCartaoValido,
   parcelasOpcoes,
 } from '@/features/roteiros/cartao';
-import { agruparPorDia, economiaAnual, numeroVitrine, rotuloPeriodo } from '@/features/roteiros/dados';
+import { agruparPorDia, economiaAnual, numeroVitrine, precoAtual, promocaoAtiva, rotuloPeriodo, ultimoDiaPromocao } from '@/features/roteiros/dados';
 import { temPreco } from '@/features/ofertas/dados';
 import type { RoteiroItem } from '@/lib/tipos';
 
@@ -92,5 +92,33 @@ describe('oferta sem preço', () => {
     expect(temPreco({ price: 0 })).toBe(false);
     expect(temPreco({ price: null })).toBe(false);
     expect(temPreco({ price: 193.89 })).toBe(true);
+  });
+});
+
+describe('promoção do plano mensal', () => {
+  const promo = {
+    mensal: { idassinatura: 1, nome: 'Mensal', descricao: null, valor: 19.9, valor_cheio: 49.9, promo_ativa: true, promo_ate: '2026-10-21T00:00:00-03:00', periodicidade: 'mensal' as const, parcelas_max: 1 },
+    anual: { idassinatura: 2, nome: 'Anual', descricao: null, valor: 149.9, periodicidade: 'anual' as const, parcelas_max: 1 },
+  };
+  const noite20 = new Date('2026-10-20T22:00:00-03:00').getTime();
+  const dia21 = new Date('2026-10-21T00:00:01-03:00').getTime();
+
+  test('durante a promoção: preço promocional, último dia 20/10 e sem selo de economia', () => {
+    expect(promocaoAtiva(promo.mensal, noite20)).toBe(true);
+    expect(precoAtual(promo.mensal, noite20)).toBe(19.9);
+    expect(ultimoDiaPromocao(promo.mensal)?.toISOString()).toBe('2026-10-21T02:59:59.000Z');
+    expect(economiaAnual([promo.mensal, promo.anual], noite20)).toBe(0);
+  });
+
+  test('passou do prazo: a página aberta volta ao preço cheio e mostra 75% de economia', () => {
+    expect(promocaoAtiva(promo.mensal, dia21)).toBe(false);
+    expect(precoAtual(promo.mensal, dia21)).toBe(49.9);
+    expect(economiaAnual([promo.mensal, promo.anual], dia21)).toBe(75);
+  });
+
+  test('a API já voltou ao preço cheio (sem promo_ativa): 49,90 e 75%', () => {
+    const cheio = { ...promo.mensal, valor: 49.9, promo_ativa: false, promo_ate: null };
+    expect(precoAtual(cheio, noite20)).toBe(49.9);
+    expect(economiaAnual([cheio, promo.anual], noite20)).toBe(75);
   });
 });

@@ -2,7 +2,7 @@
 
 Os roteiros prontos são os mesmos da aba "Roteiros" do aplicativo
 (`roteiro_personalizado`). O dia a dia é conteúdo do **Plano Viajantes**: os
-planos da tabela `assinatura` (hoje Mensal R$ 19,90 e Anual R$ 149,90), que o
+planos da tabela `assinatura` (hoje Mensal R$ 49,90, com promoção de R$ 19,90 até 20/10/2026 via `valor_promo`/`promo_ate`, e Anual R$ 149,90), que o
 app vende nas lojas e o site vende no cartão ou Pix pela Pagar.me. A assinatura
 é uma só: quem paga no site fica liberado no app, e vice-versa. O lado da API
 está em `viajantes-node-api/docs/assinatura-site.md`.

@@ -89,13 +89,39 @@ export function rotuloPeriodo(periodicidade: Periodicidade): string {
   return periodicidade === 'anual' ? 'por ano' : 'por mês';
 }
 
-/** Quanto o anual economiza frente a 12 meses do mensal, em % inteiro; 0 se não dá para comparar. */
-export function economiaAnual(planos: PlanoSite[]): number {
+/** A promoção do plano ainda vale agora? A API já manda `promo_ativa`, mas a página pode ficar aberta
+ * além do prazo: o relógio do navegador derruba o selo sem precisar recarregar. */
+export function promocaoAtiva(plano: PlanoSite, agora: number = Date.now()): boolean {
+  if (!plano.promo_ativa || !plano.promo_ate) return false;
+  const fim = new Date(plano.promo_ate).getTime();
+  return Number.isFinite(fim) && agora < fim;
+}
+
+/** Preço de hoje: o promocional enquanto vale, o de tabela depois. */
+export function precoAtual(plano: PlanoSite, agora: number = Date.now()): number {
+  if (promocaoAtiva(plano, agora)) return plano.valor;
+  return plano.valor_cheio ?? plano.valor;
+}
+
+/** Último dia da promoção: `promo_ate` é o instante em que ela acaba (meia-noite seguinte). */
+export function ultimoDiaPromocao(plano: PlanoSite): Date | null {
+  if (!plano.promo_ate) return null;
+  const fim = new Date(plano.promo_ate).getTime();
+  return Number.isFinite(fim) ? new Date(fim - 1000) : null;
+}
+
+/** Quanto o anual economiza frente a 12 meses do mensal, em % inteiro; 0 se não dá para comparar.
+ * Com o mensal em promoção, 0: a oferta mostra o texto da promoção, não o selo de economia. */
+export function economiaAnual(planos: PlanoSite[], agora: number = Date.now()): number {
   const mensal = planos.find((p) => p.periodicidade === 'mensal');
   const anual = planos.find((p) => p.periodicidade === 'anual');
-  if (!mensal || !anual || mensal.valor <= 0) return 0;
-  const cheio = mensal.valor * 12;
-  return cheio > anual.valor ? Math.round(((cheio - anual.valor) / cheio) * 100) : 0;
+  if (!mensal || !anual) return 0;
+  if (promocaoAtiva(mensal, agora)) return 0;
+  const preco = precoAtual(mensal, agora);
+  if (preco <= 0) return 0;
+  const cheio = preco * 12;
+  const valorAnual = precoAtual(anual, agora);
+  return cheio > valorAnual ? Math.round(((cheio - valorAnual) / cheio) * 100) : 0;
 }
 
 /** O "+N" do título da oferta: arredonda para baixo de 5 em 5, para nunca prometer mais do que existe. */

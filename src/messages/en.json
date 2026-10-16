@@ -531,6 +531,8 @@
   "ENVIAR NO WHATSAPP": "SEND ON WHATSAPP",
   "Economize 37%": "Save 37%",
   "Economize {{n}}%": "Save {{n}}%",
+  "só até {{data}}, depois {{valor}}": "only until {{data}}, then {{valor}}",
+  "No mensal seriam 12 × {{mensal}} = {{total}}": "Monthly would be 12 × {{mensal}} = {{total}}",
   "Econômica": "Budget",
   "Ecossistema": "Ecosystem",
   "Editar": "Edit",
@@ -1793,5 +1795,8 @@
   "🏅 {{pontos}} pontos": "🏅 {{pontos}} points",
   "👤 Mapeado por": "👤 Mapped by",
   "👤 Mapeado por um Viajante": "👤 Mapped by a Traveler",
-  "📡 Modo Offline": "📡 Offline mode"
+  "📡 Modo Offline": "📡 Offline mode",
+  "Última atualização": "Last updated",
+  "Este documento está disponível somente em português.": "This document is available in Portuguese only.",
+  "Política de privacidade do Viajantes App: quais dados coletamos e como usamos.": "Viajantes App privacy policy: what data we collect and how we use it."
 }

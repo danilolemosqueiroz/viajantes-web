@@ -5,12 +5,10 @@ import { apiGet } from '@/lib/api';
 import { useMeta } from '@/lib/meta';
 import Carregando from '@/components/layout/Carregando';
 
-/** Páginas de texto (sobre, termos, privacidade). O conteúdo vem da API (a mesma tabela `geral`
- * que o aplicativo usa), então a equipe edita num lugar só e o site acompanha. */
+/** Páginas de texto editadas na gerência (Textos Gerais → tabela `geral`, a mesma do app).
+ * Termos e privacidade NÃO passam por aqui: são páginas fixas em features/legal. */
 const PAGINAS = {
   sobre: { rota: '/sobre' as RotaFixa, chave: 'sobre', titulo: 'Sobre Nós' },
-  termos: { rota: '/termos' as RotaFixa, chave: 'termos', titulo: 'Termos e condições' },
-  privacidade: { rota: '/privacidade' as RotaFixa, chave: 'privacidade', titulo: 'Política de Privacidade' },
 } as const;
 
 export default function Texto({ pagina }: { pagina: keyof typeof PAGINAS }) {
@@ -21,10 +19,12 @@ export default function Texto({ pagina }: { pagina: keyof typeof PAGINAS }) {
   const { data: conteudo, isPending } = useQuery<string>({
     queryKey: ['texto', chave],
     queryFn: async () => {
-      const r = await apiGet<{ texto?: string; conteudo?: string }>(`/site/geral/${chave}`);
-      return r.ok ? (r.data?.texto ?? r.data?.conteudo ?? '') : '';
+      const r = await apiGet<Record<string, unknown>>('/site/geral');
+      return r.ok && typeof r.data?.[chave] === 'string' ? (r.data[chave] as string) : '';
     },
   });
+  // O texto da gerência é um textarea sem HTML: quebra dupla vira parágrafo.
+  const paragrafos = (conteudo ?? '').split(/\r?\n\s*\r?\n/).map((p) => p.trim()).filter(Boolean);
 
   useMeta({ titulo: t(titulo), caminho: href(rota, idioma) });
 
@@ -33,12 +33,12 @@ export default function Texto({ pagina }: { pagina: keyof typeof PAGINAS }) {
       <h1 className="text-titulo font-bold leading-tight text-brand sm:text-heroi">{t(titulo)}</h1>
       {isPending ? (
         <Carregando altura="min-h-[30vh]" />
-      ) : conteudo ? (
-        <div
-          className="mt-6 max-w-3xl space-y-4 text-corpo leading-relaxed text-texto-2"
-          // Conteúdo escrito pela própria equipe na gerência, não por visitantes.
-          dangerouslySetInnerHTML={{ __html: conteudo }}
-        />
+      ) : paragrafos.length ? (
+        <div className="mt-6 max-w-3xl space-y-4 text-corpo leading-relaxed text-texto-2">
+          {paragrafos.map((p, i) => (
+            <p key={i} className="whitespace-pre-line">{p}</p>
+          ))}
+        </div>
       ) : (
         <p className="mt-6 text-texto-2">{t('Conteúdo indisponível no momento.')}</p>
       )}
