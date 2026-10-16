@@ -37,3 +37,10 @@ export function formatarData(valor: string | null | undefined, idioma: Idioma): 
   if (Number.isNaN(data.getTime())) return String(valor);
   return data.toLocaleDateString(LOCALIDADE[idioma] ?? 'pt-BR');
 }
+
+/** Dia e mês ("20/10") de um instante ISO, sempre no horário de Brasília, onde a promoção acaba. */
+export function formatarDiaMes(valor: string | Date, idioma: Idioma): string {
+  const data = valor instanceof Date ? valor : new Date(valor);
+  if (Number.isNaN(data.getTime())) return '';
+  return data.toLocaleDateString(LOCALIDADE[idioma] ?? 'pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo' });
+}

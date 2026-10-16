@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { PlanoSite, UsuarioSessao } from '@/lib/tipos';
 import { formatarPreco } from '@/lib/moeda';
 import { pagamentoConfigurado, tokenizarCartao } from '@/lib/pagarme';
-import { comprarPlano, rotuloPeriodo, statusCompra, type PedidoCompra } from './dados';
+import { comprarPlano, precoAtual, rotuloPeriodo, statusCompra, type PedidoCompra } from './dados';
 import {
   cepValido,
   cpfValido,
@@ -51,7 +51,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
   const [enviando, setEnviando] = useState(false);
   const [pendente, setPendente] = useState<{ idcompra: number } | null>(null);
 
-  const preco = plano.valor;
+  const preco = precoAtual(plano);
   const opcoes = parcelasOpcoes(preco, plano.parcelas_max);
 
   // Cartão "em análise": pergunta à API a cada 5 s até a operadora decidir.
@@ -201,7 +201,7 @@ export default function Checkout({ plano, usuario, aoPagar }: Props) {
       <div>
         <h3 id="checkout-titulo" className="text-secao font-bold leading-tight text-brand">{t('Finalizar assinatura')}</h3>
         <p className="mt-1 text-nota text-texto-2">
-          {plano.nome} · {formatarPreco(plano.valor, idioma)} {t(rotuloPeriodo(plano.periodicidade))}
+          {plano.nome} · {formatarPreco(preco, idioma)} {t(rotuloPeriodo(plano.periodicidade))}
         </p>
       </div>
 

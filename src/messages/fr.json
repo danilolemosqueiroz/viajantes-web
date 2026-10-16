@@ -531,6 +531,8 @@
   "ENVIAR NO WHATSAPP": "ENVOYER SUR WHATSAPP",
   "Economize 37%": "Économisez 37 %",
   "Economize {{n}}%": "Économisez {{n}} %",
+  "só até {{data}}, depois {{valor}}": "jusqu'au {{data}} seulement, puis {{valor}}",
+  "No mensal seriam 12 × {{mensal}} = {{total}}": "En mensuel : 12 × {{mensal}} = {{total}}",
   "Econômica": "Économique",
   "Ecossistema": "Écosystème",
   "Editar": "Modifier",
@@ -1793,5 +1795,8 @@
   "🏅 {{pontos}} pontos": "🏅 {{pontos}} points",
   "👤 Mapeado por": "👤 Cartographié par",
   "👤 Mapeado por um Viajante": "👤 Cartographié par un voyageur",
-  "📡 Modo Offline": "📡 Mode hors ligne"
+  "📡 Modo Offline": "📡 Mode hors ligne",
+  "Última atualização": "Dernière mise à jour",
+  "Este documento está disponível somente em português.": "Ce document n’est disponible qu’en portugais.",
+  "Política de privacidade do Viajantes App: quais dados coletamos e como usamos.": "Politique de confidentialité de Viajantes App : quelles données nous collectons et comment nous les utilisons."
 }

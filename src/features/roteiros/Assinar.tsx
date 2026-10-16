@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   BotMessageSquare,
@@ -18,13 +18,13 @@ import { useIdioma, useT } from '@/i18n/Traducao';
 import { useAssinaturaSite, useRoteiros } from '@/lib/consultas';
 import { useUsuario } from '@/lib/conta';
 import { lerSessao } from '@/lib/sessao';
-import { formatarPreco } from '@/lib/moeda';
+import { formatarDiaMes, formatarPreco } from '@/lib/moeda';
 import { publico } from '@/lib/publico';
 import type { Idioma } from '@/i18n/categorias';
 import type { PlanoSite } from '@/lib/tipos';
 import ModalLogin from '@/features/conta/ModalLogin';
 import Checkout from './Checkout';
-import { economiaAnual, numeroVitrine, rotuloPeriodo } from './dados';
+import { economiaAnual, numeroVitrine, precoAtual, promocaoAtiva, rotuloPeriodo, ultimoDiaPromocao } from './dados';
 
 const FOTO_800 = publico('images/plano-viajantes-800.webp');
 const FOTO_1400 = publico('images/plano-viajantes-1400.webp');
@@ -55,6 +55,12 @@ export default function Assinar({ contexto, compacto = false }: { contexto?: str
   const [comprando, setComprando] = useState(false);
   const [pedindoLogin, setPedindoLogin] = useState(false);
   const [pago, setPago] = useState(false);
+  // Relógio de 1 min: a promoção some da tela no minuto em que acaba, mesmo com a página aberta.
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    const relogio = setInterval(() => setAgora(Date.now()), 60_000);
+    return () => clearInterval(relogio);
+  }, []);
 
   if (pago) {
     return (
@@ -83,8 +89,9 @@ export default function Assinar({ contexto, compacto = false }: { contexto?: str
   }
   const anual = planos.find((p) => p.periodicidade === 'anual');
   const plano: PlanoSite = planos.find((p) => p.idassinatura === escolhido) ?? anual ?? planos[0];
-  const economia = economiaAnual(planos);
-  const menor = planos.reduce((a, b) => (a.valor < b.valor ? a : b));
+  const economia = economiaAnual(planos, agora);
+  const menor = planos.reduce((a, b) => (precoAtual(a, agora) < precoAtual(b, agora) ? a : b));
+  const mensal = planos.find((p) => p.periodicidade === 'mensal');
 
   const iniciar = () => {
     if (usuario) setComprando(true);
@@ -119,7 +126,7 @@ export default function Assinar({ contexto, compacto = false }: { contexto?: str
             </p>
             <p className="mt-0.5 text-nota text-texto-2">
               {t('Veja o dia a dia completo de todos os roteiros, a partir de {{valor}} {{periodo}}.', {
-                valor: formatarPreco(menor.valor, idioma),
+                valor: formatarPreco(precoAtual(menor, agora), idioma),
                 periodo: t(rotuloPeriodo(menor.periodicidade)),
               })}
             </p>
@@ -155,6 +162,8 @@ export default function Assinar({ contexto, compacto = false }: { contexto?: str
                   plano={p}
                   ativo={p.idassinatura === plano.idassinatura}
                   economia={p.periodicidade === 'anual' ? economia : 0}
+                  mensal={mensal}
+                  agora={agora}
                   idioma={idioma}
                   aoEscolher={() => setEscolhido(p.idassinatura)}
                 />
@@ -167,7 +176,7 @@ export default function Assinar({ contexto, compacto = false }: { contexto?: str
                 <div className="mt-5">
                   <button type="button" onClick={iniciar} className="botao-acao min-h-12 w-full text-base @xl:w-auto @xl:px-8">
                     <Lock size={16} aria-hidden="true" />
-                    {t('Assinar por {{valor}}', { valor: formatarPreco(plano.valor, idioma) })}
+                    {t('Assinar por {{valor}}', { valor: formatarPreco(precoAtual(plano, agora), idioma) })}
                   </button>
                   <ul className="mt-3 space-y-1 text-mini text-texto-3">
                     <li className="flex items-start gap-1.5">
@@ -289,22 +298,41 @@ function CartaoPlano({
   plano,
   ativo,
   economia,
+  mensal,
+  agora,
   idioma,
   aoEscolher,
 }: {
   plano: PlanoSite;
   ativo: boolean;
   economia: number;
+  mensal: PlanoSite | undefined;
+  agora: number;
   idioma: Idioma;
   aoEscolher: () => void;
 }) {
   const t = useT();
   const parcelado = plano.parcelas_max > 1;
+  const preco = precoAtual(plano, agora);
+  const promo = promocaoAtiva(plano, agora);
+  const fimPromo = ultimoDiaPromocao(plano);
+  // Com o mensal em promoção, o anual mostra o que 12 meses do mensal custariam a preço cheio.
+  const mensalPromo = plano.periodicidade === 'anual' && mensal && promocaoAtiva(mensal, agora) ? mensal : null;
   const detalhe = parcelado
-    ? t('ou {{n}}x de {{valor}}', { n: plano.parcelas_max, valor: formatarPreco(plano.valor / plano.parcelas_max, idioma) })
+    ? t('ou {{n}}x de {{valor}}', { n: plano.parcelas_max, valor: formatarPreco(preco / plano.parcelas_max, idioma) })
     : plano.periodicidade === 'anual'
-      ? t('equivale a {{valor}} por mês', { valor: formatarPreco(plano.valor / 12, idioma) })
+      ? t('equivale a {{valor}} por mês', { valor: formatarPreco(preco / 12, idioma) })
       : null;
+  const avisoPromo =
+    promo && fimPromo
+      ? t('só até {{data}}, depois {{valor}}', { data: formatarDiaMes(fimPromo, idioma), valor: formatarPreco(plano.valor_cheio ?? plano.valor, idioma) })
+      : null;
+  const comparativo = mensalPromo
+    ? t('No mensal seriam 12 × {{mensal}} = {{total}}', {
+        mensal: formatarPreco(mensalPromo.valor_cheio ?? mensalPromo.valor, idioma),
+        total: formatarPreco((mensalPromo.valor_cheio ?? mensalPromo.valor) * 12, idioma),
+      })
+    : null;
 
   return (
     <button
@@ -333,10 +361,12 @@ function CartaoPlano({
         </span>
       </span>
       <span className="mt-2 text-[1.375rem] font-bold leading-none tracking-tight text-brand @sm:text-[1.625rem]">
-        {formatarPreco(plano.valor, idioma)}
+        {formatarPreco(preco, idioma)}
       </span>
       <span className="mt-1 text-nota text-texto-3">{t(rotuloPeriodo(plano.periodicidade))}</span>
+      {avisoPromo && <span className="mt-2 text-mini font-bold text-acento-escuro">{avisoPromo}</span>}
       {detalhe && <span className="mt-2 text-mini font-semibold text-acento-escuro">{detalhe}</span>}
+      {comparativo && <span className="mt-1 text-mini text-texto-3">{comparativo}</span>}
     </button>
   );
 }

@@ -19,6 +19,8 @@ const Busca = lazy(() => import('@/paginas/Busca'));
 const Ofertas = lazy(() => import('@/paginas/Ofertas'));
 const Mapeadores = lazy(() => import('@/paginas/Mapeadores'));
 const Texto = lazy(() => import('@/paginas/Texto'));
+const Termos = lazy(() => import('@/features/legal/Termos'));
+const Privacidade = lazy(() => import('@/features/legal/Privacidade'));
 const Contato = lazy(() => import('@/paginas/Contato'));
 const Entrar = lazy(() => import('@/paginas/Entrar'));
 const CriarConta = lazy(() => import('@/paginas/CriarConta'));
@@ -47,8 +49,8 @@ function rotasDoIdioma(idioma: Idioma) {
       <Route path={c('/mapeadores')} element={<Mapeadores />} />
       <Route path={c('/sobre')} element={<Texto pagina="sobre" />} />
       <Route path={c('/contato')} element={<Contato />} />
-      <Route path={c('/termos')} element={<Texto pagina="termos" />} />
-      <Route path={c('/privacidade')} element={<Texto pagina="privacidade" />} />
+      <Route path={c('/termos')} element={<Termos />} />
+      <Route path={c('/privacidade')} element={<Privacidade />} />
       <Route path={c('/entrar')} element={<Entrar />} />
       <Route path={c('/criar-conta')} element={<CriarConta />} />
       <Route path={c('/recuperar-senha')} element={<RecuperarSenha />} />
