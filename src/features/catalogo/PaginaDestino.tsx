@@ -10,7 +10,7 @@ import { useEmpresas } from '@/lib/consultas';
 import Carregando from '@/components/layout/Carregando';
 import FiltroLocal from './FiltroLocal';
 import GradeEmpresas from './GradeEmpresas';
-import BuscaBooking, { useBuscaBooking } from './BuscaBooking';
+import BuscaBooking, { localDoDestino, useBuscaBooking } from './BuscaBooking';
 
 /** Atrativos de uma categoria em um destino, como "cachoeiras em Capitólio".
  * O destino pode ser região ou cidade; o índice de geografia já resolveu qual é qual. */
@@ -28,7 +28,8 @@ export default function PaginaDestino({ destino, categoria, idioma }: Props) {
   // Hospedagens sem nenhuma pousada cliente no destino: a busca do Booking.com
   // entra no lugar do vazio (viajantes-node-api/docs/hospedagem-booking.md).
   const semHospedagem = categoria.eavmoda === 2 && !isPending && empresas.length === 0;
-  const booking = useBuscaBooking(destino, semHospedagem);
+  const local = localDoDestino(destino);
+  const booking = useBuscaBooking(local, semHospedagem);
   const mostrarBooking = semHospedagem && (booking.isError || booking.data?.mostrar === true);
 
   const inicio = raiz(idioma) || '/';
@@ -105,7 +106,7 @@ export default function PaginaDestino({ destino, categoria, idioma }: Props) {
         {isPending || (semHospedagem && booking.isPending) ? (
           <Carregando altura="min-h-[30vh]" />
         ) : mostrarBooking ? (
-          <BuscaBooking destino={destino} dados={booking.data} comErro={booking.isError} />
+          <BuscaBooking local={local} dados={booking.data} comErro={booking.isError} />
         ) : empresas.length > 0 ? (
           <GradeEmpresas
             empresas={empresas}
