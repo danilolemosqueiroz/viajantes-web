@@ -6,6 +6,27 @@ import { buscar } from '@/lib/api';
 import type { Destino } from '@/lib/geo/indice';
 import { filtroDoDestino } from '@/lib/geo/indice';
 
+/** Onde buscar: região ou cidade (página do destino) ou só o estado (hub da categoria com ?estado=). */
+export interface LocalBooking {
+  chave: string;
+  nome: string;
+  estado?: string;
+  filtro: { regiao: number } | { cidade: number } | { estado: number };
+}
+
+export const localDoDestino = (destino: Destino): LocalBooking => ({
+  chave: `${destino.tipo}-${destino.id}`,
+  nome: destino.nome,
+  estado: destino.estado?.nome,
+  filtro: filtroDoDestino(destino),
+});
+
+export const localDoEstado = (estado: { id: number; nome: string }): LocalBooking => ({
+  chave: `estado-${estado.id}`,
+  nome: estado.nome,
+  filtro: { estado: estado.id },
+});
+
 /** Busca de hospedagem no Booking.com (afiliado CJ) onde o destino não tem pousada cliente.
  * Contrato da API: viajantes-node-api/docs/hospedagem-booking.md */
 
@@ -16,11 +37,11 @@ interface RespostaBooking {
 }
 
 /** `null` enquanto a API decide; `false` quando há pousada cliente (a página mostra o vazio comum). */
-export function useBuscaBooking(destino: Destino, ligada: boolean) {
+export function useBuscaBooking(local: LocalBooking | null, ligada: boolean) {
   return useQuery<RespostaBooking>({
-    queryKey: ['hospedagem-booking', destino.tipo, destino.id],
-    queryFn: () => buscar<RespostaBooking>('/site/hospedagem-booking', filtroDoDestino(destino)),
-    enabled: ligada,
+    queryKey: ['hospedagem-booking', local?.chave],
+    queryFn: () => buscar<RespostaBooking>('/site/hospedagem-booking', local!.filtro),
+    enabled: ligada && Boolean(local),
     staleTime: 10 * 60 * 1000,
     retry: 1,
   });
@@ -32,13 +53,13 @@ const hoje = () => {
 };
 
 interface Props {
-  destino: Destino;
+  local: LocalBooking;
   /** Retorno de `useBuscaBooking`; com erro, o bloco vira só o botão. */
   dados?: RespostaBooking;
   comErro?: boolean;
 }
 
-export default function BuscaBooking({ destino, dados, comErro }: Props) {
+export default function BuscaBooking({ local, dados, comErro }: Props) {
   const t = useT();
   const id = useId();
   const [checkin, setCheckin] = useState('');
@@ -58,7 +79,7 @@ export default function BuscaBooking({ destino, dados, comErro }: Props) {
     if (comErro) return;
     let vivo = true;
     const query: Record<string, string | number> = {
-      ...filtroDoDestino(destino),
+      ...local.filtro,
       adultos,
       criancas,
       idades: idades.join(','),
@@ -70,10 +91,10 @@ export default function BuscaBooking({ destino, dados, comErro }: Props) {
     return () => {
       vivo = false;
     };
-  }, [destino, checkin, checkout, adultos, criancas, idades, comErro]);
+  }, [local, checkin, checkout, adultos, criancas, idades, comErro]);
 
   // Sem API: ainda leva ao Booking, mesmo sem o rastreio.
-  const href = url ?? montarUrlBookingDireta(destino);
+  const href = url ?? montarUrlBookingDireta(local);
   const rotulo = 'mb-1 block text-mini font-semibold text-texto-2';
   const botao = (
     <a href={href} target="_blank" rel="noopener sponsored" className="botao-acao w-full sm:w-auto">
@@ -86,7 +107,7 @@ export default function BuscaBooking({ destino, dados, comErro }: Props) {
     return (
       <div className="recuo p-6 text-center sm:p-10">
         <h2 className="text-secao font-bold text-brand">{t('Encontre hospedagens para sua viagem')}</h2>
-        <p className="mt-2 text-texto-2">{t('Ainda não temos pousadas parceiras em {{destino}}.', { destino: destino.nome })}</p>
+        <p className="mt-2 text-texto-2">{t('Ainda não temos pousadas parceiras em {{destino}}.', { destino: local.nome })}</p>
         <div className="mt-5">{botao}</div>
         <p className="mt-3 text-mini text-texto-3">{t('Você será levado ao Booking.com')}</p>
       </div>
@@ -96,7 +117,7 @@ export default function BuscaBooking({ destino, dados, comErro }: Props) {
   return (
     <div className="recuo p-5 sm:p-8">
       <h2 className="text-secao font-bold text-brand">
-        {t('Encontre uma hospedagem em {{destino}}', { destino: destino.nome })}
+        {t('Encontre uma hospedagem em {{destino}}', { destino: local.nome })}
       </h2>
       <p className="mt-2 text-texto-2">
         {t('Ainda não temos pousadas parceiras aqui. Busque no Booking.com com as datas da sua viagem.')}
@@ -107,7 +128,7 @@ export default function BuscaBooking({ destino, dados, comErro }: Props) {
           <span className={rotulo}>{t('Destino')}</span>
           <p className="campo flex items-center gap-2 bg-cartao text-texto">
             <MapPin size={16} className="shrink-0 text-acento" aria-hidden="true" />
-            <span className="truncate">{dados?.destino ?? destino.nome}</span>
+            <span className="truncate">{dados?.destino ?? local.nome}</span>
           </p>
         </div>
         <div>
@@ -170,7 +191,7 @@ export default function BuscaBooking({ destino, dados, comErro }: Props) {
   );
 }
 
-function montarUrlBookingDireta(destino: Destino): string {
-  const ss = [destino.nome, destino.estado?.nome, 'Brasil'].filter(Boolean).join(', ');
+function montarUrlBookingDireta(local: LocalBooking): string {
+  const ss = [local.nome, local.estado, 'Brasil'].filter(Boolean).join(', ');
   return `https://www.booking.com/searchresults.pt-br.html?${new URLSearchParams({ ss, lang: 'pt-br' })}`;
 }

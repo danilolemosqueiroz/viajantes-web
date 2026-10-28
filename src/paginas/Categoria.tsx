@@ -9,6 +9,7 @@ import { useMeta } from '@/lib/meta';
 import { JsonLd, migalhas } from '@/lib/seo/jsonld';
 import FiltroLocal from '@/features/catalogo/FiltroLocal';
 import GradeEmpresas from '@/features/catalogo/GradeEmpresas';
+import BuscaBooking, { localDoEstado, useBuscaBooking } from '@/features/catalogo/BuscaBooking';
 import Carregando from '@/components/layout/Carregando';
 import NaoEncontrada from './NaoEncontrada';
 
@@ -28,6 +29,13 @@ export default function Categoria() {
     Boolean(categoria),
   );
   const { data: geografia } = useGeografia();
+  const estado = estadoId ? geografia?.estados.find((e) => e.id === estadoId) : null;
+
+  // Hospedagens com só o estado escolhido e nenhuma pousada cliente: busca do Booking.com no lugar do vazio.
+  const local = estado ? localDoEstado(estado) : null;
+  const semHospedagem = categoria?.eavmoda === 2 && Boolean(local) && !isPending && empresas.length === 0;
+  const booking = useBuscaBooking(local, semHospedagem);
+  const mostrarBooking = semHospedagem && (booking.isError || booking.data?.mostrar === true);
 
   const caminho = categoria ? hrefCategoria(categoria, idioma) : '/';
   useMeta({
@@ -39,7 +47,6 @@ export default function Categoria() {
 
   if (!categoria) return <NaoEncontrada />;
 
-  const estado = estadoId ? geografia?.estados.find((e) => e.id === estadoId) : null;
   const destinos = (estado?.regioes ?? geografia?.regioes ?? []).filter((r) => r.quantidade > 0).slice(0, 24);
 
   return (
@@ -57,8 +64,10 @@ export default function Categoria() {
       </div>
 
       <div className="folha py-8">
-        {isPending ? (
+        {isPending || (semHospedagem && booking.isPending) ? (
           <Carregando altura="min-h-[30vh]" />
+        ) : mostrarBooking && local ? (
+          <BuscaBooking local={local} dados={booking.data} comErro={booking.isError} />
         ) : empresas.length > 0 ? (
           <GradeEmpresas empresas={empresas} categoria={categoria} idioma={idioma} prioridadeNosPrimeiros={4} />
         ) : (
