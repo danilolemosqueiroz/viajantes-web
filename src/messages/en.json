@@ -1798,5 +1798,22 @@
   "📡 Modo Offline": "📡 Offline mode",
   "Última atualização": "Last updated",
   "Este documento está disponível somente em português.": "This document is available in Portuguese only.",
-  "Política de privacidade do Viajantes App: quais dados coletamos e como usamos.": "Viajantes App privacy policy: what data we collect and how we use it."
+  "Política de privacidade do Viajantes App: quais dados coletamos e como usamos.": "Viajantes App privacy policy: what data we collect and how we use it.",
+  "Encontre uma hospedagem em {{destino}}": "Find a place to stay in {{destino}}",
+  "Ainda não temos pousadas parceiras aqui. Busque no Booking.com com as datas da sua viagem.": "We don't have partner inns here yet. Search on Booking.com with your travel dates.",
+  "Encontre hospedagens para sua viagem": "Find accommodations for your trip",
+  "Ainda não temos pousadas parceiras em {{destino}}.": "We don't have partner inns in {{destino}} yet.",
+  "Destino": "Destination",
+  "Check-in": "Check-in",
+  "Check-out": "Check-out",
+  "Hóspedes": "Guests",
+  "Adultos": "Adults",
+  "Crianças": "Children",
+  "adulto": "adult",
+  "adultos": "adults",
+  "criança": "child",
+  "crianças": "children",
+  "Idade da criança {{n}}": "Age of child {{n}}",
+  "Buscar hospedagens": "Search accommodations",
+  "Você será levado ao Booking.com": "You will be taken to Booking.com"
 }
