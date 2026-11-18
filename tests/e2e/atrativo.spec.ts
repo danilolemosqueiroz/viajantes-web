@@ -193,10 +193,9 @@ test.describe('Viajantes pago', () => {
       long: '',
       coordenada: '',
       tem_wikiloc: true,
+      tem_como_chegar: true,
+      tem_whatsapp: false,
     });
-    await page.route('**/site/paywall/resumo*', (r) =>
-      r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ regiao: null, atrativos: 120, cachoeiras: 0, beneficios: 8 }) }),
-    );
 
     await abrirAtrativo(page);
 
@@ -204,8 +203,9 @@ test.describe('Viajantes pago', () => {
     await expect(page.getByText('Poço verde.')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Como chegar' })).toBeVisible();
     await expect(page.getByRole('button', { name: /ver trilha no wikiloc/i })).toBeDisabled();
-    await expect(page.getByText('120 atrativos completos')).toBeVisible();
-    await expect(page.getByText(/cachoeiras com fotos/i)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /como chegar/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /whatsapp/i })).toHaveCount(0);
+    await expect(page.getByText(/atrativos completos em|lugares com benefício/i)).toHaveCount(0);
     await expect(page.getByRole('button', { name: /assinar por/i })).toBeVisible();
 
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);

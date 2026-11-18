@@ -115,10 +115,14 @@ export interface Empresa {
   bloqueado?: number | null;
   resumo?: string | null;
   tem_wikiloc?: boolean;
+  /** Atrativo bloqueado: existe rota e WhatsApp (mostrados com cadeado). */
+  tem_como_chegar?: boolean;
+  tem_whatsapp?: boolean;
   link_wikiloc?: string | null;
-  /** Estabelecimento: `beneficio` só vem para assinante; para os outros, `null` com `tem_beneficio`. */
+  /** Estabelecimento: todos recebem `beneficio`; `beneficio_liberado` diz se a pessoa pode usar (só assinante). */
   tem_beneficio?: boolean;
   beneficio?: BeneficioEmpresa | null;
+  beneficio_liberado?: boolean;
 }
 
 export interface BeneficioEmpresa {

@@ -1816,12 +1816,6 @@
   "Idade da criança {{n}}": "Age of child {{n}}",
   "Buscar hospedagens": "Search accommodations",
   "Você será levado ao Booking.com": "You will be taken to Booking.com",
-  "1 atrativo completo": "1 complete attraction",
-  "{{n}} atrativos completos": "{{n}} complete attractions",
-  "1 cachoeira com fotos, mapa e como chegar": "1 waterfall with photos, map and directions",
-  "{{n}} cachoeiras com fotos, mapa e como chegar": "{{n}} waterfalls with photos, map and directions",
-  "1 lugar com benefício para assinantes": "1 place with a perk for subscribers",
-  "{{n}} lugares com benefício para assinantes": "{{n}} places with perks for subscribers",
   "Veja este atrativo completo": "See this attraction in full",
   "Assine o Plano Viajantes para ver fotos, mapa, como chegar, contatos e o texto completo de cada atrativo.": "Subscribe to the Viajantes Plan to see photos, map, directions, contacts and the full text of every attraction.",
   "Ver trilha no Wikiloc": "See the trail on Wikiloc",
@@ -1832,5 +1826,6 @@
   "Atrativos completos": "Full attractions",
   "Fotos, mapa, como chegar, horários e trilhas de cada atrativo": "Photos, map, directions, opening hours and trails for every attraction",
   "Benefícios nos parceiros": "Perks at partner businesses",
-  "Faça check-in na porta do estabelecimento e ganhe o benefício exclusivo de assinante": "Check in at the partner's door and get the subscriber-only perk"
+  "Faça check-in na porta do estabelecimento e ganhe o benefício exclusivo de assinante": "Check in at the partner's door and get the subscriber-only perk",
+  "WhatsApp": "WhatsApp"
 }

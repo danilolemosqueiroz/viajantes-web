@@ -1,17 +1,14 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { CircleCheck, Footprints, Lock, MapPin } from 'lucide-react';
+import { Footprints, Lock, MapPin, MessageCircle, Navigation } from 'lucide-react';
 import { useT } from '@/i18n/Traducao';
 import type { Categoria, Idioma } from '@/i18n/categorias';
 import { hrefCategoria, raiz } from '@/i18n/caminhos';
-import { apiGet } from '@/lib/api';
 import { useUsuario } from '@/lib/conta';
 import type { Empresa } from '@/lib/tipos';
 import ModalLogin from '@/features/conta/ModalLogin';
 import Assinar from '@/features/roteiros/Assinar';
 import { capaEmpresa, tituloInfo } from './dados';
-import { linhasDoResumo, type ResumoPaywall } from './paywall';
 import GradeEmpresas from './GradeEmpresas';
 import LinhasBorradas from './LinhasBorradas';
 
@@ -21,21 +18,16 @@ export default function AtrativoBloqueado({ empresa, categoria, idioma }: { empr
   const t = useT();
   const { data: usuario, isPending: carregandoUsuario } = useUsuario();
   const [entrando, setEntrando] = useState(false);
-  const regiao = empresa.regiao_idregiao ?? null;
-
-  const { data: numeros } = useQuery<ResumoPaywall | null>({
-    queryKey: ['paywall', regiao],
-    queryFn: async () => {
-      const r = await apiGet<ResumoPaywall>('/site/paywall/resumo', { regiao });
-      return r.ok ? r.data : null;
-    },
-    staleTime: 60 * 60 * 1000,
-  });
 
   const capa = capaEmpresa(empresa);
   const lugar = [empresa.cidade_nome, empresa.estado_nome].filter(Boolean).join(', ');
   const titulos = (empresa.infos ?? []).map((info) => tituloInfo(info.titulo)).filter(Boolean);
-  const linhas = numeros ? linhasDoResumo(numeros, t) : [];
+  // Mostra que existe como chegar e WhatsApp; o toque leva ao convite do Plano (sem números: 17/11).
+  const trancados = [
+    empresa.tem_como_chegar && { chave: 'rota', Icone: Navigation, texto: t('Como chegar') },
+    empresa.tem_whatsapp && { chave: 'whats', Icone: MessageCircle, texto: t('WhatsApp') },
+  ].filter(Boolean) as { chave: string; Icone: typeof Navigation; texto: string }[];
+  const irParaConvite = () => document.getElementById('atrativo-completo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
     <>
@@ -67,13 +59,22 @@ export default function AtrativoBloqueado({ empresa, categoria, idioma }: { empr
           </p>
         )}
 
-        {empresa.tem_wikiloc && (
-          <div className="mt-5">
-            <button type="button" disabled className="botao-fio cursor-not-allowed opacity-70" title={t('Exclusivo para assinantes do Plano Viajantes.')}>
-              <Lock size={15} aria-hidden="true" />
-              <Footprints size={15} aria-hidden="true" />
-              {t('Ver trilha no Wikiloc')}
-            </button>
+        {(trancados.length > 0 || empresa.tem_wikiloc) && (
+          <div className="mt-5 flex flex-wrap gap-2">
+            {trancados.map(({ chave, Icone, texto }) => (
+              <button key={chave} type="button" onClick={irParaConvite} className="botao-fio" title={t('Exclusivo para assinantes do Plano Viajantes.')}>
+                <Lock size={15} aria-hidden="true" />
+                <Icone size={15} aria-hidden="true" />
+                {texto}
+              </button>
+            ))}
+            {empresa.tem_wikiloc && (
+              <button type="button" disabled className="botao-fio cursor-not-allowed opacity-70" title={t('Exclusivo para assinantes do Plano Viajantes.')}>
+                <Lock size={15} aria-hidden="true" />
+                <Footprints size={15} aria-hidden="true" />
+                {t('Ver trilha no Wikiloc')}
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -112,16 +113,6 @@ export default function AtrativoBloqueado({ empresa, categoria, idioma }: { empr
             <p className="mt-1 text-nota text-texto-2">
               {t('Assine o Plano Viajantes para ver fotos, mapa, como chegar, contatos e o texto completo de cada atrativo.')}
             </p>
-            {linhas.length > 0 && (
-              <ul className="mt-4 space-y-1.5 text-nota font-semibold text-brand">
-                {linhas.map((linha) => (
-                  <li key={linha} className="flex items-start gap-2">
-                    <CircleCheck size={16} className="mt-0.5 shrink-0 text-ok" aria-hidden="true" />
-                    {linha}
-                  </li>
-                ))}
-              </ul>
-            )}
             {!carregandoUsuario && !usuario && (
               <p className="mt-4 text-nota text-texto-2">
                 {t('Já é assinante?')}{' '}

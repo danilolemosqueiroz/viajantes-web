@@ -134,7 +134,8 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
   const facebook = linkPerfil(empresa.urlfacebook, 'https://www.facebook.com');
   const email = String(empresa.email ?? '').trim();
   const wikiloc = linkExterno(empresa.link_wikiloc);
-  const beneficioEscondido = Boolean(empresa.tem_beneficio && !empresa.beneficio);
+  // Quem não assina vê o benefício (17/11), mas só usa assinando: a página mostra o <Assinar /> embaixo.
+  const beneficioEscondido = Boolean(empresa.tem_beneficio && (!empresa.beneficio || empresa.beneficio_liberado === false));
 
   const inicio = raiz(idioma) || '/';
   const caminhoCategoria = hrefCategoria(categoria, idioma);
