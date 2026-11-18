@@ -5,6 +5,7 @@ import { indiceGeografia, resolverDestino, type Destino, type IndiceGeografia } 
 import { buscarEmpresa, listarEmpresas } from '@/features/catalogo/dados';
 import { buscarAssinatura, buscarRoteiro, listarCompras, listarItensRoteiro, listarRoteiros } from '@/features/roteiros/dados';
 import { lerSessao } from '@/lib/sessao';
+import { useUsuario } from '@/lib/conta';
 import type { AssinaturaSite, CompraFeita, Empresa, EmpresaResumo, Roteiro, RoteiroItem } from '@/lib/tipos';
 
 /** As consultas à API, em um lugar só. O TanStack Query evita repetir a mesma consulta
@@ -63,20 +64,24 @@ export function useEmpresas(filtro: FiltroEmpresas, ligada = true) {
   });
 }
 
-/** O idioma vai na chave porque os textos da empresa vêm traduzidos: sem ele, trocar de `/` para
- * `/en` reaproveitaria a resposta em português. Exportada para o `fetchQuery` usar a mesma chave. */
+/** Idioma e sessão vão na chave: os textos vêm traduzidos e o atrativo vem cortado para quem
+ * não assina. Exportada para o `fetchQuery` usar a mesma chave. */
 export function consultaEmpresa(id: number, idioma: Idioma) {
   return queryOptions<Empresa | null>({
-    queryKey: ['empresa', id, idioma],
+    queryKey: ['empresa', id, idioma, lerSessao()],
     queryFn: () => buscarEmpresa(id, idioma),
   });
 }
 
 export function useEmpresa(id: number | undefined) {
   const idioma = useIdioma();
+  // Entrar ou sair muda o usuário, e o novo render troca a sessão na chave.
+  useUsuario();
   return useQuery({
     ...consultaEmpresa(id!, idioma),
     enabled: Number.isFinite(id) && (id ?? 0) > 0,
+    // Mesmo atrativo com outra sessão: segura a tela de antes, sem "carregando", até a nova chegar.
+    placeholderData: (anterior, consulta) => (consulta?.queryKey[1] === id && consulta?.queryKey[2] === idioma ? anterior : undefined),
   });
 }
 

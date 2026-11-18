@@ -59,6 +59,9 @@ export interface EmpresaResumo {
   long: string | null;
   possui_desconto?: number | null;
   desconto_percentual?: number | null;
+  /** 1 = atrativo cortado para quem não assina (ver `Empresa.bloqueado`). */
+  bloqueado?: number | null;
+  tem_beneficio?: boolean;
 }
 
 /** Empresa como vem no detalhe (`/site/empresa/:id`). */
@@ -83,7 +86,8 @@ export interface Empresa {
   telefones: Telefone[] | null;
   /** Link pronto do WhatsApp (com a mensagem de apresentação). */
   whatsapp: string | null;
-  email: string | null;
+  /** A API deixou de mandar (campo interno); fica para respostas antigas. */
+  email?: string | null;
   site: string | null;
   urlfacebook: string | null;
   urlinstagram: string | null;
@@ -107,6 +111,23 @@ export interface Empresa {
   total_atrativos: number | null;
   filhos: EmpresaResumo[] | null;
   anunciante: number | null;
+  /** 1 = atrativo cortado para quem não assina: só nome, capa, local, títulos e resumo. */
+  bloqueado?: number | null;
+  resumo?: string | null;
+  tem_wikiloc?: boolean;
+  link_wikiloc?: string | null;
+  /** Estabelecimento: `beneficio` só vem para assinante; para os outros, `null` com `tem_beneficio`. */
+  tem_beneficio?: boolean;
+  beneficio?: BeneficioEmpresa | null;
+}
+
+export interface BeneficioEmpresa {
+  tipo: string;
+  valor: number | null;
+  descricao: string | null;
+  condicoes: string | null;
+  /** Pronto para a tela ("10% de desconto"). */
+  texto: string;
 }
 
 export interface Avaliacao {

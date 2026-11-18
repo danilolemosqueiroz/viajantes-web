@@ -3,7 +3,7 @@
  *
  * O site React sai dos arquivos de dist/ (sem passar por aqui). Este código só
  * roda nos caminhos de `run_worker_first` (wrangler.jsonc): as páginas PHP que
- * continuam na KingHost. Para quem acessa, o endereço não muda.
+ * continuam na KingHost e o `.well-known` dos links universais do app.
  */
 interface Env {
   /** Arquivos de dist/ (binding de assets do wrangler.jsonc). */
@@ -20,6 +20,9 @@ const RENOMEADAS: Array<[RegExp, string]> = [
 /** O que continua morando na KingHost. */
 const NA_ORIGEM = [/^\/seja-cliente(\/|$)/, /^\/painel-cliente(\/|$)/, /^\/download(\/|$)/, /^\/descontos(\/|$)/, /\.php$/];
 
+/** Links universais (iOS) e App Links (Android) de /e/* e /empresa/*. */
+const LINKS_DO_APP = ['/.well-known/apple-app-site-association', '/.well-known/assetlinks.json'];
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -31,6 +34,14 @@ export default {
 
     if (NA_ORIGEM.some((re) => re.test(url.pathname))) {
       return buscarNaOrigem(request, url, env);
+    }
+
+    // Apple e Android só aceitam estes arquivos como JSON; o AASA, sem extensão, sairia como octet-stream.
+    if (LINKS_DO_APP.includes(url.pathname)) {
+      const r = await env.ASSETS.fetch(request);
+      const h = new Headers(r.headers);
+      h.set('Content-Type', 'application/json');
+      return new Response(r.body, { status: r.status, headers: h });
     }
 
     return env.ASSETS.fetch(request);

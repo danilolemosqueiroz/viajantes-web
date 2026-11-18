@@ -3,6 +3,8 @@ import { rota } from './rota';
 
 /** O caminho que o visitante faz: home, categoria, destino e atrativo. */
 test('da home até um atrativo', async ({ page }) => {
+  // O acesso ao atrativo não pode contar no painel do parceiro de verdade.
+  await page.route('**/site/clique', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"error":false}' }));
   await page.goto(rota('/'));
   await expect(page.getByRole('heading', { level: 1 })).toContainText(/descubra o brasil/i);
 

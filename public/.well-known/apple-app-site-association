@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "CD8JT4S275.br.com.mediaplus.nahoraapp",
+        "appIDs": ["CD8JT4S275.br.com.mediaplus.nahoraapp"],
+        "paths": ["/e/*", "/empresa/*"],
+        "components": [{ "/": "/e/*" }, { "/": "/empresa/*" }]
+      }
+    ]
+  }
+}

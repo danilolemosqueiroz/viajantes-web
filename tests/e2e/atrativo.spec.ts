@@ -1,9 +1,48 @@
 import { expect, test, type Page } from '@playwright/test';
 import { rota } from './rota';
 
-/** Página do atrativo: convites, contato, avaliações, atrativos próximos e envio de avaliação.
- * O atrativo vem da API de verdade; o resto é simulado, para não depender do banco. */
+/** Página do atrativo: convites, contato, avaliações, atrativos próximos, envio de avaliação e o
+ * corte do Viajantes pago. Tudo simulado: a API de verdade corta o atrativo para quem não assina. */
 const ATRATIVO = '/cachoeiras/cachoeira-agua-limpa-19475';
+const RESTAURANTE = '/restaurantes/restaurante-de-teste-20494';
+
+const INTEIRO = {
+  idempresa: 19475,
+  nome: 'Cachoeira Água Limpa',
+  eavmoda: 3,
+  anunciante: 1,
+  descricao: '',
+  endereco: 'Estrada da Cachoeira, km 4',
+  cidade_nome: 'Capitólio',
+  regiao_nome: 'Serra da Canastra',
+  estado_nome: 'Minas Gerais',
+  regiao_idregiao: 37,
+  cidade_idcidade: 1,
+  capa: null,
+  logotipo: null,
+  fotos: [],
+  telefone1: '(37) 3373-0000',
+  telefones: [{ idtelefone: 1, numero: '(37) 3373-0000', descricao: '' }],
+  whatsapp: '',
+  site: '',
+  urlfacebook: '',
+  urlinstagram: '',
+  lat: '-20.6',
+  long: '-46.3',
+  coordenada: '-20.6,-46.3',
+  aberto: 1,
+  horario: '',
+  horarios: [],
+  infos: [{ idinfo: 1, titulo: 'Como chegar', descricao: 'Pela MG-050, 4 km de estrada de terra.' }],
+  nota: 0,
+  exibeavaliacao: 1,
+  acesso: null,
+  dificuldade: null,
+  complexo: 0,
+  total_atrativos: 0,
+  filhos: [],
+  bloqueado: 0,
+};
 
 const AVALIACOES = [
   { idavaliacao: 1, nome: 'Ana Teste', foto: null, nota: 5, mensagem: 'Linda demais, água cristalina.' },
@@ -15,7 +54,22 @@ const PROXIMOS = [
   { idempresa: 20494, nome: 'Restaurante de Teste', capa: null, cidade: 'Capitólio', eavmoda: 4, distancia_km: 1.5 },
 ];
 
+/** `/site/clique` chamados na página (D17): não podem chegar à API de verdade. */
+let cliques: number[] = [];
+
+async function simularEmpresa(page: Page, id: number, empresa: Record<string, unknown>) {
+  await page.route(`**/site/empresa/${id}`, (r) =>
+    r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(empresa) }),
+  );
+}
+
 async function simularComplementos(page: Page) {
+  cliques = [];
+  await page.route('**/site/clique', (r) => {
+    cliques.push(Number(r.request().postDataJSON()?.idempresa));
+    r.fulfill({ status: 200, contentType: 'application/json', body: '{"error":false}' });
+  });
+  await simularEmpresa(page, 19475, INTEIRO);
   await page.route('**/site/avaliacoes/*', (r) =>
     r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AVALIACOES) }),
   );
@@ -25,8 +79,8 @@ async function simularComplementos(page: Page) {
 }
 
 /** Abre o atrativo e dispensa o convite que aparece ao entrar. */
-async function abrirAtrativo(page: Page) {
-  await page.goto(rota(ATRATIVO));
+async function abrirAtrativo(page: Page, caminho = ATRATIVO) {
+  await page.goto(rota(caminho));
   const convite = page.getByRole('dialog', { name: /entre ou crie sua conta|baixe o aplicativo/i });
   await convite.getByRole('button', { name: /continuar no site/i }).click();
   await expect(convite).toBeHidden();
@@ -69,6 +123,9 @@ test('convite de conta ao abrir, app no segundo atrativo — e nada trava', asyn
   await page.reload();
   await expect(page.getByRole('dialog', { name: /entre ou crie sua conta/i })).toBeVisible();
   await expect(page.getByRole('dialog', { name: /baixe o aplicativo/i })).toBeHidden();
+
+  // Três aberturas na mesma aba: um acesso só para o painel do parceiro.
+  expect(cliques).toEqual([19475]);
 });
 
 test.describe('com o convite já respondido', () => {
@@ -119,5 +176,85 @@ test.describe('com o convite já respondido', () => {
 
     await expect(modal.getByRole('status')).toContainText(/publicada após aprovação/i);
     expect(enviado).toMatchObject({ idempresa: 19475, nota: 5, nome: 'Carla Teste', email: 'carla@example.com' });
+  });
+});
+
+test.describe('Viajantes pago', () => {
+  test('atrativo cortado: nome, resumo e títulos, sem contato, e o convite para assinar', async ({ page }) => {
+    await simularEmpresa(page, 19475, {
+      ...INTEIRO,
+      bloqueado: 1,
+      resumo: 'Poço verde.',
+      infos: [{ idinfo: 1, titulo: 'Como chegar', descricao: '' }],
+      telefones: [],
+      telefone1: '',
+      endereco: '',
+      lat: '',
+      long: '',
+      coordenada: '',
+      tem_wikiloc: true,
+    });
+    await page.route('**/site/paywall/resumo*', (r) =>
+      r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ regiao: null, atrativos: 120, cachoeiras: 0, beneficios: 8 }) }),
+    );
+
+    await abrirAtrativo(page);
+
+    await expect(page.getByRole('heading', { level: 1, name: 'Cachoeira Água Limpa' })).toBeVisible();
+    await expect(page.getByText('Poço verde.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Como chegar' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /ver trilha no wikiloc/i })).toBeDisabled();
+    await expect(page.getByText('120 atrativos completos')).toBeVisible();
+    await expect(page.getByText(/cachoeiras com fotos/i)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /assinar por/i })).toBeVisible();
+
+    await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /como chegar/i })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: /^avaliações$/i })).toHaveCount(0);
+  });
+
+  test('estabelecimento mostra que há benefício, sem dizer qual, a quem não assina', async ({ page }) => {
+    await simularEmpresa(page, 20494, { ...INTEIRO, idempresa: 20494, nome: 'Restaurante de Teste', eavmoda: 4, tem_beneficio: true, beneficio: null });
+
+    await abrirAtrativo(page, RESTAURANTE);
+
+    await expect(page.getByText('Benefício exclusivo para assinantes')).toBeVisible();
+    await page.getByRole('button', { name: /assinar o plano viajantes/i }).click();
+    await expect(page.locator('#assinar-plano')).toBeInViewport();
+    // Contato continua aberto: só o benefício é do assinante.
+    await expect(page.locator('a[href^="tel:"]').first()).toBeVisible();
+  });
+
+  test('assinante vê o benefício e como liberar', async ({ page }) => {
+    await simularEmpresa(page, 20494, {
+      ...INTEIRO,
+      idempresa: 20494,
+      nome: 'Restaurante de Teste',
+      eavmoda: 4,
+      tem_beneficio: true,
+      beneficio: { tipo: 'percentual', valor: 10, descricao: null, condicoes: 'Exceto bebidas.', texto: '10% de desconto' },
+    });
+
+    await abrirAtrativo(page, RESTAURANTE);
+
+    await expect(page.getByText('Seu benefício: 10% de desconto')).toBeVisible();
+    await expect(page.getByText('Exceto bebidas.')).toBeVisible();
+    await expect(page.getByText(/check-in no app viajantes/i)).toBeVisible();
+    await expect(page.getByText('Benefício exclusivo para assinantes')).toHaveCount(0);
+  });
+
+  test('QR na porta: celular vai para a loja, computador para a página', async ({ page, isMobile }) => {
+    await page.route('https://play.google.com/**', (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<p>loja</p>' }));
+
+    await page.goto(rota('/e/19475?origem=qr'));
+
+    if (isMobile) {
+      await page.waitForURL(/play\.google\.com/);
+      expect(page.url()).toContain('id=app.nahora');
+      expect(page.url()).toContain('referrer=utm_source%3Dqr-parceiro%26utm_medium%3Dqr');
+    } else {
+      await expect(page).toHaveURL(/\/cachoeiras\/cachoeira-agua-limpa-19475$/);
+      await expect(page.getByRole('heading', { level: 1, name: 'Cachoeira Água Limpa' })).toBeVisible();
+    }
   });
 });

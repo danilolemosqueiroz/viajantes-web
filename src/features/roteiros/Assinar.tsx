@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
+  BadgePercent,
   BotMessageSquare,
   CalendarCheck,
   CircleCheck,
@@ -8,6 +9,7 @@ import {
   MapPinned,
   RefreshCw,
   Route,
+  Mountain,
   ShieldCheck,
   Smartphone,
   Sparkles,
@@ -31,6 +33,8 @@ const FOTO_1400 = publico('images/plano-viajantes-1400.webp');
 
 /** Os mesmos itens da tela de assinatura do app, menos o progresso, que só existe lá. */
 const BENEFICIOS = [
+  { Icone: Mountain, titulo: 'Atrativos completos', texto: 'Fotos, mapa, como chegar, horários e trilhas de cada atrativo', novo: true },
+  { Icone: BadgePercent, titulo: 'Benefícios nos parceiros', texto: 'Faça check-in na porta do estabelecimento e ganhe o benefício exclusivo de assinante', novo: true },
   { Icone: Route, titulo: 'Roteiros Exclusivos', texto: 'Itinerários completos, vividos e testados pela equipe do Viajantes App' },
   { Icone: BotMessageSquare, titulo: 'Chat com Inteligência Artificial', texto: 'Tire dúvidas e monte roteiros sob medida com o Guia Viajantes', novo: true },
   { Icone: CalendarCheck, titulo: 'Planejamento Dia a Dia', texto: 'Programação detalhada com horários e atividades' },
@@ -104,6 +108,8 @@ export default function Assinar({ contexto, compacto = false }: { contexto?: str
     cliente.invalidateQueries({ queryKey: ['assinatura-site'] });
     cliente.invalidateQueries({ queryKey: ['roteiro-itens'] });
     cliente.invalidateQueries({ queryKey: ['compras-plano'] });
+    // O atrativo cortado da página aberta passa a vir inteiro.
+    cliente.invalidateQueries({ queryKey: ['empresa'] });
   };
 
   if (!aberto) {

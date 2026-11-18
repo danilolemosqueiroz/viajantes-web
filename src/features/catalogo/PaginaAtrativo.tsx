@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Clock, Globe, Mail, MapPin, Navigation, Phone, Star, Ticket, User } from 'lucide-react';
+import { Clock, Footprints, Globe, Mail, MapPin, Navigation, Phone, Star, Ticket, User } from 'lucide-react';
 import { useT } from '@/i18n/Traducao';
 import type { Categoria, Idioma } from '@/i18n/categorias';
 import { hrefCategoria, hrefEmpresa, raiz } from '@/i18n/caminhos';
 import type { Avaliacao, AtrativoProximo, Empresa, Telefone } from '@/lib/tipos';
-import { apiGet } from '@/lib/api';
+import { apiGet, apiPost } from '@/lib/api';
 import { urlSite, JsonLd, migalhas } from '@/lib/seo/jsonld';
 import { useMeta } from '@/lib/meta';
 import { useUsuario } from '@/lib/conta';
@@ -29,7 +29,11 @@ import {
   urlEmbedVideo,
 } from './dados';
 import { decidirConviteAoAbrir, marcarConviteContaDispensado, type Convite } from './convites';
+import { descricaoParaMeta, estaBloqueado } from './paywall';
+import Assinar from '@/features/roteiros/Assinar';
+import AtrativoBloqueado from './AtrativoBloqueado';
 import AtrativosProximos from './AtrativosProximos';
+import CartaoBeneficio, { ANCORA_ASSINAR } from './CartaoBeneficio';
 import AvaliarLocal from './AvaliarLocal';
 import ConviteApp from './ConviteApp';
 import ConviteConta from './ConviteConta';
@@ -76,6 +80,20 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
     setConvite(decidirConviteAoAbrir(Boolean(usuario)));
   }, [carregandoUsuario, usuario]);
 
+  // Acesso do dia para o painel do parceiro (D17): uma vez por aba, a API conta um por pessoa e dia.
+  useEffect(() => {
+    const chave = `vj_visto_${empresa.idempresa}`;
+    try {
+      if (sessionStorage.getItem(chave)) return;
+      sessionStorage.setItem(chave, '1');
+    } catch {
+      /* armazenamento bloqueado: a API ainda deduplica no dia */
+    }
+    void apiPost('/site/clique', { idempresa: empresa.idempresa });
+  }, [empresa.idempresa]);
+
+  const bloqueado = estaBloqueado(empresa);
+
   // Avaliações e atrativos próximos são complementos: se a API falhar, a
   // página continua de pé sem eles.
   const { data: avaliacoes = [] } = useQuery<Avaliacao[]>({
@@ -84,6 +102,7 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
       const r = await apiGet<Avaliacao[]>(`/site/avaliacoes/${empresa.idempresa}`);
       return r.ok && Array.isArray(r.data) ? r.data.filter((a) => a && typeof a === 'object') : [];
     },
+    enabled: !bloqueado,
   });
 
   const { data: proximos = [] } = useQuery<AtrativoProximo[]>({
@@ -92,6 +111,7 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
       const r = await apiGet<AtrativoProximo[]>(`/site/empresa/${empresa.idempresa}/atrativos`);
       return r.ok && Array.isArray(r.data) ? r.data : [];
     },
+    enabled: !bloqueado,
   });
 
   const capa = capaEmpresa(empresa);
@@ -113,15 +133,15 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
   const instagram = linkPerfil(empresa.urlinstagram, 'https://www.instagram.com');
   const facebook = linkPerfil(empresa.urlfacebook, 'https://www.facebook.com');
   const email = String(empresa.email ?? '').trim();
+  const wikiloc = linkExterno(empresa.link_wikiloc);
+  const beneficioEscondido = Boolean(empresa.tem_beneficio && !empresa.beneficio);
 
   const inicio = raiz(idioma) || '/';
   const caminhoCategoria = hrefCategoria(categoria, idioma);
   const caminhoAtual = `${caminhoCategoria}/${slug}`;
 
   const lugar = [empresa.cidade_nome, empresa.estado_nome].filter(Boolean).join(', ');
-  const descricao = (empresa.descricao || textos[0]?.descricao || `${t(categoria.titulo)}${lugar ? ` em ${lugar}` : ''}.`)
-    .replace(/\s+/g, ' ')
-    .trim();
+  const descricao = descricaoParaMeta(empresa, textos[0]?.descricao ?? '', `${t(categoria.titulo)}${lugar ? ` em ${lugar}` : ''}.`);
   useMeta({
     titulo: lugar ? `${empresa.nome} — ${lugar}` : empresa.nome,
     descricao: descricao.slice(0, 300),
@@ -223,61 +243,91 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
     </div>
   );
 
+  const convites = (
+    <>
+      <ConviteConta
+        aberto={convite === 'conta'}
+        aoFechar={() => {
+          marcarConviteContaDispensado();
+          setConvite(null);
+        }}
+      />
+
+      <ConviteApp aberto={convite === 'app'} aoFechar={() => setConvite(null)} nome={empresa.nome} capa={capa} />
+    </>
+  );
+
+  const jsonLd = (
+    <JsonLd
+      blocos={[
+        migalhas([
+          { nome: 'Home', caminho: inicio },
+          { nome: t(categoria.titulo), caminho: caminhoCategoria },
+          { nome: empresa.nome, caminho: caminhoAtual },
+        ]),
+        {
+          '@context': 'https://schema.org',
+          '@type': tipoSchema(empresa.eavmoda),
+          name: empresa.nome,
+          url: urlSite(caminhoAtual),
+          ...(capa ? { image: capa } : {}),
+          description: descricao,
+          ...(empresa.endereco
+            ? {
+                address: {
+                  '@type': 'PostalAddress',
+                  streetAddress: empresa.endereco,
+                  addressLocality: empresa.cidade_nome ?? undefined,
+                  addressRegion: empresa.estado_nome ?? undefined,
+                  addressCountry: 'BR',
+                },
+              }
+            : {}),
+          ...(empresa.lat && empresa.long
+            ? { geo: { '@type': 'GeoCoordinates', latitude: Number(empresa.lat), longitude: Number(empresa.long) } }
+            : {}),
+          ...(telefones[0] ? { telephone: `+55${telefones[0].numero.replace(/\D/g, '')}` } : {}),
+          ...([instagram, facebook, site].some(Boolean) ? { sameAs: [instagram, facebook, site].filter(Boolean) } : {}),
+          ...(filhos.length > 0
+            ? {
+                containsPlace: filhos.map((filho) => ({
+                  '@type': 'TouristAttraction',
+                  name: filho.nome,
+                  url: urlSite(hrefEmpresa(filho, categoria, idioma)),
+                })),
+              }
+            : {}),
+          // Cortado não mostra avaliação na tela, então ela também não vai para o Google.
+          ...(!bloqueado && avaliacoes.length > 0
+            ? {
+                aggregateRating: { '@type': 'AggregateRating', ratingValue: nota, reviewCount: avaliacoes.length, bestRating: 5 },
+                review: avaliacoes.slice(0, 10).map((a) => ({
+                  '@type': 'Review',
+                  author: { '@type': 'Person', name: a.nome || 'Viajante' },
+                  reviewRating: { '@type': 'Rating', ratingValue: Number(a.nota) || 0, bestRating: 5 },
+                  reviewBody: a.mensagem ?? '',
+                })),
+              }
+            : {}),
+        },
+      ]}
+    />
+  );
+
+  // Depois de todos os hooks: o atrativo cortado tem a tela dele.
+  if (bloqueado) {
+    return (
+      <>
+        {jsonLd}
+        <AtrativoBloqueado empresa={empresa} categoria={categoria} idioma={idioma} />
+        {convites}
+      </>
+    );
+  }
+
   return (
     <>
-      <JsonLd
-        blocos={[
-          migalhas([
-            { nome: 'Home', caminho: inicio },
-            { nome: t(categoria.titulo), caminho: caminhoCategoria },
-            { nome: empresa.nome, caminho: caminhoAtual },
-          ]),
-          {
-            '@context': 'https://schema.org',
-            '@type': tipoSchema(empresa.eavmoda),
-            name: empresa.nome,
-            url: urlSite(caminhoAtual),
-            ...(capa ? { image: capa } : {}),
-            description: descricao,
-            ...(empresa.endereco
-              ? {
-                  address: {
-                    '@type': 'PostalAddress',
-                    streetAddress: empresa.endereco,
-                    addressLocality: empresa.cidade_nome ?? undefined,
-                    addressRegion: empresa.estado_nome ?? undefined,
-                    addressCountry: 'BR',
-                  },
-                }
-              : {}),
-            ...(empresa.lat && empresa.long
-              ? { geo: { '@type': 'GeoCoordinates', latitude: Number(empresa.lat), longitude: Number(empresa.long) } }
-              : {}),
-            ...(telefones[0] ? { telephone: `+55${telefones[0].numero.replace(/\D/g, '')}` } : {}),
-            ...([instagram, facebook, site].some(Boolean) ? { sameAs: [instagram, facebook, site].filter(Boolean) } : {}),
-            ...(filhos.length > 0
-              ? {
-                  containsPlace: filhos.map((filho) => ({
-                    '@type': 'TouristAttraction',
-                    name: filho.nome,
-                    url: urlSite(hrefEmpresa(filho, categoria, idioma)),
-                  })),
-                }
-              : {}),
-            ...(avaliacoes.length > 0
-              ? {
-                  aggregateRating: { '@type': 'AggregateRating', ratingValue: nota, reviewCount: avaliacoes.length, bestRating: 5 },
-                  review: avaliacoes.slice(0, 10).map((a) => ({
-                    '@type': 'Review',
-                    author: { '@type': 'Person', name: a.nome || 'Viajante' },
-                    reviewRating: { '@type': 'Rating', ratingValue: Number(a.nota) || 0, bestRating: 5 },
-                    reviewBody: a.mensagem ?? '',
-                  })),
-                }
-              : {}),
-          },
-        ]}
-      />
+      {jsonLd}
 
       {/* Capa: um painel de foto sobre a folha, e o título embaixo em tinta
           verde, na mesma ordem da tela de detalhe do aplicativo. */}
@@ -364,18 +414,16 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
               {t('Reservar')}
             </a>
           )}
+          {wikiloc && (
+            <a href={wikiloc} target="_blank" rel="noopener" className="botao-fio">
+              <Footprints size={16} aria-hidden="true" />
+              {t('Ver trilha no Wikiloc')}
+            </a>
+          )}
         </div>
       </div>
 
-      <ConviteConta
-        aberto={convite === 'conta'}
-        aoFechar={() => {
-          marcarConviteContaDispensado();
-          setConvite(null);
-        }}
-      />
-
-      <ConviteApp aberto={convite === 'app'} aoFechar={() => setConvite(null)} nome={empresa.nome} capa={capa} />
+      {convites}
 
       <AvaliarLocal
         aberto={avaliando}
@@ -388,7 +436,10 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
       <div className="folha grid gap-8 py-8 lg:grid-cols-[1fr_20rem]">
         {/* No celular o contato vem antes do conteúdo, como no site antigo;
             no computador fica na coluna da direita, acompanhando a rolagem. */}
-        <aside className="lg:order-2 lg:sticky lg:top-24 lg:self-start">{contato}</aside>
+        <aside className="space-y-4 lg:order-2 lg:sticky lg:top-24 lg:self-start">
+          <CartaoBeneficio empresa={empresa} />
+          {contato}
+        </aside>
 
         <div className="min-w-0 space-y-10 lg:order-1">
           {filhos.length > 0 && (
@@ -537,6 +588,11 @@ export default function PaginaAtrativo({ empresa, categoria, idioma, slug }: Pro
             </section>
           )}
 
+          {beneficioEscondido && (
+            <section id={ANCORA_ASSINAR} className="scroll-mt-24">
+              <Assinar />
+            </section>
+          )}
         </div>
       </div>
     </>

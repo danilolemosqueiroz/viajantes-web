@@ -58,6 +58,15 @@ nota média e formulário, atrativos próximos em abas, vídeos, horários, foto
 o contato fica ao lado. As pegadinhas da API do detalhe (nota sempre 0, horário
 que não é "aberto agora", vídeo com barra dobrada) estão em `docs/atrativo.md`.
 
+**Viajantes pago.** Quem corta é a API: para quem não assina, o atrativo vem com
+`bloqueado: 1` (nome, capa, local, resumo e títulos) e a página vira
+`AtrativoBloqueado.tsx`, com linhas borradas falsas e o convite para assinar; o
+estabelecimento vem inteiro, menos o benefício (`tem_beneficio` sem `beneficio`,
+ver `CartaoBeneficio.tsx`). A sessão entra na chave da consulta do atrativo, então
+entrar ou assinar busca de novo. Resposta antiga (sem `bloqueado`) mostra tudo.
+O QR na porta do parceiro aponta para `/e/<id>?origem=qr`: no celular sem o app a
+ponte manda para a loja; o `.well-known` dos links universais sai do worker como JSON.
+
 **Conta.** A mesma do aplicativo. O login devolve um `hash` de sessão, guardado
 no navegador e enviado no cabeçalho `Passport` — igual ao app.
 

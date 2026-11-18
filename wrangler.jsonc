@@ -18,7 +18,9 @@
       "/parceiros*",
       "/download*",
       "/descontos*",
-      "/*.php"
+      "/*.php",
+      // Links universais do app: o worker só troca o Content-Type para JSON.
+      "/.well-known/*"
     ]
   },
   "vars": {
